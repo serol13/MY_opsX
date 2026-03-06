@@ -3,6 +3,9 @@ import pandas as pd
 import io
 import base64
 import requests
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from datetime import datetime, date
 import uuid
 import plotly.express as px
@@ -163,12 +166,94 @@ def badge(label, bg, fg="#fff"):
             f'border-radius:4px;font-size:12px;font-weight:700">{label}</span>')
 
 def progress_bar(pct, color=DHL_YELLOW):
+    border = DHL_BORDER
+    gray   = DHL_GRAY
     return (
-        f'<div style="background:{DHL_BORDER};border-radius:4px;height:12px;'
+        f'<div style="background:{border};border-radius:4px;height:12px;'
         f'width:100%;overflow:hidden;margin:6px 0 2px">'
         f'<div style="background:{color};width:{pct}%;height:100%;border-radius:4px"></div></div>'
-        f'<small style="color:{DHL_GRAY};font-size:12px">{pct}% complete</small>'
+        f'<small style="color:{gray};font-size:12px">{pct}% complete</small>'
     )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# EMAIL NOTIFICATION
+# ─────────────────────────────────────────────────────────────────────────────
+def send_new_ticket_email(ticket: dict) -> None:
+    """Send email notification when a new ticket is submitted."""
+    try:
+        gmail_user     = st.secrets["GMAIL_USER"]
+        gmail_password = st.secrets["GMAIL_APP_PASSWORD"]
+        notify_email   = st.secrets["NOTIFY_EMAIL"]
+    except KeyError:
+        return  # email not configured, skip silently
+
+    subject = f"[QA Tracker] New Ticket: {ticket['ticket_id']} — {ticket['title']}"
+
+    html = f"""
+    <html><body style="font-family:Arial,sans-serif;background:#f5f5f5;padding:20px">
+    <div style="max-width:600px;margin:auto;background:#fff;border-radius:8px;
+                border-top:5px solid #FFCC00;padding:28px 32px;box-shadow:0 2px 8px rgba(0,0,0,.08)">
+      <div style="font-size:22px;font-weight:900;color:#D40511;letter-spacing:1px;margin-bottom:4px">DHL</div>
+      <div style="font-size:18px;font-weight:700;color:#1A1A1A;margin-bottom:20px">New QA Ticket Submitted</div>
+      <table style="width:100%;border-collapse:collapse;font-size:14px">
+        <tr style="background:#FFCC00">
+          <td style="padding:10px 14px;font-weight:700;color:#1A1A1A;width:35%">Ticket ID</td>
+          <td style="padding:10px 14px;font-weight:700;color:#1A1A1A">{ticket['ticket_id']}</td>
+        </tr>
+        <tr style="background:#f9f9f9">
+          <td style="padding:10px 14px;color:#6B6B6B;font-weight:600">Title</td>
+          <td style="padding:10px 14px;color:#1A1A1A">{ticket['title']}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 14px;color:#6B6B6B;font-weight:600">Platform</td>
+          <td style="padding:10px 14px;color:#1A1A1A">{ticket['platform']}</td>
+        </tr>
+        <tr style="background:#f9f9f9">
+          <td style="padding:10px 14px;color:#6B6B6B;font-weight:600">Priority</td>
+          <td style="padding:10px 14px;color:#1A1A1A">{ticket['priority']}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 14px;color:#6B6B6B;font-weight:600">Requestor</td>
+          <td style="padding:10px 14px;color:#1A1A1A">{ticket['requestor']}</td>
+        </tr>
+        <tr style="background:#f9f9f9">
+          <td style="padding:10px 14px;color:#6B6B6B;font-weight:600">Due Date</td>
+          <td style="padding:10px 14px;color:#1A1A1A">{ticket['due_date']}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 14px;color:#6B6B6B;font-weight:600">Submitted By</td>
+          <td style="padding:10px 14px;color:#1A1A1A">{ticket['updated_by']}</td>
+        </tr>
+        <tr style="background:#f9f9f9">
+          <td style="padding:10px 14px;color:#6B6B6B;font-weight:600">Description</td>
+          <td style="padding:10px 14px;color:#1A1A1A">{ticket['description']}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 14px;color:#6B6B6B;font-weight:600">Notes</td>
+          <td style="padding:10px 14px;color:#1A1A1A">{ticket.get('notes','—')}</td>
+        </tr>
+        <tr style="background:#f9f9f9">
+          <td style="padding:10px 14px;color:#6B6B6B;font-weight:600">Submitted At</td>
+          <td style="padding:10px 14px;color:#1A1A1A">{ticket['timestamp'][:16].replace('T', ' at ')}</td>
+        </tr>
+      </table>
+      <div style="margin-top:24px;font-size:12px;color:#9E9E9E;border-top:1px solid #E0E0E0;padding-top:14px">
+        This is an automated notification from your QA Viz Tracker.
+      </div>
+    </div>
+    </body></html>
+    """
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"]    = gmail_user
+    msg["To"]      = notify_email
+    msg.attach(MIMEText(html, "html"))
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login(gmail_user, gmail_password)
+        server.sendmail(gmail_user, notify_email, msg.as_string())
 
 # ─────────────────────────────────────────────────────────────────────────────
 # EXCEL EXPORT
@@ -728,6 +813,7 @@ elif page == "Submit Request":
             with st.spinner("Saving to GitHub..."):
                 try:
                     gh_append(row)
+                    send_new_ticket_email(row)
                     st.success(f"Ticket **{tid}** submitted and logged to CSV.")
                     st.markdown(f"""<div class="ticket-card">
                       <div class="ticket-id">{tid}</div>
