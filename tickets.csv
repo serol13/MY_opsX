@@ -91,3 +91,4 @@ Average Volume By Week at Region to Daily Volume at Region
 Depot Volume By Week to Daily volume by Depot
  ",Guest:Alyu,,,,
 2026-03-06T15:58:09,CREATED,QA-74BF1F,Address Discrepancy Between POSID and DHL Label - MYNEVLDF-OR-11548 / 7228021120572346 (MEMORY PLACE ENTERPRISE),Splunk,Low,Backlog,0,Hazim,2026-03-06,POS,Checking the discrepancy for POS label and DHL label,Guest:Hazim,,,,
+2026-03-06T16:00:08,UPDATED,QA-2218E5,SCNC dashboard in Power BI,Power BI,Critical,Done,100,AlYu,,,,serol,Already publish the app.,Critical,serol,
