@@ -203,6 +203,9 @@ if "rec_df" not in st.session_state:
 if "my_tasks_mode" not in st.session_state:
     st.session_state.my_tasks_mode = False
 
+if "nav_page" not in st.session_state:
+    st.session_state.nav_page = "Dashboard"
+
 # ── Guest PIN wall ────────────────────────────────────────────────────────────
 GUEST_PIN = str(st.secrets.get("GUEST_PIN", ""))
 
@@ -681,8 +684,18 @@ with st.sidebar:
     if user:
         nav_options += ["Update / Delete Ticket"]
 
-    page = st.radio("Navigation", nav_options, label_visibility="collapsed")
-    # Clear My Tasks mode if user manually navigates away
+    # Keep radio in sync with session state nav_page
+    if st.session_state.nav_page not in nav_options:
+        st.session_state.nav_page = nav_options[0]
+    nav_idx = nav_options.index(st.session_state.nav_page)
+    page = st.radio("Navigation", nav_options, index=nav_idx,
+                    label_visibility="collapsed", key="nav_radio")
+    # Sync back — if user clicks sidebar, update nav_page
+    if page != st.session_state.nav_page:
+        st.session_state.nav_page = page
+        st.session_state.my_tasks_mode = False
+        st.rerun()
+    # Clear My Tasks mode if not on Update page
     if page != "Update / Delete Ticket":
         st.session_state.my_tasks_mode = False
     st.markdown("---")
@@ -714,6 +727,7 @@ with st.sidebar:
         if my_count > 0:
             if st.button("View & Update My Tasks →", key="my_tasks_btn", use_container_width=True):
                 st.session_state.my_tasks_mode = True
+                st.session_state.nav_page = "Update / Delete Ticket"
                 st.rerun()
 
     # Recurring tasks count
@@ -1230,6 +1244,7 @@ elif page == "Update / Delete Ticket":
             with col_back:
                 if st.button("← Show All Tickets"):
                     st.session_state.my_tasks_mode = False
+                    st.session_state.nav_page = "Update / Delete Ticket"
                     st.rerun()
 
         # Filter + sort before dropdown
