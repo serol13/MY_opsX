@@ -158,7 +158,14 @@ PRIORITY_COLORS = {
     "High":     DHL_RED,
     "Critical": "#6A0DAD",
 }
-PRIORITY_ORDER = ["Low", "Medium", "High", "Critical"]
+PRIORITY_ORDER   = ["Low", "Medium", "High", "Critical"]
+COMPLEXITY_ORDER = ["Simple", "Medium", "Complex", "Critical"]
+COMPLEXITY_COLORS = {
+    "Simple":   "#2E7D32",
+    "Medium":   "#0078D4",
+    "Complex":  "#FF8C00",
+    "Critical": "#6A0DAD",
+}
 STATUS_ORDER   = ["Backlog", "In Progress", "In Review", "Blocked", "Done"]
 
 def badge(label, bg, fg="#fff"):
@@ -532,6 +539,24 @@ with st.sidebar:
     total   = len(tickets)
     done    = len(tickets[tickets["status"] == "Done"]) if not tickets.empty else 0
     blocked = len(tickets[tickets["status"] == "Blocked"]) if not tickets.empty else 0
+    # My Tasks count for logged-in user
+    if user and not tickets.empty:
+        my_tasks = tickets[
+            (tickets.get("assigned_to", pd.Series(dtype=str)) == user) &
+            (~tickets["status"].isin(["Done"]))
+        ] if "assigned_to" in tickets.columns else pd.DataFrame()
+        my_count = len(my_tasks)
+        my_blocked = len(my_tasks[my_tasks["status"] == "Blocked"]) if not my_tasks.empty else 0
+        st.markdown(f"""
+        <div style="background:#1e1e1e;border:1px solid #FFCC00;border-radius:6px;
+                    padding:10px 14px;margin-bottom:10px">
+          <div style="font-size:11px;color:#FFCC00;font-weight:700;text-transform:uppercase;
+                      letter-spacing:.06em;margin-bottom:6px">My Tasks</div>
+          <div style="font-size:22px;font-weight:900;color:#FFCC00;line-height:1">{my_count}</div>
+          <div style="font-size:11px;color:#aaa;margin-top:2px">pending tickets assigned to you</div>
+          {f'<div style="font-size:11px;color:#D40511;margin-top:4px;font-weight:700">{my_blocked} blocked</div>' if my_blocked else ""}
+        </div>""", unsafe_allow_html=True)
+
     st.markdown(f"""
     <div style="font-size:13px;color:#ccc;line-height:2.2">
       <b style="color:#fff">Active tickets:</b> {total}<br>
@@ -681,9 +706,11 @@ if page == "Dashboard":
               <div class="ticket-id">{t['ticket_id']} · {t.get('requestor','')} · Due {t.get('due_date','—')}</div>
               <div class="ticket-title">{t['title']}</div>
               <div class="pills">
-                {badge(t['platform'], PLATFORM_COLORS.get(t['platform'], DHL_GRAY))}
-                {badge(t['status'],   STATUS_COLORS.get(t['status'],     DHL_GRAY))}
-                {badge(t['priority'], PRIORITY_COLORS.get(t['priority'], DHL_GRAY))}
+                {badge(t['platform'],  PLATFORM_COLORS.get(t['platform'],  DHL_GRAY))}
+                {badge(t['status'],    STATUS_COLORS.get(t['status'],       DHL_GRAY))}
+                {badge(t['priority'],  PRIORITY_COLORS.get(t['priority'],   DHL_GRAY))}
+                {badge("Complexity: " + str(t.get("complexity","—")), "#555555") if t.get("complexity") else ""}
+                {badge("Assigned: "   + str(t.get("assigned_to","Unassigned")), "#1A1A1A", DHL_YELLOW) if t.get("assigned_to") else ""}
                 {tag_html}
               </div>
               """ + progress_bar(pct, bc) + """
@@ -742,12 +769,14 @@ elif page == "All Tickets":
                 desc = str(t.get('description',''))
                 desc_short = desc[:200] + ('...' if len(desc) > 200 else '')
                 st.markdown(f"""<div class="ticket-card">
-                  <div class="ticket-id">{t['ticket_id']} · {t.get('requestor','')} · Due {t.get('due_date','—')} · Last updated by {t.get('updated_by','')}</div>
+                  <div class="ticket-id">{t['ticket_id']} · {t.get('requestor','')} · Due {t.get('due_date','—')} · Assigned: {t.get('assigned_to','Unassigned')} · Updated by {t.get('updated_by','')}</div>
                   <div class="ticket-title">{t['title']}</div>
                   <div class="pills">
-                    {badge(t['platform'], PLATFORM_COLORS.get(t['platform'], DHL_GRAY))}
-                    {badge(t['status'],   STATUS_COLORS.get(t['status'],     DHL_GRAY))}
-                    {badge(t['priority'], PRIORITY_COLORS.get(t['priority'], DHL_GRAY))}
+                    {badge(t['platform'],  PLATFORM_COLORS.get(t['platform'],  DHL_GRAY))}
+                    {badge(t['status'],    STATUS_COLORS.get(t['status'],       DHL_GRAY))}
+                    {badge(t['priority'],  PRIORITY_COLORS.get(t['priority'],   DHL_GRAY))}
+                    {badge("Complexity: " + str(t.get("complexity","—")), "#555555") if t.get("complexity") else ""}
+                    {badge("Assigned: "   + str(t.get("assigned_to","Unassigned")), "#1A1A1A", DHL_YELLOW) if t.get("assigned_to") else ""}
                     {tag_html}
                   </div>
                   """ + progress_bar(pct, bc) + f"""
@@ -848,9 +877,11 @@ elif page == "Update / Delete Ticket":
           <div class="ticket-id">{t['ticket_id']} · Requestor: {t.get('requestor','')} · Due: {t.get('due_date','')}</div>
           <div class="ticket-title">{t['title']}</div>
           <div class="pills">
-            {badge(t['platform'], PLATFORM_COLORS.get(t['platform'], DHL_GRAY))}
-            {badge(t['status'],   STATUS_COLORS.get(t['status'],     DHL_GRAY))}
-            {badge(t['priority'], PRIORITY_COLORS.get(t['priority'], DHL_GRAY))}
+            {badge(t['platform'],  PLATFORM_COLORS.get(t['platform'],  DHL_GRAY))}
+            {badge(t['status'],    STATUS_COLORS.get(t['status'],       DHL_GRAY))}
+            {badge(t['priority'],  PRIORITY_COLORS.get(t['priority'],   DHL_GRAY))}
+            {badge("Complexity: " + str(t.get("complexity","—")),       "#555555") if t.get("complexity") else ""}
+            {badge("Assigned: "   + str(t.get("assigned_to","Unassigned")), "#1A1A1A", DHL_YELLOW) if t.get("assigned_to") else badge("Unassigned", "#9E9E9E")}
           </div>
           """ + progress_bar(pct, STATUS_COLORS.get(t['status'], DHL_YELLOW)) + f"""
           <p style="color:{DHL_GRAY};font-size:13px;margin-top:6px">{t.get('description','')}</p>
@@ -858,13 +889,23 @@ elif page == "Update / Delete Ticket":
 
         st.markdown("#### Update Fields")
         uc1,uc2,uc3 = st.columns(3)
-        cur_status   = t["status"]   if t["status"]   in STATUS_ORDER   else STATUS_ORDER[0]
-        cur_priority = t["priority"] if t["priority"] in PRIORITY_ORDER else PRIORITY_ORDER[0]
-        with uc1: new_status   = st.selectbox("Status",   STATUS_ORDER,
-                                               index=STATUS_ORDER.index(cur_status))
-        with uc2: new_priority = st.selectbox("Priority", PRIORITY_ORDER,
-                                               index=PRIORITY_ORDER.index(cur_priority))
-        with uc3: new_progress = st.slider("Progress %", 0, 100, pct, step=5)
+        cur_status     = t["status"]     if t["status"]     in STATUS_ORDER     else STATUS_ORDER[0]
+        cur_priority   = t["priority"]   if t["priority"]   in PRIORITY_ORDER   else PRIORITY_ORDER[0]
+        cur_complexity = t.get("complexity","") if t.get("complexity","") in COMPLEXITY_ORDER else COMPLEXITY_ORDER[0]
+        with uc1: new_status     = st.selectbox("Status",     STATUS_ORDER,
+                                                 index=STATUS_ORDER.index(cur_status))
+        with uc2: new_priority   = st.selectbox("Priority",   PRIORITY_ORDER,
+                                                 index=PRIORITY_ORDER.index(cur_priority))
+        with uc3: new_progress   = st.slider("Progress %", 0, 100, pct, step=5)
+
+        uc4,uc5 = st.columns(2)
+        user_list = list(USERS.keys())
+        cur_assigned = t.get("assigned_to","") if t.get("assigned_to","") in user_list else user_list[0]
+        with uc4: new_complexity = st.selectbox("Complexity", COMPLEXITY_ORDER,
+                                                 index=COMPLEXITY_ORDER.index(cur_complexity))
+        with uc5: new_assigned   = st.selectbox("Assign To",  user_list,
+                                                 index=user_list.index(cur_assigned) if cur_assigned in user_list else 0)
+
         new_notes = st.text_area("Notes / Comment *",
                                  placeholder="Describe what changed or why...")
 
@@ -887,6 +928,8 @@ elif page == "Update / Delete Ticket":
                     "description": t["description"],
                     "updated_by":  user,
                     "notes":       new_notes.strip(),
+                    "complexity":  new_complexity,
+                    "assigned_to": new_assigned,
                 }
                 with st.spinner("Saving to GitHub..."):
                     try:
@@ -915,7 +958,9 @@ elif page == "Update / Delete Ticket":
                   <div style="font-size:13px;color:{DHL_DARK}">
                     Status: <b>{row['status']}</b> &nbsp;|&nbsp;
                     Priority: <b>{row['priority']}</b> &nbsp;|&nbsp;
-                    Progress: <b>{row['progress']}%</b>
+                    Progress: <b>{row['progress']}%</b> &nbsp;|&nbsp;
+                    Complexity: <b>{row.get('complexity','—')}</b> &nbsp;|&nbsp;
+                    Assigned: <b>{row.get('assigned_to','—')}</b>
                   </div>
                   {f'<div style="font-size:13px;color:{DHL_GRAY};margin-top:4px">{row["notes"]}</div>' if row.get("notes") else ""}
                 </div>""", unsafe_allow_html=True)
