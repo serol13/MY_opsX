@@ -72,3 +72,5 @@ timestamp,action,ticket_id,title,platform,priority,status,progress,requestor,due
 Failure reason summarized by region. Need this by facility and courier as well.
 In the last column of data, there is column that indicate 10pm delivery. Can we change 10pm to 12pm (prenoon)?
 Please explore and suggest if failure reason summary should be enhance in this dashboard or create PBI for delivery which include failure reason analysis.",Guest:Alyu,,,,
+2026-03-06T15:50:20,CREATED,QA-B878FD,MY Hypercare Performance - Amway,Splunk,Medium,Backlog,0,Alyu,2026-03-06,"amway, dashboard","Add summary by day/date
+Add filter to view monthly data",Guest:Alyu,,,,
