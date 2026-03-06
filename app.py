@@ -220,10 +220,13 @@ def build_excel_export(tickets):
     platform_counts = Counter(t["platform"] for t in tickets)
 
     def summary_section(ws, start_row, label, items, color_map, order):
+        # Section label row - spans all columns
         _hdr(ws, start_row, 1, label, h(DHL_RED), "FFFFFF", merge_to=4, height=20)
-        _hdr(ws, start_row, 2, "Count", h(DHL_RED), "FFFFFF")
-        _hdr(ws, start_row, 3, "% of Total", h(DHL_RED), "FFFFFF")
-        r = start_row + 1
+        # Column sub-headers on the NEXT row (avoids writing into merged cells)
+        for ci, col_label in enumerate(["Category", "Count", "% of Total"], 1):
+            _hdr(ws, start_row + 1, ci, col_label, h(DHL_DARK), "FFFFFF")
+        ws.row_dimensions[start_row + 1].height = 18
+        r = start_row + 2
         total = sum(items.values())
         for key in order:
             cnt = items.get(key, 0)
