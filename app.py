@@ -702,19 +702,23 @@ if page == "Dashboard":
                 f'padding:1px 8px;border-radius:4px;font-size:11px;font-weight:600">{tg}</span>'
                 for tg in str(t.get("tags","")).split(",") if tg.strip()
             )
-            st.markdown(f"""<div class="ticket-card">
-              <div class="ticket-id">{t['ticket_id']} · {t.get('requestor','')} · Due {t.get('due_date','—')}</div>
-              <div class="ticket-title">{t['title']}</div>
-              <div class="pills">
-                {badge(t['platform'],  PLATFORM_COLORS.get(t['platform'],  DHL_GRAY))}
-                {badge(t['status'],    STATUS_COLORS.get(t['status'],       DHL_GRAY))}
-                {badge(t['priority'],  PRIORITY_COLORS.get(t['priority'],   DHL_GRAY))}
-                {badge("Complexity: " + str(t.get("complexity","—")), "#555555") if t.get("complexity") else ""}
-                {badge("Assigned: "   + str(t.get("assigned_to","Unassigned")), "#1A1A1A", DHL_YELLOW) if t.get("assigned_to") else ""}
-                {tag_html}
-              </div>
-              """ + progress_bar(pct, bc) + """
-            </div>""", unsafe_allow_html=True)
+            complexity_badge = badge("Complexity: " + str(t.get("complexity","")), "#555555") if t.get("complexity") else ""
+            assigned_badge   = badge("Assigned: " + str(t.get("assigned_to","")), "#1A1A1A", DHL_YELLOW) if t.get("assigned_to") else ""
+            ticket_id_val    = t["ticket_id"]
+            requestor_val    = t.get("requestor","")
+            due_val          = t.get("due_date","—")
+            title_val        = t["title"]
+            plat_badge       = badge(t["platform"],  PLATFORM_COLORS.get(t["platform"],  DHL_GRAY))
+            stat_badge       = badge(t["status"],    STATUS_COLORS.get(t["status"],       DHL_GRAY))
+            prio_badge       = badge(t["priority"],  PRIORITY_COLORS.get(t["priority"],   DHL_GRAY))
+            st.markdown(
+                '<div class="ticket-card">'
+                + f'<div class="ticket-id">{ticket_id_val} · {requestor_val} · Due {due_val}</div>'
+                + f'<div class="ticket-title">{title_val}</div>'
+                + '<div class="pills">' + plat_badge + stat_badge + prio_badge + complexity_badge + assigned_badge + tag_html + '</div>'
+                + progress_bar(pct, bc)
+                + '</div>',
+                unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PAGE: ALL TICKETS
@@ -766,22 +770,28 @@ elif page == "All Tickets":
                     f'padding:1px 8px;border-radius:4px;font-size:11px;font-weight:600">{tg}</span>'
                     for tg in str(t.get("tags","")).split(",") if tg.strip()
                 )
-                desc = str(t.get('description',''))
-                desc_short = desc[:200] + ('...' if len(desc) > 200 else '')
-                st.markdown(f"""<div class="ticket-card">
-                  <div class="ticket-id">{t['ticket_id']} · {t.get('requestor','')} · Due {t.get('due_date','—')} · Assigned: {t.get('assigned_to','Unassigned')} · Updated by {t.get('updated_by','')}</div>
-                  <div class="ticket-title">{t['title']}</div>
-                  <div class="pills">
-                    {badge(t['platform'],  PLATFORM_COLORS.get(t['platform'],  DHL_GRAY))}
-                    {badge(t['status'],    STATUS_COLORS.get(t['status'],       DHL_GRAY))}
-                    {badge(t['priority'],  PRIORITY_COLORS.get(t['priority'],   DHL_GRAY))}
-                    {badge("Complexity: " + str(t.get("complexity","—")), "#555555") if t.get("complexity") else ""}
-                    {badge("Assigned: "   + str(t.get("assigned_to","Unassigned")), "#1A1A1A", DHL_YELLOW) if t.get("assigned_to") else ""}
-                    {tag_html}
-                  </div>
-                  """ + progress_bar(pct, bc) + f"""
-                  <p style="color:{DHL_GRAY};font-size:13px;margin-top:6px">{desc_short}</p>
-                </div>""", unsafe_allow_html=True)
+                desc       = str(t.get("description",""))
+                desc_short = desc[:200] + ("..." if len(desc) > 200 else "")
+                complexity_badge = badge("Complexity: " + str(t.get("complexity","")), "#555555") if t.get("complexity") else ""
+                assigned_badge   = badge("Assigned: " + str(t.get("assigned_to","")), "#1A1A1A", DHL_YELLOW) if t.get("assigned_to") else ""
+                ticket_id_val = t["ticket_id"]
+                requestor_val = t.get("requestor","")
+                due_val       = t.get("due_date","—")
+                assigned_val  = t.get("assigned_to","Unassigned")
+                updated_val   = t.get("updated_by","")
+                title_val     = t["title"]
+                plat_badge    = badge(t["platform"],  PLATFORM_COLORS.get(t["platform"],  DHL_GRAY))
+                stat_badge    = badge(t["status"],    STATUS_COLORS.get(t["status"],       DHL_GRAY))
+                prio_badge    = badge(t["priority"],  PRIORITY_COLORS.get(t["priority"],   DHL_GRAY))
+                st.markdown(
+                    '<div class="ticket-card">'
+                    + f'<div class="ticket-id">{ticket_id_val} · {requestor_val} · Due {due_val} · Assigned: {assigned_val} · Updated by {updated_val}</div>'
+                    + f'<div class="ticket-title">{title_val}</div>'
+                    + '<div class="pills">' + plat_badge + stat_badge + prio_badge + complexity_badge + assigned_badge + tag_html + '</div>'
+                    + progress_bar(pct, bc)
+                    + f'<p style="color:#6B6B6B;font-size:13px;margin-top:6px">{desc_short}</p>'
+                    + '</div>',
+                    unsafe_allow_html=True)
         else:
             show = ["ticket_id","title","platform","priority","status","progress",
                     "requestor","due_date","updated_by","timestamp"]
@@ -873,19 +883,25 @@ elif page == "Update / Delete Ticket":
 
         # Show current state
         pct = int(float(t.get("progress", 0) or 0))
-        st.markdown(f"""<div class="ticket-card">
-          <div class="ticket-id">{t['ticket_id']} · Requestor: {t.get('requestor','')} · Due: {t.get('due_date','')}</div>
-          <div class="ticket-title">{t['title']}</div>
-          <div class="pills">
-            {badge(t['platform'],  PLATFORM_COLORS.get(t['platform'],  DHL_GRAY))}
-            {badge(t['status'],    STATUS_COLORS.get(t['status'],       DHL_GRAY))}
-            {badge(t['priority'],  PRIORITY_COLORS.get(t['priority'],   DHL_GRAY))}
-            {badge("Complexity: " + str(t.get("complexity","—")),       "#555555") if t.get("complexity") else ""}
-            {badge("Assigned: "   + str(t.get("assigned_to","Unassigned")), "#1A1A1A", DHL_YELLOW) if t.get("assigned_to") else badge("Unassigned", "#9E9E9E")}
-          </div>
-          """ + progress_bar(pct, STATUS_COLORS.get(t['status'], DHL_YELLOW)) + f"""
-          <p style="color:{DHL_GRAY};font-size:13px;margin-top:6px">{t.get('description','')}</p>
-        </div>""", unsafe_allow_html=True)
+        complexity_badge = badge("Complexity: " + str(t.get("complexity","")), "#555555") if t.get("complexity") else ""
+        assigned_badge   = badge("Assigned: " + str(t.get("assigned_to","Unassigned")), "#1A1A1A", DHL_YELLOW) if t.get("assigned_to") else badge("Unassigned", "#9E9E9E")
+        ticket_id_val = t["ticket_id"]
+        requestor_val = t.get("requestor","")
+        due_val       = t.get("due_date","")
+        title_val     = t["title"]
+        desc_val      = t.get("description","")
+        plat_badge    = badge(t["platform"],  PLATFORM_COLORS.get(t["platform"],  DHL_GRAY))
+        stat_badge    = badge(t["status"],    STATUS_COLORS.get(t["status"],       DHL_GRAY))
+        prio_badge    = badge(t["priority"],  PRIORITY_COLORS.get(t["priority"],   DHL_GRAY))
+        st.markdown(
+            '<div class="ticket-card">'
+            + f'<div class="ticket-id">{ticket_id_val} · Requestor: {requestor_val} · Due: {due_val}</div>'
+            + f'<div class="ticket-title">{title_val}</div>'
+            + '<div class="pills">' + plat_badge + stat_badge + prio_badge + complexity_badge + assigned_badge + '</div>'
+            + progress_bar(pct, STATUS_COLORS.get(t["status"], DHL_YELLOW))
+            + f'<p style="color:#6B6B6B;font-size:13px;margin-top:6px">{desc_val}</p>'
+            + '</div>',
+            unsafe_allow_html=True)
 
         st.markdown("#### Update Fields")
         uc1,uc2,uc3 = st.columns(3)
