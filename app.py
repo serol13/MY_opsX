@@ -687,7 +687,7 @@ if page == "Dashboard":
                 {badge(t['priority'], PRIORITY_COLORS.get(t['priority'], DHL_GRAY))}
                 {tag_html}
               </div>
-              {progress_bar(pct, bc)}
+              """ + progress_bar(pct, bc) + """
             </div>""", unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -740,6 +740,8 @@ elif page == "All Tickets":
                     f'padding:1px 8px;border-radius:4px;font-size:11px;font-weight:600">{tg}</span>'
                     for tg in str(t.get("tags","")).split(",") if tg.strip()
                 )
+                desc = str(t.get('description',''))
+                desc_short = desc[:200] + ('...' if len(desc) > 200 else '')
                 st.markdown(f"""<div class="ticket-card">
                   <div class="ticket-id">{t['ticket_id']} · {t.get('requestor','')} · Due {t.get('due_date','—')} · Last updated by {t.get('updated_by','')}</div>
                   <div class="ticket-title">{t['title']}</div>
@@ -749,10 +751,8 @@ elif page == "All Tickets":
                     {badge(t['priority'], PRIORITY_COLORS.get(t['priority'], DHL_GRAY))}
                     {tag_html}
                   </div>
-                  {progress_bar(pct, bc)}
-                  <p style="color:{DHL_GRAY};font-size:13px;margin-top:6px">
-                    {str(t.get('description',''))[:200]}{'...' if len(str(t.get('description','')))>200 else ''}
-                  </p>
+                  """ + progress_bar(pct, bc) + f"""
+                  <p style="color:{DHL_GRAY};font-size:13px;margin-top:6px">{desc_short}</p>
                 </div>""", unsafe_allow_html=True)
         else:
             show = ["ticket_id","title","platform","priority","status","progress",
@@ -853,7 +853,7 @@ elif page == "Update / Delete Ticket":
             {badge(t['status'],   STATUS_COLORS.get(t['status'],     DHL_GRAY))}
             {badge(t['priority'], PRIORITY_COLORS.get(t['priority'], DHL_GRAY))}
           </div>
-          {progress_bar(pct, STATUS_COLORS.get(t['status'], DHL_YELLOW))}
+          """ + progress_bar(pct, STATUS_COLORS.get(t['status'], DHL_YELLOW)) + f"""
           <p style="color:{DHL_GRAY};font-size:13px;margin-top:6px">{t.get('description','')}</p>
         </div>""", unsafe_allow_html=True)
 
