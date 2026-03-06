@@ -93,3 +93,10 @@ Depot Volume By Week to Daily volume by Depot
 2026-03-06T15:58:09,CREATED,QA-74BF1F,Address Discrepancy Between POSID and DHL Label - MYNEVLDF-OR-11548 / 7228021120572346 (MEMORY PLACE ENTERPRISE),Splunk,Low,Backlog,0,Hazim,2026-03-06,POS,Checking the discrepancy for POS label and DHL label,Guest:Hazim,,,,
 2026-03-06T16:00:08,UPDATED,QA-2218E5,SCNC dashboard in Power BI,Power BI,Critical,Done,100,AlYu,,,,serol,Already publish the app.,Critical,serol,
 2026-03-07T01:17:29+08:00,UPDATED,QA-74BF1F,Address Discrepancy Between POSID and DHL Label - MYNEVLDF-OR-11548 / 7228021120572346 (MEMORY PLACE ENTERPRISE),Splunk,Low,Done,100,Hazim,2026-03-06,POS,Checking the discrepancy for POS label and DHL label,serol,Edit API data is not pushed to Splunk. Inform the user on the challenges that lead to different POS and DHL label,Simple,serol,
+2026-03-07T01:17:45+08:00,UPDATED,QA-A6F828,MY Volume Tracker - Destination,Power BI,High,Done,100,Alyu,2026-03-06,volume tracker,"*email*
+
+Good Day.
+As per our yesterday discussion, both of us agreed to change:
+Average Volume By Week at Region to Daily Volume at Region
+Depot Volume By Week to Daily volume by Depot
+ ",serol,Edit API data is not pushed to Splunk. Inform the user on the challenges that lead to different POS and DHL label,Simple,serol,
