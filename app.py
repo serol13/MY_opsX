@@ -530,17 +530,7 @@ with st.sidebar:
     if user:
         nav_options += ["Update / Delete Ticket"]
 
-    if "current_page" not in st.session_state:
-        st.session_state.current_page = "Dashboard"
-    # If logged out and was on restricted page, reset
-    if not user and st.session_state.current_page == "Update / Delete Ticket":
-        st.session_state.current_page = "Dashboard"
-
-    page = st.radio("Navigation", nav_options, label_visibility="collapsed",
-                    index=nav_options.index(st.session_state.current_page)
-                          if st.session_state.current_page in nav_options else 0,
-                    key="sidebar_nav")
-    st.session_state.current_page = page
+    page = st.radio("Navigation", nav_options, label_visibility="collapsed")
     st.markdown("---")
 
     # ── Quick stats ───────────────────────────────────────────────────────────
@@ -593,53 +583,6 @@ with st.sidebar:
             except Exception as e:
                 st.error(str(e))
 
-# ─────────────────────────────────────────────────────────────────────────────
-# TOP NAVIGATION BAR  (always visible even when sidebar is collapsed)
-# ─────────────────────────────────────────────────────────────────────────────
-_user_now = st.session_state.logged_in_user
-_nav_items = ["Dashboard", "All Tickets", "Submit Request"]
-if _user_now:
-    _nav_items += ["Update / Delete Ticket"]
-
-# Build nav buttons inline
-_cols = st.columns(len(_nav_items) + 2)  # extra cols for spacing
-for _i, _item in enumerate(_nav_items):
-    with _cols[_i]:
-        _active = st.session_state.get("current_page", "Dashboard") == _item
-        _bg     = "#FFCC00" if _active else "#FFFFFF"
-        _fg     = "#1A1A1A" if _active else "#6B6B6B"
-        _border = "#FFCC00" if _active else "#E0E0E0"
-        _weight = "700"     if _active else "500"
-        # Short label for narrow screens
-        _label  = _item.replace("Update / Delete Ticket", "Update Ticket")
-        if st.button(_label, key=f"topnav_{_i}",
-                     help=f"Go to {_item}",
-                     use_container_width=True):
-            st.session_state.current_page = _item
-            st.rerun()
-
-st.markdown(f"""
-<style>
-/* Style the top nav buttons */
-div[data-testid="stHorizontalBlock"] > div:nth-child(-n+{len(_nav_items)}) button {{
-    background: #FFFFFF !important;
-    color: #6B6B6B !important;
-    border: 1px solid #E0E0E0 !important;
-    border-radius: 6px !important;
-    font-weight: 500 !important;
-    font-size: 13px !important;
-    padding: 6px 8px !important;
-    transition: all .15s;
-}}
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown('<hr style="border:none;border-top:2px solid #E0E0E0;margin:8px 0 16px">', unsafe_allow_html=True)
-
-# Sync sidebar selection with top nav
-page = st.session_state.get("current_page", "Dashboard")
-
-# ─────────────────────────────────────────────────────────────────────────────
 # Refresh local references after sidebar
 log_df  = st.session_state.log_df
 tickets = current_tickets(log_df)
