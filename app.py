@@ -442,44 +442,31 @@ st.markdown(f"""
 html,body,[class*="css"],.stApp{{font-family:'Roboto',sans-serif!important;background:{DHL_LIGHT}!important;color:{DHL_DARK}!important}}
 .main .block-container{{background:{DHL_LIGHT};padding-top:1.2rem!important;max-width:1400px}}
 [data-testid="stSidebar"]{{background:{DHL_DARK}!important;border-right:4px solid {DHL_YELLOW}!important}}
-[data-testid="stSidebar"] p,[data-testid="stSidebar"] span,[data-testid="stSidebar"] label,
-[data-testid="stSidebar"] div,[data-testid="stSidebar"] a{{color:{DHL_WHITE}!important}}
+[data-testid="stSidebar"] p,[data-testid="stSidebar"] span,
+[data-testid="stSidebar"] label,[data-testid="stSidebar"] div,[data-testid="stSidebar"] a{{color:{DHL_WHITE}!important}}
 [data-testid="stSidebar"] hr{{border-color:#444!important}}
-.dhl-topbar{{background:{DHL_YELLOW};padding:12px 20px;border-radius:8px;margin-bottom:20px;
-            border-left:6px solid {DHL_RED};display:flex;align-items:center;justify-content:space-between}}
+.dhl-topbar{{background:{DHL_YELLOW};padding:12px 20px;border-radius:8px;margin-bottom:20px;border-left:6px solid {DHL_RED}}}
 .dhl-topbar h1{{margin:0;font-size:20px;font-weight:700;color:{DHL_DARK};text-transform:uppercase;letter-spacing:.5px}}
 .dhl-topbar span{{font-size:12px;color:#555}}
-.metric-card{{background:{DHL_WHITE};border:1px solid {DHL_BORDER};border-top:4px solid {DHL_YELLOW};
-             border-radius:8px;padding:18px 20px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06)}}
+.metric-card{{background:{DHL_WHITE};border:1px solid {DHL_BORDER};border-top:4px solid {DHL_YELLOW};border-radius:8px;padding:18px 20px;margin-bottom:8px}}
 .metric-card .val{{font-size:2.2rem;font-weight:700;color:{DHL_DARK};line-height:1;margin-bottom:4px}}
 .metric-card .lbl{{font-size:12px;font-weight:600;color:{DHL_GRAY};text-transform:uppercase;letter-spacing:.06em}}
 .metric-card.red{{border-top-color:{DHL_RED}}}
 .metric-card.blue{{border-top-color:#0078D4}}
 .metric-card.green{{border-top-color:#2E7D32}}
 .metric-card.orange{{border-top-color:#FF8C00}}
-.section-header{{font-size:17px;font-weight:700;color:{DHL_DARK};border-left:5px solid {DHL_YELLOW};
-                padding-left:12px;margin:24px 0 14px;text-transform:uppercase;letter-spacing:.04em}}
-.ticket-card{{background:{DHL_WHITE};border:1px solid {DHL_BORDER};border-left:5px solid {DHL_YELLOW};
-             border-radius:8px;padding:15px 18px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}}
+.section-header{{font-size:17px;font-weight:700;color:{DHL_DARK};border-left:5px solid {DHL_YELLOW};padding-left:12px;margin:24px 0 14px;text-transform:uppercase}}
+.ticket-card{{background:{DHL_WHITE};border:1px solid {DHL_BORDER};border-left:5px solid {DHL_YELLOW};border-radius:8px;padding:15px 18px;margin-bottom:10px}}
 .ticket-card:hover{{border-left-color:{DHL_RED}}}
 .ticket-id{{font-size:11px;font-weight:700;color:{DHL_GRAY};text-transform:uppercase;letter-spacing:.08em}}
 .ticket-title{{font-size:15px;font-weight:700;color:{DHL_DARK};margin:4px 0 8px}}
 .pills{{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 8px}}
-.login-box{{background:{DHL_WHITE};border:1px solid {DHL_BORDER};border-top:4px solid {DHL_YELLOW};
-           border-radius:8px;padding:20px;margin-bottom:16px}}
-.user-chip{{background:{DHL_YELLOW};color:{DHL_DARK};padding:4px 14px;border-radius:20px;
-           font-size:13px;font-weight:700;display:inline-block}}
-.readonly-banner{{background:#FFF9E6;border:1px solid {DHL_YELLOW};border-radius:6px;
-                 padding:8px 14px;font-size:13px;color:#7a6000;margin-bottom:12px}}
-.stButton>button{{background:{DHL_YELLOW}!important;color:{DHL_DARK}!important;border:none!important;
-                 border-radius:5px!important;font-weight:700!important;font-size:14px!important;padding:9px 22px!important}}
+.readonly-banner{{background:#FFF9E6;border:1px solid {DHL_YELLOW};border-radius:6px;padding:8px 14px;font-size:13px;color:#7a6000;margin-bottom:12px}}
+.stButton>button{{background:{DHL_YELLOW}!important;color:{DHL_DARK}!important;border:none!important;border-radius:5px!important;font-weight:700!important;font-size:14px!important;padding:9px 22px!important}}
 .stButton>button:hover{{background:{DHL_RED}!important;color:{DHL_WHITE}!important}}
-.stTextInput>div>div>input,.stTextArea>div>div>textarea{{background:{DHL_WHITE}!important;
-  color:{DHL_DARK}!important;border:1px solid {DHL_BORDER}!important;border-radius:5px!important}}
-.stTextInput>div>div>input:focus,.stTextArea>div>div>textarea:focus{{border-color:{DHL_YELLOW}!important}}
+.stTextInput>div>div>input,.stTextArea>div>div>textarea{{background:{DHL_WHITE}!important;color:{DHL_DARK}!important;border:1px solid {DHL_BORDER}!important;border-radius:5px!important}}
 .stSelectbox>div>div,.stMultiSelect>div>div{{background:{DHL_WHITE}!important;color:{DHL_DARK}!important}}
 .stSlider>div>div>div>div{{background:{DHL_YELLOW}!important}}
-#MainMenu{{visibility:hidden}}footer{{visibility:hidden}}
 </style>
 """, unsafe_allow_html=True)
 
