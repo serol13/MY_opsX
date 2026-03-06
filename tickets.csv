@@ -83,3 +83,10 @@ Please explore this requirement and share any limitations or challenges you may 
 - Consist of all shipment with failed status updated by courier from 6am - 10pm
 - Column needed: DHL ID, CCN, Facility, Primary Facility, Courier ID, Delivery Failed Ts, Primary Failure Reason, Secondary Failure Reason, Call log,  Latitude, Longitude, Attempt Count",Guest:Adillah,,,,
 2026-03-06T15:55:08,CREATED,QA-CF3E37,Pickup Daily KPI Report,Splunk,Low,Backlog,0,Farid,2026-03-06,pickup,Remove Farid from auto email splunk,Guest:Farid,,,,
+2026-03-06T15:56:47,CREATED,QA-A6F828,MY Volume Tracker - Destination,Power BI,High,Backlog,0,Alyu,2026-03-06,volume tracker,"*email*
+
+Good Day.
+As per our yesterday discussion, both of us agreed to change:
+Average Volume By Week at Region to Daily Volume at Region
+Depot Volume By Week to Daily volume by Depot
+ ",Guest:Alyu,,,,
