@@ -478,7 +478,12 @@ html,body,[class*="css"],.stApp{{font-family:'Roboto',sans-serif!important;backg
 .stTextInput>div>div>input:focus,.stTextArea>div>div>textarea:focus{{border-color:{DHL_YELLOW}!important}}
 .stSelectbox>div>div,.stMultiSelect>div>div{{background:{DHL_WHITE}!important;color:{DHL_DARK}!important}}
 .stSlider>div>div>div>div{{background:{DHL_YELLOW}!important}}
-#MainMenu,footer,header{{visibility:hidden}}
+#MainMenu{{visibility:hidden}}
+footer{{visibility:hidden}}
+/* Do NOT hide header — it controls sidebar toggle in newer Streamlit */
+header[data-testid="stHeader"]{{background:transparent!important;}}
+/* Hide only the deploy/hamburger menu items inside header */
+header[data-testid="stHeader"] button:not([data-testid="baseButton-headerNoPadding"]){{visibility:hidden}}
 </style>
 """, unsafe_allow_html=True)
 
