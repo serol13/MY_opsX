@@ -77,3 +77,4 @@ Add filter to view monthly data",Guest:Alyu,,,,
 2026-03-06T15:51:12,CREATED,QA-8935AB,New Dashboard,Splunk,Medium,Backlog,0,Alyu,2026-03-06,"dashboard, encoded","The objective is to view a summary of the overall status based on the selected encoded date.
 For example, when I filter the encoded date to 3rd February 2026, I should be able to see all shipments encoded on that date, along with a summary of their current overall status as of today.
 Please explore this requirement and share any limitations or challenges you may encounter in developing this dashboard.",Guest:Alyu,,,,
+2026-03-06T15:52:30,CREATED,QA-414F8E,New added Postcode 47310,Splunk,High,Backlog,0,Adillah,2026-03-06,"TT Matrix, SLA",Adding new postcode in Splunk ,Guest:Adillah,,,,
