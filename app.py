@@ -9,6 +9,11 @@ from email.mime.multipart import MIMEMultipart
 from datetime import datetime, date
 import uuid
 import plotly.express as px
+try:
+    from streamlit_paste_button import paste_image_button
+    PASTE_AVAILABLE = True
+except ImportError:
+    PASTE_AVAILABLE = False
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
@@ -60,7 +65,10 @@ CSV_COLS = [
     "tags",        # comma-separated
     "description",
     "updated_by",  # username (logged-in) or "Guest:<name>" (public submit)
-    "notes",       # comment added with this action
+    "notes",        # comment added with this action
+    "complexity",   # Simple | Medium | Complex | Critical
+    "assigned_to",  # username from users list
+    "image",        # base64 encoded image (optional)
 ]
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -260,6 +268,74 @@ def send_new_ticket_email(ticket: dict) -> None:
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
         server.login(gmail_user, gmail_password)
         server.sendmail(gmail_user, notify_email, msg.as_string())
+
+# ─────────────────────────────────────────────────────────────────────────────
+# IMAGE HELPERS
+# ─────────────────────────────────────────────────────────────────────────────
+def encode_image(uploaded_file) -> str:
+    """Encode uploaded file to base64 string."""
+    if uploaded_file is None:
+        return ""
+    data = uploaded_file.read()
+    if len(data) > 2 * 1024 * 1024:  # 2MB limit
+        st.warning("Image exceeds 2MB limit and was not attached.")
+        return ""
+    return base64.b64encode(data).decode("utf-8")
+
+def image_html(b64: str, max_width: str = "100%") -> str:
+    """Return an <img> tag from a base64 string."""
+    if not b64:
+        return ""
+    return (f'<img src="data:image/png;base64,{b64}" ' 
+            f'style="max-width:{max_width};border-radius:6px;margin-top:8px;border:1px solid #E0E0E0">')
+
+def image_widget(key_prefix: str) -> str:
+    """
+    Render paste button + file uploader. Returns base64 string or "".
+    key_prefix must be unique per page.
+    """
+    b64 = ""
+    st.markdown(
+        f'<div style="background:#F5F5F5;border:1px dashed #E0E0E0;border-radius:6px;' 
+        f'padding:12px 16px;margin-bottom:8px">' 
+        f'<span style="font-size:12px;color:#6B6B6B;font-weight:600">ATTACH SCREENSHOT (OPTIONAL)</span>' 
+        f'</div>', unsafe_allow_html=True)
+
+    col1, col2 = st.columns([1, 2])
+    with col1:
+        if PASTE_AVAILABLE:
+            paste_result = paste_image_button(
+                label="Paste from Clipboard",
+                key=f"{key_prefix}_paste",
+                background_color="#FFCC00",
+                hover_background_color="#D40511",
+                text_color="#1A1A1A",
+            )
+            if paste_result and paste_result.image_data is not None:
+                import io as _io
+                buf = _io.BytesIO()
+                paste_result.image_data.save(buf, format="PNG")
+                b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
+                st.success("Image pasted!")
+        else:
+            st.caption("Paste not available — use upload.")
+    with col2:
+        uploaded = st.file_uploader(
+            "Or drag & drop / browse",
+            type=["png","jpg","jpeg","gif","webp","bmp"],
+            key=f"{key_prefix}_upload",
+            label_visibility="collapsed",
+        )
+        if uploaded:
+            b64 = encode_image(uploaded)
+            if b64:
+                st.success("Image attached!")
+
+    # Preview
+    if b64:
+        st.markdown(image_html(b64, "300px"), unsafe_allow_html=True)
+
+    return b64
 
 # ─────────────────────────────────────────────────────────────────────────────
 # EXCEL EXPORT
@@ -701,12 +777,14 @@ if page == "Dashboard":
             plat_badge       = badge(t["platform"],  PLATFORM_COLORS.get(t["platform"],  DHL_GRAY))
             stat_badge       = badge(t["status"],    STATUS_COLORS.get(t["status"],       DHL_GRAY))
             prio_badge       = badge(t["priority"],  PRIORITY_COLORS.get(t["priority"],   DHL_GRAY))
+            img_html = image_html(str(t.get("image","")), "100%")
             st.markdown(
                 '<div class="ticket-card">'
                 + f'<div class="ticket-id">{ticket_id_val} · {requestor_val} · Due {due_val}</div>'
                 + f'<div class="ticket-title">{title_val}</div>'
                 + '<div class="pills">' + plat_badge + stat_badge + prio_badge + complexity_badge + assigned_badge + tag_html + '</div>'
                 + progress_bar(pct, bc)
+                + img_html
                 + '</div>',
                 unsafe_allow_html=True)
 
@@ -773,6 +851,7 @@ elif page == "All Tickets":
                 plat_badge    = badge(t["platform"],  PLATFORM_COLORS.get(t["platform"],  DHL_GRAY))
                 stat_badge    = badge(t["status"],    STATUS_COLORS.get(t["status"],       DHL_GRAY))
                 prio_badge    = badge(t["priority"],  PRIORITY_COLORS.get(t["priority"],   DHL_GRAY))
+                img_html_t = image_html(str(t.get("image","")), "100%")
                 st.markdown(
                     '<div class="ticket-card">'
                     + f'<div class="ticket-id">{ticket_id_val} · {requestor_val} · Due {due_val} · Assigned: {assigned_val} · Updated by {updated_val}</div>'
@@ -780,6 +859,7 @@ elif page == "All Tickets":
                     + '<div class="pills">' + plat_badge + stat_badge + prio_badge + complexity_badge + assigned_badge + tag_html + '</div>'
                     + progress_bar(pct, bc)
                     + f'<p style="color:#6B6B6B;font-size:13px;margin-top:6px">{desc_short}</p>'
+                    + img_html_t
                     + '</div>',
                     unsafe_allow_html=True)
         else:
@@ -816,6 +896,10 @@ elif page == "Submit Request":
         notes_val = st.text_input("Notes (optional)", placeholder="Any additional notes for this submission...")
         submitted = st.form_submit_button("Submit Ticket")
 
+    # Image widget lives OUTSIDE the form (paste API can't run inside st.form)
+    st.markdown("---")
+    submit_image = image_widget("submit")
+
     if submitted:
         if not title_val or not requestor_val or not desc_val:
             st.error("Please fill in all required fields (*).")
@@ -837,6 +921,9 @@ elif page == "Submit Request":
                 "description": desc_val,
                 "updated_by":  updated_by,
                 "notes":       notes_val,
+                "complexity":  "",
+                "assigned_to": "",
+                "image":       submit_image,
             }
             with st.spinner("Saving to GitHub..."):
                 try:
@@ -914,6 +1001,7 @@ elif page == "Update / Delete Ticket":
 
         new_notes = st.text_area("Notes / Comment *",
                                  placeholder="Describe what changed or why...")
+        update_image = image_widget("update")
 
         if st.button("Save Update"):
             if not new_notes.strip():
@@ -936,6 +1024,7 @@ elif page == "Update / Delete Ticket":
                     "notes":       new_notes.strip(),
                     "complexity":  new_complexity,
                     "assigned_to": new_assigned,
+                    "image":       update_image,
                 }
                 with st.spinner("Saving to GitHub..."):
                     try:
@@ -970,6 +1059,8 @@ elif page == "Update / Delete Ticket":
                   </div>
                   {f'<div style="font-size:13px;color:{DHL_GRAY};margin-top:4px">{row["notes"]}</div>' if row.get("notes") else ""}
                 </div>""", unsafe_allow_html=True)
+                if row.get("image"):
+                    st.markdown(image_html(str(row["image"]), "480px"), unsafe_allow_html=True)
 
         # Delete
         st.markdown("---")
