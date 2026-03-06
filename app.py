@@ -160,6 +160,9 @@ if "show_login_form" not in st.session_state:
 if "app_unlocked" not in st.session_state:
     st.session_state.app_unlocked = False
 
+if "my_tasks_mode" not in st.session_state:
+    st.session_state.my_tasks_mode = False
+
 # ── Guest PIN wall ────────────────────────────────────────────────────────────
 GUEST_PIN = str(st.secrets.get("GUEST_PIN", ""))
 
@@ -639,6 +642,9 @@ with st.sidebar:
         nav_options += ["Update / Delete Ticket"]
 
     page = st.radio("Navigation", nav_options, label_visibility="collapsed")
+    # Clear My Tasks mode if user manually navigates away
+    if page != "Update / Delete Ticket":
+        st.session_state.my_tasks_mode = False
     st.markdown("---")
 
     # ── Quick stats ───────────────────────────────────────────────────────────
@@ -655,15 +661,20 @@ with st.sidebar:
         ] if "assigned_to" in tickets.columns else pd.DataFrame()
         my_count = len(my_tasks)
         my_blocked = len(my_tasks[my_tasks["status"] == "Blocked"]) if not my_tasks.empty else 0
+        blocked_line = f'<div style="font-size:11px;color:#D40511;margin-top:2px;font-weight:700">{my_blocked} blocked</div>' if my_blocked else ""
         st.markdown(f"""
         <div style="background:#1e1e1e;border:1px solid #FFCC00;border-radius:6px;
-                    padding:10px 14px;margin-bottom:10px">
+                    padding:10px 14px;margin-bottom:4px">
           <div style="font-size:11px;color:#FFCC00;font-weight:700;text-transform:uppercase;
-                      letter-spacing:.06em;margin-bottom:6px">My Tasks</div>
-          <div style="font-size:22px;font-weight:900;color:#FFCC00;line-height:1">{my_count}</div>
+                      letter-spacing:.06em;margin-bottom:4px">My Tasks</div>
+          <div style="font-size:28px;font-weight:900;color:#FFCC00;line-height:1">{my_count}</div>
           <div style="font-size:11px;color:#aaa;margin-top:2px">pending tickets assigned to you</div>
-          {f'<div style="font-size:11px;color:#D40511;margin-top:4px;font-weight:700">{my_blocked} blocked</div>' if my_blocked else ""}
+          {blocked_line}
         </div>""", unsafe_allow_html=True)
+        if my_count > 0:
+            if st.button("View & Update My Tasks →", key="my_tasks_btn", use_container_width=True):
+                st.session_state.my_tasks_mode = True
+                st.rerun()
 
     st.markdown(f"""
     <div style="font-size:13px;color:#ccc;line-height:2.2">
@@ -1000,22 +1011,45 @@ elif page == "Update / Delete Ticket":
     elif tickets.empty:
         st.info("No tickets found.")
     else:
+        # My Tasks shortcut banner
+        if st.session_state.get("my_tasks_mode"):
+            st.markdown(f"""
+            <div style="background:#FFCC00;border-radius:6px;padding:8px 14px;
+                        margin-bottom:12px;font-size:13px;font-weight:700;color:#1A1A1A">
+              Showing tickets assigned to you. 
+            </div>""", unsafe_allow_html=True)
+            col_back, _ = st.columns([1,3])
+            with col_back:
+                if st.button("← Show All Tickets"):
+                    st.session_state.my_tasks_mode = False
+                    st.rerun()
+
         # Filter + sort before dropdown
         uf1, uf2 = st.columns([1, 2])
         with uf1:
+            # Default: if my_tasks_mode, pre-select non-Done statuses
+            default_statuses = [s for s in STATUS_ORDER if s != "Done"]
             filter_status = st.multiselect(
                 "Filter by Status", STATUS_ORDER,
-                default=[s for s in STATUS_ORDER if s != "Done"],
+                default=default_statuses,
                 key="update_status_filter"
             )
         with uf2:
-            st.markdown("")  # spacer
+            st.markdown("")
 
         filtered_tickets = tickets[tickets["status"].isin(filter_status)] if filter_status else tickets
+
+        # Apply My Tasks filter on top
+        if st.session_state.get("my_tasks_mode") and "assigned_to" in filtered_tickets.columns:
+            filtered_tickets = filtered_tickets[filtered_tickets["assigned_to"] == user]
+
         filtered_tickets = filtered_tickets.sort_values("timestamp", ascending=False)
 
         if filtered_tickets.empty:
-            st.info("No tickets match the selected status filter.")
+            if st.session_state.get("my_tasks_mode"):
+                st.info("No pending tickets assigned to you.")
+            else:
+                st.info("No tickets match the selected status filter.")
             st.stop()
 
         options = {f"[{r['status']}] {r['ticket_id']} - {r['title']}": r['ticket_id']
