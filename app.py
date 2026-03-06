@@ -46,8 +46,10 @@ st.set_page_config(page_title="Operation Excellence Tracker", layout="wide",
 GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 GITHUB_REPO  = st.secrets["GITHUB_REPO"]
 FILE_PATH    = "tickets.csv"
+REC_PATH     = "recurring.csv"
 BRANCH       = "main"
 GITHUB_API   = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FILE_PATH}"
+REC_API      = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{REC_PATH}"
 GH_HEADERS   = {
     "Authorization": f"token {GITHUB_TOKEN}",
     "Accept": "application/vnd.github.v3+json",
@@ -141,6 +143,38 @@ def current_tickets(df: pd.DataFrame) -> pd.DataFrame:
     return latest[~latest["ticket_id"].isin(deleted)].reset_index(drop=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
+# RECURRING TASKS  — simple CRUD on recurring.csv
+# ─────────────────────────────────────────────────────────────────────────────
+REC_COLS = ["task_id","title","description","frequency","day_info",
+            "assigned_to","platform","created_by","created_at","active"]
+# frequency: Daily | Weekly | Monthly
+# day_info: "Every day" | "Monday" | "1st of month" etc.
+
+def rec_load() -> tuple:
+    r = requests.get(REC_API, headers=GH_HEADERS)
+    if r.status_code == 404:
+        return pd.DataFrame(columns=REC_COLS), None
+    r.raise_for_status()
+    data    = r.json()
+    content = base64.b64decode(data["content"]).decode("utf-8")
+    df = pd.read_csv(io.StringIO(content), dtype=str).fillna("")
+    for col in REC_COLS:
+        if col not in df.columns:
+            df[col] = ""
+    return df[REC_COLS], data["sha"]
+
+def rec_save(df: pd.DataFrame, sha, msg: str) -> None:
+    csv_bytes = df.to_csv(index=False).encode("utf-8")
+    payload = {"message": msg,
+               "content": base64.b64encode(csv_bytes).decode("utf-8"),
+               "branch": BRANCH}
+    if sha:
+        payload["sha"] = sha
+    r = requests.put(REC_API, headers=GH_HEADERS, json=payload)
+    r.raise_for_status()
+    st.session_state.rec_df = df
+
+# ─────────────────────────────────────────────────────────────────────────────
 # SESSION STATE BOOTSTRAP
 # ─────────────────────────────────────────────────────────────────────────────
 if "log_df" not in st.session_state:
@@ -159,6 +193,12 @@ if "show_login_form" not in st.session_state:
 
 if "app_unlocked" not in st.session_state:
     st.session_state.app_unlocked = False
+
+if "rec_df" not in st.session_state:
+    try:
+        st.session_state.rec_df, _ = rec_load()
+    except:
+        st.session_state.rec_df = pd.DataFrame(columns=REC_COLS)
 
 if "my_tasks_mode" not in st.session_state:
     st.session_state.my_tasks_mode = False
@@ -637,7 +677,7 @@ with st.sidebar:
     st.markdown("---")
 
     # ── Navigation ────────────────────────────────────────────────────────────
-    nav_options = ["Dashboard", "All Tickets", "Submit Request"]
+    nav_options = ["Dashboard", "All Tickets", "Recurring Tasks", "Submit Request"]
     if user:
         nav_options += ["Update / Delete Ticket"]
 
@@ -675,6 +715,24 @@ with st.sidebar:
             if st.button("View & Update My Tasks →", key="my_tasks_btn", use_container_width=True):
                 st.session_state.my_tasks_mode = True
                 st.rerun()
+
+    # Recurring tasks count
+    rec_df_sb = st.session_state.rec_df
+    if user and not rec_df_sb.empty:
+        my_rec = rec_df_sb[(rec_df_sb["assigned_to"] == user) & (rec_df_sb["active"] == "Yes")]
+        if len(my_rec) > 0:
+            daily_c   = len(my_rec[my_rec["frequency"] == "Daily"])
+            weekly_c  = len(my_rec[my_rec["frequency"] == "Weekly"])
+            monthly_c = len(my_rec[my_rec["frequency"] == "Monthly"])
+            st.markdown(f"""
+            <div style="background:#1e1e1e;border:1px solid #555;border-radius:6px;
+                        padding:10px 14px;margin-bottom:8px">
+              <div style="font-size:11px;color:#aaa;font-weight:700;text-transform:uppercase;
+                          letter-spacing:.06em;margin-bottom:4px">My Recurring</div>
+              <div style="font-size:12px;color:#ccc;line-height:2">
+                {"<b style='color:#FFCC00'>D:</b> " + str(daily_c) + "&nbsp;&nbsp;" if daily_c else ""}{"<b style='color:#FFCC00'>W:</b> " + str(weekly_c) + "&nbsp;&nbsp;" if weekly_c else ""}{"<b style='color:#FFCC00'>M:</b> " + str(monthly_c) if monthly_c else ""}
+              </div>
+            </div>""", unsafe_allow_html=True)
 
     st.markdown(f"""
     <div style="font-size:13px;color:#ccc;line-height:2.2">
@@ -720,6 +778,7 @@ CHART = dict(
 PAGE_META = {
     "Dashboard":              ("Dashboard Overview",        "Live summary of all Operation Excellence requests"),
     "All Tickets":            ("All Tickets",               "Browse and filter every submitted ticket"),
+    "Recurring Tasks":        ("Recurring Tasks",           "Daily, weekly and monthly task reference"),
     "Submit Request":         ("Submit New Request",        "Anyone can raise a new request"),
     "Update / Delete Ticket": ("Update / Delete Ticket",   f"Editing as: {user}"),
 }
@@ -841,6 +900,32 @@ if page == "Dashboard":
                 + '</div>',
                 unsafe_allow_html=True)
 
+        # ── Recurring Tasks on Dashboard ──────────────────────────────────
+        rec_df_dash = st.session_state.rec_df
+        active_rec  = rec_df_dash[rec_df_dash["active"] == "Yes"] if not rec_df_dash.empty else pd.DataFrame()
+        if not active_rec.empty:
+            st.markdown('<div class="section-header">Recurring Tasks</div>', unsafe_allow_html=True)
+            FREQ_COLORS = {"Daily": "#2E7D32", "Weekly": "#0078D4", "Monthly": "#6A0DAD"}
+            for freq in ["Daily", "Weekly", "Monthly"]:
+                grp = active_rec[active_rec["frequency"] == freq]
+                if grp.empty:
+                    continue
+                st.markdown(f'<div style="font-size:13px;font-weight:700;color:{FREQ_COLORS[freq]};'
+                            f'margin:12px 0 6px;text-transform:uppercase;letter-spacing:.05em">'
+                            f'{freq} ({len(grp)})</div>', unsafe_allow_html=True)
+                for _, r in grp.iterrows():
+                    assigned_b = badge(str(r.get("assigned_to","Unassigned")), "#1A1A1A", DHL_YELLOW) if r.get("assigned_to") else badge("Unassigned","#9E9E9E")
+                    plat_b     = badge(str(r.get("platform","Others")), PLATFORM_COLORS.get(str(r.get("platform","")),"#9E9E9E"))
+                    day_info   = f' · {r["day_info"]}' if r.get("day_info") else ""
+                    st.markdown(
+                        f'<div class="ticket-card" style="border-left-color:{FREQ_COLORS[freq]}">'
+                        + f'<div class="ticket-id">{r["task_id"]}{day_info}</div>'
+                        + f'<div class="ticket-title">{r["title"]}</div>'
+                        + '<div class="pills">' + plat_b + badge(freq, FREQ_COLORS[freq]) + assigned_b + '</div>'
+                        + (f'<p style="color:#6B6B6B;font-size:12px;margin-top:4px">{r["description"]}</p>' if r.get("description") else "")
+                        + '</div>',
+                        unsafe_allow_html=True)
+
 # ─────────────────────────────────────────────────────────────────────────────
 # PAGE: ALL TICKETS
 # ─────────────────────────────────────────────────────────────────────────────
@@ -922,6 +1007,129 @@ elif page == "All Tickets":
             df_display["timestamp"] = df_display["timestamp"].apply(fmt_ts)
             st.dataframe(df_display.rename(columns=lambda c: c.replace("_"," ").title()),
                          use_container_width=True, hide_index=True)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE: RECURRING TASKS
+# ─────────────────────────────────────────────────────────────────────────────
+elif page == "Recurring Tasks":
+    rec_df   = st.session_state.rec_df
+    FREQ_COLORS = {"Daily": "#2E7D32", "Weekly": "#0078D4", "Monthly": "#6A0DAD"}
+
+    # ── Add new task (logged-in only) ─────────────────────────────────────────
+    if user:
+        with st.expander("+ Add New Recurring Task", expanded=False):
+            rc1, rc2 = st.columns(2)
+            with rc1:
+                r_title    = st.text_input("Task Name *", key="r_title")
+                r_freq     = st.selectbox("Frequency *", ["Daily","Weekly","Monthly"], key="r_freq")
+                r_platform = st.selectbox("Platform", ["Splunk","Power BI","Others"], key="r_plat")
+            with rc2:
+                user_list  = list(USERS.keys())
+                r_assigned = st.selectbox("Assign To *", user_list, key="r_assign")
+                day_options = {
+                    "Daily":   ["Every day"],
+                    "Weekly":  ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+                    "Monthly": ["1st","2nd","3rd","4th","5th","10th","15th","20th","25th","Last day"],
+                }
+                r_day = st.selectbox("When", day_options[st.session_state.get("r_freq","Daily")], key="r_day")
+            r_desc = st.text_area("Description (optional)", key="r_desc", height=80)
+            if st.button("Add Recurring Task", key="add_rec"):
+                if not r_title:
+                    st.error("Task Name is required.")
+                else:
+                    new_id  = "REC-" + str(uuid.uuid4())[:6].upper()
+                    new_row = {
+                        "task_id":     new_id,
+                        "title":       r_title,
+                        "description": r_desc,
+                        "frequency":   r_freq,
+                        "day_info":    r_day,
+                        "assigned_to": r_assigned,
+                        "platform":    r_platform,
+                        "created_by":  user,
+                        "created_at":  now8().isoformat(timespec="seconds"),
+                        "active":      "Yes",
+                    }
+                    with st.spinner("Saving..."):
+                        try:
+                            df_cur, sha = rec_load()
+                            df_new = pd.concat([df_cur, pd.DataFrame([new_row])], ignore_index=True)
+                            rec_save(df_new, sha, f"[ADD] {new_id} by {user}")
+                            st.success(f"Recurring task {new_id} added!")
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Save failed: {e}")
+    else:
+        st.markdown('<div class="readonly-banner">Login to add or edit recurring tasks.</div>',
+                    unsafe_allow_html=True)
+
+    # ── Filter + view ─────────────────────────────────────────────────────────
+    if rec_df.empty:
+        st.info("No recurring tasks yet. Login and add the first one above.")
+    else:
+        fc1, fc2, fc3 = st.columns(3)
+        with fc1:
+            f_freq = st.multiselect("Frequency", ["Daily","Weekly","Monthly"],
+                                    default=["Daily","Weekly","Monthly"], key="rec_f_freq")
+        with fc2:
+            all_assignees = sorted(rec_df["assigned_to"].dropna().unique().tolist())
+            f_owner = st.multiselect("Assigned To", all_assignees,
+                                     default=all_assignees, key="rec_f_owner")
+        with fc3:
+            f_active = st.radio("Show", ["Active only","All"], horizontal=True, key="rec_active")
+
+        view_df = rec_df.copy()
+        if f_freq:   view_df = view_df[view_df["frequency"].isin(f_freq)]
+        if f_owner:  view_df = view_df[view_df["assigned_to"].isin(f_owner)]
+        if f_active == "Active only":
+            view_df = view_df[view_df["active"] == "Yes"]
+
+        st.caption(f"Showing {len(view_df)} recurring task(s)")
+
+        for freq in ["Daily","Weekly","Monthly"]:
+            grp = view_df[view_df["frequency"] == freq]
+            if grp.empty:
+                continue
+            st.markdown(f'<div class="section-header" style="border-left-color:{FREQ_COLORS[freq]}">'
+                        f'{freq} Tasks ({len(grp)})</div>', unsafe_allow_html=True)
+            for _, r in grp.iterrows():
+                assigned_b = badge(str(r.get("assigned_to","Unassigned")), "#1A1A1A", DHL_YELLOW) if r.get("assigned_to") else badge("Unassigned","#9E9E9E")
+                plat_b     = badge(str(r.get("platform","Others")), PLATFORM_COLORS.get(str(r.get("platform","")),"#9E9E9E"))
+                active_b   = badge("Active","#2E7D32") if r.get("active") == "Yes" else badge("Inactive","#9E9E9E")
+                day_info   = f' · {r["day_info"]}' if r.get("day_info") else ""
+
+                col_card, col_btn = st.columns([5,1])
+                with col_card:
+                    st.markdown(
+                        f'<div class="ticket-card" style="border-left-color:{FREQ_COLORS[freq]};margin-bottom:4px">'
+                        + f'<div class="ticket-id">{r["task_id"]}{day_info} · Added by {r.get("created_by","")}</div>'
+                        + f'<div class="ticket-title">{r["title"]}</div>'
+                        + '<div class="pills">' + plat_b + badge(freq, FREQ_COLORS[freq]) + assigned_b + active_b + '</div>'
+                        + (f'<p style="color:#6B6B6B;font-size:12px;margin-top:4px">{r["description"]}</p>' if r.get("description") else "")
+                        + '</div>',
+                        unsafe_allow_html=True)
+                with col_btn:
+                    if user:
+                        st.markdown("<div style='height:18px'></div>", unsafe_allow_html=True)
+                        action = "Deactivate" if r.get("active") == "Yes" else "Reactivate"
+                        if st.button(action, key=f"tog_{r['task_id']}"):
+                            with st.spinner("Updating..."):
+                                try:
+                                    df_cur, sha = rec_load()
+                                    df_cur.loc[df_cur["task_id"] == r["task_id"], "active"] =                                         "No" if r.get("active") == "Yes" else "Yes"
+                                    rec_save(df_cur, sha, f"[TOGGLE] {r['task_id']} by {user}")
+                                    st.rerun()
+                                except Exception as e:
+                                    st.error(str(e))
+                        if st.button("Delete", key=f"del_{r['task_id']}"):
+                            with st.spinner("Deleting..."):
+                                try:
+                                    df_cur, sha = rec_load()
+                                    df_cur = df_cur[df_cur["task_id"] != r["task_id"]]
+                                    rec_save(df_cur, sha, f"[DELETE] {r['task_id']} by {user}")
+                                    st.rerun()
+                                except Exception as e:
+                                    st.error(str(e))
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PAGE: SUBMIT REQUEST  (open to everyone)
