@@ -16,7 +16,7 @@ from openpyxl.utils import get_column_letter
 # ─────────────────────────────────────────────────────────────────────────────
 # PAGE CONFIG
 # ─────────────────────────────────────────────────────────────────────────────
-st.set_page_config(page_title="QA Viz Tracker", layout="wide",
+st.set_page_config(page_title="Operation Excellence Tracker", layout="wide",
                    initial_sidebar_state="expanded")
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -194,7 +194,7 @@ def send_new_ticket_email(ticket: dict) -> None:
     except KeyError:
         return  # email not configured, skip silently
 
-    subject = f"[QA Tracker] New Ticket: {ticket['ticket_id']} — {ticket['title']}"
+    subject = f"[Ops Excellence Tracker] New Ticket: {ticket['ticket_id']} — {ticket['title']}"
 
     html = f"""
     <html><body style="font-family:Arial,sans-serif;background:#f5f5f5;padding:20px">
@@ -245,7 +245,7 @@ def send_new_ticket_email(ticket: dict) -> None:
         </tr>
       </table>
       <div style="margin-top:24px;font-size:12px;color:#9E9E9E;border-top:1px solid #E0E0E0;padding-top:14px">
-        This is an automated notification from your QA Viz Tracker.
+        This is an automated notification from your Operation Excellence Tracker.
       </div>
     </div>
     </body></html>
@@ -288,7 +288,7 @@ def build_excel(log_df: pd.DataFrame) -> bytes:
     ws1.title = "Audit Log"
     ws1.sheet_view.showGridLines = False
 
-    hdr(ws1, 1, 1, "QA VIZ TRACKER — FULL AUDIT LOG",
+    hdr(ws1, 1, 1, "OPERATION EXCELLENCE TRACKER — FULL AUDIT LOG",
         h(DHL_YELLOW), h(DHL_DARK), merge_to=len(CSV_COLS), ht=34)
     ws1["A1"].font = Font(bold=True, color=h(DHL_DARK), name="Arial", size=13)
     hdr(ws1, 2, 1,
@@ -464,6 +464,8 @@ html,body,[class*="css"],.stApp{{font-family:'Roboto',sans-serif!important;backg
 .readonly-banner{{background:#FFF9E6;border:1px solid {DHL_YELLOW};border-radius:6px;padding:8px 14px;font-size:13px;color:#7a6000;margin-bottom:12px}}
 .stButton>button{{background:{DHL_YELLOW}!important;color:{DHL_DARK}!important;border:none!important;border-radius:5px!important;font-weight:700!important;font-size:14px!important;padding:9px 22px!important}}
 .stButton>button:hover{{background:{DHL_RED}!important;color:{DHL_WHITE}!important}}
+.stDownloadButton>button{{background:{DHL_YELLOW}!important;color:{DHL_DARK}!important;border:2px solid {DHL_YELLOW}!important;border-radius:5px!important;font-weight:700!important;font-size:13px!important;padding:9px 22px!important;width:100%!important}}
+.stDownloadButton>button:hover{{background:{DHL_RED}!important;color:{DHL_WHITE}!important;border-color:{DHL_RED}!important}}
 .stTextInput>div>div>input,.stTextArea>div>div>textarea{{background:{DHL_WHITE}!important;color:{DHL_DARK}!important;border:1px solid {DHL_BORDER}!important;border-radius:5px!important}}
 .stSelectbox>div>div,.stMultiSelect>div>div{{background:{DHL_WHITE}!important;color:{DHL_DARK}!important}}
 .stSlider>div>div>div>div{{background:{DHL_YELLOW}!important}}
@@ -479,7 +481,7 @@ with st.sidebar:
     st.markdown("""
     <div style="padding:14px 0 6px">
       <div style="font-size:26px;font-weight:900;color:#FFCC00;letter-spacing:1px">DHL</div>
-      <div style="font-size:12px;color:#aaa;margin-top:2px">QA Visualization Tracker</div>
+      <div style="font-size:12px;color:#aaa;margin-top:2px">Operation Excellence Tracker</div>
     </div>""", unsafe_allow_html=True)
 
     # ── Login / user block ────────────────────────────────────────────────────
@@ -587,12 +589,12 @@ CHART = dict(
 # PAGE HEADER helper
 # ─────────────────────────────────────────────────────────────────────────────
 PAGE_META = {
-    "Dashboard":              ("Dashboard Overview",        "Live summary of all QA visualization requests"),
+    "Dashboard":              ("Dashboard Overview",        "Live summary of all Operation Excellence requests"),
     "All Tickets":            ("All Tickets",               "Browse and filter every submitted ticket"),
-    "Submit Request":         ("Submit New Request",        "Anyone can raise a new visualization request"),
+    "Submit Request":         ("Submit New Request",        "Anyone can raise a new request"),
     "Update / Delete Ticket": ("Update / Delete Ticket",   f"Editing as: {user}"),
 }
-title, subtitle = PAGE_META.get(page, ("QA Viz Tracker", ""))
+title, subtitle = PAGE_META.get(page, ("Operation Excellence Tracker", ""))
 st.markdown(f"""
 <div class="dhl-topbar">
   <div><h1>{title}</h1><span>{subtitle}</span></div>
