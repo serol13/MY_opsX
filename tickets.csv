@@ -100,3 +100,4 @@ As per our yesterday discussion, both of us agreed to change:
 Average Volume By Week at Region to Daily Volume at Region
 Depot Volume By Week to Daily volume by Depot
  ",serol,Edit API data is not pushed to Splunk. Inform the user on the challenges that lead to different POS and DHL label,Simple,serol,
+2026-03-07T01:25:12+08:00,UPDATED,QA-74BF1F,Address Discrepancy Between POSID and DHL Label - MYNEVLDF-OR-11548 / 7228021120572346 (MEMORY PLACE ENTERPRISE),Splunk,Low,Done,100,Hazim,2026-03-06,POS,Checking the discrepancy for POS label and DHL label,serol,EDIT API is not pushed to Splunk. Thus leading us to create wrong address for POS,Simple,serol,
