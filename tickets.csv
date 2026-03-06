@@ -5,3 +5,4 @@ timestamp,action,ticket_id,title,platform,priority,status,progress,requestor,due
 2026-03-06T13:36:30,UPDATED,QA-1D77DA,Volume tracker,Power BI,Critical,In Progress,0,Maneerat,2026-03-06,volume,volume ,serol,already update the app in power bi.
 2026-03-06T13:36:41,UPDATED,QA-1D77DA,Volume tracker,Power BI,Critical,In Progress,100,Maneerat,2026-03-06,volume,volume ,serol,already update the app in power bi.
 2026-03-06T13:36:49,UPDATED,QA-1D77DA,Volume tracker,Power BI,Critical,Done,100,Maneerat,2026-03-06,volume,volume ,serol,already update the app in power bi.
+2026-03-06T13:38:12,DELETED,QA-971BD1,dsfdsd,Splunk,Low,In Progress,15,serol,2026-03-06,,sddfgshtgsgds,serol,delete
