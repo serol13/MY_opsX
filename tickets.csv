@@ -68,3 +68,7 @@ timestamp,action,ticket_id,title,platform,priority,status,progress,requestor,due
 2025-11-20T00:00:00,CREATED,QA-99E149,Data Loss in Splunk,Splunk,Medium,Backlog,0,,,,Data loss affecting both MY and TH,serol,,,,
 2026-03-06T14:45:26,UPDATED,QA-018128,WEB ENQUIRY,Others,Medium,In Progress,0,,2025-01-24,,Request by saurabh to check on 3month record for recipient,serol,reply email,Simple,serol,
 2026-03-06T15:47:55,CREATED,QA-83FF9E,MY - Live Pickup Performance Today,Splunk,Medium,Backlog,0,Alyu,2026-03-06,"pickup, enquiry","The difference of the Base Time (filter: Job Creation, Job Acceptance, Job Start Date)",Guest:Alyu,dashboard,,,
+2026-03-06T15:49:39,CREATED,QA-3AC6EE,MY - Delivery Today,Splunk,Low,Backlog,0,Alyu,2026-03-06,"dashboard, delivery, enhancement","The summary available for overall courier ID. Unable to identify the courier under which depot. Suggestion: Add filter for facility or add column of facility next to courier ID.
+Failure reason summarized by region. Need this by facility and courier as well.
+In the last column of data, there is column that indicate 10pm delivery. Can we change 10pm to 12pm (prenoon)?
+Please explore and suggest if failure reason summary should be enhance in this dashboard or create PBI for delivery which include failure reason analysis.",Guest:Alyu,,,,
