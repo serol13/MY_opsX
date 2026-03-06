@@ -9,6 +9,20 @@ from email.mime.multipart import MIMEMultipart
 from datetime import datetime, date, timezone, timedelta
 TZ_GMT8 = timezone(timedelta(hours=8))
 def now8(): return datetime.now(TZ_GMT8)
+def fmt_ts(ts: str) -> str:
+    """Convert ISO timestamp to dd/mm/yy hh:mm AM/PM"""
+    if not ts: return "—"
+    try:
+        # Handle both with and without timezone offset
+        for fmt in ("%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S"):
+            try:
+                dt = datetime.strptime(str(ts)[:25], fmt)
+                return dt.strftime("%d/%m/%y %I:%M %p")
+            except:
+                continue
+        return str(ts)[:16].replace("T"," ")
+    except:
+        return str(ts)[:16]
 import uuid
 import plotly.express as px
 try:
@@ -893,7 +907,9 @@ elif page == "All Tickets":
         else:
             show = ["ticket_id","title","platform","priority","status","progress",
                     "requestor","due_date","updated_by","timestamp"]
-            st.dataframe(df[show].rename(columns=lambda c: c.replace("_"," ").title()),
+            df_display = df[show].copy()
+            df_display["timestamp"] = df_display["timestamp"].apply(fmt_ts)
+            st.dataframe(df_display.rename(columns=lambda c: c.replace("_"," ").title()),
                          use_container_width=True, hide_index=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1097,7 +1113,7 @@ elif page == "Update / Delete Ticket":
                             border-radius:6px;padding:10px 14px;margin-bottom:8px">
                   <div style="display:flex;gap:12px;align-items:center;margin-bottom:4px">
                     {badge(ac, action_color.get(ac, DHL_GRAY))}
-                    <span style="font-size:12px;color:{DHL_GRAY}">{row['timestamp'][:16].replace('T',' at ')}</span>
+                    <span style="font-size:12px;color:{DHL_GRAY}">{fmt_ts(row['timestamp'])}</span>
                     <span style="font-size:12px;font-weight:700;color:{DHL_DARK}">by {row['updated_by']}</span>
                   </div>
                   <div style="font-size:13px;color:{DHL_DARK}">
