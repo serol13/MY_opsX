@@ -2,11 +2,16 @@ import streamlit as st
 import pandas as pd
 import json
 import base64
+import io
 import requests
 from datetime import datetime, date
 import uuid
 import plotly.express as px
 import plotly.graph_objects as go
+from collections import Counter
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.utils import get_column_letter
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -110,6 +115,203 @@ def progress_bar_html(pct, color=DHL_YELLOW):
         f'<div style="background:{color};width:{pct}%;height:100%;border-radius:4px"></div></div>'
         f'<small style="color:{DHL_GRAY};font-size:12px">{pct}% complete</small>'
     )
+
+# ── Excel export builder ──────────────────────────────────────────────────────
+def _thin_border():
+    s = Side(style="thin", color="E0E0E0")
+    return Border(left=s, right=s, top=s, bottom=s)
+
+def _hdr(ws, row, col, value, bg, fg="FFFFFF", merge_to=None, height=None):
+    cell = ws.cell(row=row, column=col, value=value)
+    cell.fill = PatternFill("solid", start_color=bg)
+    cell.font = Font(bold=True, color=fg, name="Arial", size=10)
+    cell.alignment = Alignment(horizontal="center", vertical="center")
+    cell.border = _thin_border()
+    if merge_to:
+        ws.merge_cells(f"{get_column_letter(col)}{row}:{get_column_letter(merge_to)}{row}")
+    if height:
+        ws.row_dimensions[row].height = height
+    return cell
+
+def build_excel_export(tickets):
+    # strip leading # from hex colours for openpyxl
+    def h(c): return c.lstrip("#")
+
+    P_COLORS = {k: h(v) for k, v in PLATFORM_COLORS.items()}
+    S_COLORS = {k: h(v) for k, v in STATUS_COLORS.items()}
+    R_COLORS = {k: h(v) for k, v in PRIORITY_COLORS.items()}
+
+    wb = Workbook()
+
+    # ── Sheet 1: All Tickets ──────────────────────────────────────────────
+    ws = wb.active
+    ws.title = "All Tickets"
+    ws.sheet_view.showGridLines = False
+
+    _hdr(ws, 1, 1, "QA VISUALIZATION TRACKER — TICKET EXPORT",
+         h(DHL_YELLOW), h(DHL_DARK), merge_to=11, height=36)
+    ws["A1"].font = Font(bold=True, color=h(DHL_DARK), name="Arial", size=14)
+
+    _hdr(ws, 2, 1,
+         f"Generated: {datetime.now().strftime('%d %B %Y, %H:%M')}  |  Total: {len(tickets)} tickets",
+         h(DHL_DARK), h(DHL_YELLOW), merge_to=11, height=20)
+    ws["A2"].font = Font(italic=True, color=h(DHL_YELLOW), name="Arial", size=10)
+
+    ws.row_dimensions[3].height = 5
+
+    col_headers = ["Ticket ID","Title","Platform","Priority","Status","Progress %",
+                   "Requestor","Due Date","Tags","Description","Created"]
+    col_widths  = [14, 36, 12, 12, 14, 13, 16, 14, 22, 50, 20]
+    for i, (hd, w) in enumerate(zip(col_headers, col_widths), 1):
+        _hdr(ws, 4, i, hd, h(DHL_RED), "FFFFFF")
+        ws.column_dimensions[get_column_letter(i)].width = w
+    ws.row_dimensions[4].height = 22
+
+    for r, t in enumerate(tickets, 5):
+        row_bg = "FFFFFF" if r % 2 == 1 else "F5F5F5"
+        data = [
+            t.get("id",""), t.get("title",""), t.get("platform",""),
+            t.get("priority",""), t.get("status",""), t.get("progress", 0),
+            t.get("requestor",""), t.get("due_date",""),
+            ", ".join(t.get("tags",[])), t.get("description",""),
+            t.get("created_at","")[:10],
+        ]
+        ws.row_dimensions[r].height = 20
+        for ci, val in enumerate(data, 1):
+            cell = ws.cell(row=r, column=ci, value=val)
+            cell.border = _thin_border()
+            cell.font = Font(name="Arial", size=10, color=h(DHL_DARK))
+            cell.alignment = Alignment(vertical="center", wrap_text=(ci == 10))
+
+            if ci == 3:    # Platform
+                cell.fill = PatternFill("solid", start_color=P_COLORS.get(val, h(DHL_GRAY)))
+                cell.font = Font(name="Arial", size=10, color="FFFFFF", bold=True)
+                cell.alignment = Alignment(horizontal="center", vertical="center")
+            elif ci == 4:  # Priority
+                cell.fill = PatternFill("solid", start_color=R_COLORS.get(val, h(DHL_GRAY)))
+                cell.font = Font(name="Arial", size=10, color="FFFFFF", bold=True)
+                cell.alignment = Alignment(horizontal="center", vertical="center")
+            elif ci == 5:  # Status
+                cell.fill = PatternFill("solid", start_color=S_COLORS.get(val, h(DHL_GRAY)))
+                cell.font = Font(name="Arial", size=10, color="FFFFFF", bold=True)
+                cell.alignment = Alignment(horizontal="center", vertical="center")
+            elif ci == 6:  # Progress
+                cell.fill = PatternFill("solid", start_color=row_bg)
+                cell.alignment = Alignment(horizontal="center", vertical="center")
+                cell.number_format = '0"%"'
+            else:
+                cell.fill = PatternFill("solid", start_color=row_bg)
+
+    ws.freeze_panes = "A5"
+
+    # ── Sheet 2: Summary ──────────────────────────────────────────────────
+    ws2 = wb.create_sheet("Summary")
+    ws2.sheet_view.showGridLines = False
+    for col, w in zip("ABCD", [22, 12, 14, 14]):
+        ws2.column_dimensions[col].width = w
+
+    _hdr(ws2, 1, 1, "TICKET SUMMARY", h(DHL_YELLOW), h(DHL_DARK), merge_to=4, height=32)
+    ws2["A1"].font = Font(bold=True, color=h(DHL_DARK), name="Arial", size=13)
+    _hdr(ws2, 2, 1, f"As of {datetime.now().strftime('%d %B %Y')}",
+         h(DHL_DARK), h(DHL_YELLOW), merge_to=4, height=18)
+
+    status_counts   = Counter(t["status"]   for t in tickets)
+    priority_counts = Counter(t["priority"] for t in tickets)
+    platform_counts = Counter(t["platform"] for t in tickets)
+
+    def summary_section(ws, start_row, label, items, color_map, order):
+        _hdr(ws, start_row, 1, label, h(DHL_RED), "FFFFFF", merge_to=4, height=20)
+        _hdr(ws, start_row, 2, "Count", h(DHL_RED), "FFFFFF")
+        _hdr(ws, start_row, 3, "% of Total", h(DHL_RED), "FFFFFF")
+        r = start_row + 1
+        total = sum(items.values())
+        for key in order:
+            cnt = items.get(key, 0)
+            ca = ws.cell(row=r, column=1, value=key)
+            ca.fill = PatternFill("solid", start_color=color_map.get(h(key) if key in color_map else key, h(DHL_GRAY)))
+
+            # Use correct colour map (already stripped)
+            bg = color_map.get(key, h(DHL_GRAY))
+            ca.fill = PatternFill("solid", start_color=bg)
+            ca.font = Font(bold=True, color="FFFFFF", name="Arial", size=10)
+            ca.alignment = Alignment(horizontal="center", vertical="center")
+            ca.border = _thin_border()
+
+            cb = ws.cell(row=r, column=2, value=cnt)
+            cb.font = Font(name="Arial", size=10, bold=True, color=h(DHL_DARK))
+            cb.alignment = Alignment(horizontal="center")
+            cb.border = _thin_border()
+            cb.fill = PatternFill("solid", start_color="FFFFFF")
+
+            pct = round(cnt / total * 100, 1) if total else 0
+            cc = ws.cell(row=r, column=3, value=pct)
+            cc.number_format = '0.0"%"'
+            cc.font = Font(name="Arial", size=10, color=h(DHL_DARK))
+            cc.alignment = Alignment(horizontal="center")
+            cc.border = _thin_border()
+            cc.fill = PatternFill("solid", start_color="F5F5F5")
+            ws.row_dimensions[r].height = 20
+            r += 1
+
+        # Total row
+        ct = ws.cell(row=r, column=1, value="TOTAL")
+        ct.fill = PatternFill("solid", start_color=h(DHL_DARK))
+        ct.font = Font(bold=True, color="FFFFFF", name="Arial")
+        ct.alignment = Alignment(horizontal="center")
+        ct.border = _thin_border()
+        ctv = ws.cell(row=r, column=2, value=total)
+        ctv.fill = PatternFill("solid", start_color=h(DHL_YELLOW))
+        ctv.font = Font(bold=True, name="Arial", color=h(DHL_DARK))
+        ctv.alignment = Alignment(horizontal="center")
+        ctv.border = _thin_border()
+        ws.row_dimensions[r].height = 22
+        return r + 2
+
+    next_row = summary_section(ws2, 4, "BY STATUS",   status_counts,
+                               {k: h(v) for k,v in STATUS_COLORS.items()}, STATUS_ORDER)
+    next_row = summary_section(ws2, next_row, "BY PRIORITY", priority_counts,
+                               {k: h(v) for k,v in PRIORITY_COLORS.items()}, PRIORITY_ORDER)
+    summary_section(ws2, next_row, "BY PLATFORM", platform_counts,
+                    {k: h(v) for k,v in PLATFORM_COLORS.items()}, ["Splunk","Power BI","Others"])
+
+    # ── Sheet 3: Comments ─────────────────────────────────────────────────
+    ws3 = wb.create_sheet("Comments")
+    ws3.sheet_view.showGridLines = False
+    _hdr(ws3, 1, 1, "COMMENT HISTORY", h(DHL_YELLOW), h(DHL_DARK), merge_to=4, height=30)
+    ws3["A1"].font = Font(bold=True, color=h(DHL_DARK), name="Arial", size=13)
+
+    for i, (hd, w) in enumerate(zip(["Ticket ID","Ticket Title","Timestamp","Comment"],
+                                     [14, 36, 20, 72]), 1):
+        _hdr(ws3, 3, i, hd, h(DHL_RED), "FFFFFF")
+        ws3.column_dimensions[get_column_letter(i)].width = w
+    ws3.row_dimensions[3].height = 22
+    ws3.freeze_panes = "A4"
+
+    cmt_row = 4
+    for t in tickets:
+        for cmt in t.get("comments", []):
+            bg = "FFFFFF" if cmt_row % 2 == 0 else "F5F5F5"
+            for ci, val in enumerate([
+                t["id"], t["title"],
+                cmt["timestamp"][:16].replace("T", " "),
+                cmt["text"]
+            ], 1):
+                cell = ws3.cell(row=cmt_row, column=ci, value=val)
+                cell.fill = PatternFill("solid", start_color=bg)
+                cell.font = Font(name="Arial", size=10, color=h(DHL_DARK))
+                cell.border = _thin_border()
+                cell.alignment = Alignment(vertical="center", wrap_text=(ci == 4))
+            ws3.row_dimensions[cmt_row].height = 20
+            cmt_row += 1
+
+    if cmt_row == 4:
+        c = ws3.cell(row=4, column=1, value="No comments recorded yet.")
+        c.font = Font(italic=True, color=h(DHL_GRAY), name="Arial")
+
+    out = io.BytesIO()
+    wb.save(out)
+    out.seek(0)
+    return out.getvalue()
 
 # ── Streamlit theme override via config ───────────────────────────────────────
 st.markdown(f"""
@@ -362,6 +564,16 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
     st.markdown("")
+    st.markdown("")
+    if tickets:
+        excel_bytes = build_excel_export(tickets)
+        st.download_button(
+            label="Export to Excel",
+            data=excel_bytes,
+            file_name=f"QA_Tickets_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+    st.markdown("---")
     if st.button("Refresh from GitHub"):
         with st.spinner("Syncing..."):
             try:
@@ -548,6 +760,15 @@ elif page == "All Tickets":
     if not tickets:
         st.info("No tickets yet. Submit your first request!")
     else:
+        # Export button at top
+        excel_bytes = build_excel_export(tickets)
+        st.download_button(
+            label="Export All Tickets to Excel",
+            data=excel_bytes,
+            file_name=f"QA_Tickets_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+        st.markdown("")
         fc1, fc2, fc3, fc4 = st.columns(4)
         with fc1: f_platform = st.multiselect("Platform", ["Splunk","Power BI","Others"], default=["Splunk","Power BI","Others"])
         with fc2: f_status   = st.multiselect("Status", STATUS_ORDER, default=STATUS_ORDER)
