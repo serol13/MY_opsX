@@ -1,1 +1,68 @@
 timestamp,action,ticket_id,title,platform,priority,status,progress,requestor,due_date,tags,description,updated_by,notes,complexity,assigned_to
+2025-05-02T00:00:00,CREATED,QA-749DBC,Retrieve POD for 799999999999995,Others,Medium,Done,100,,2025-05-03,POD Request,"- POD for 7999999999999995
+- Delivered date: 2 February 2025
+- Requested by CS",serol,Update: - Done retrieve the POD | Remarks: Sample,,serol
+2025-01-03T00:00:00,CREATED,QA-7099A7,Sample reports for MY Reports will be migrated to 2244,Others,Medium,Backlog,0,,,,Migrating established report from Splunk to Server 2244 to comply with email requirement,serol,,,serol
+2024-11-27T00:00:00,CREATED,QA-A1BBF9,MY/TH BRS Migration,Others,Medium,Backlog,0,,,,KI group is aligning the strategy to ingest data and implement a data model for reporting in BRS.,serol,,,serol
+2024-01-10T00:00:00,CREATED,QA-389CA8,Splunk User Access Review: 15 Jan [Annual],Splunk,Medium,Backlog,0,,2025-01-15,,"reviewing the access granted to the Splunk farm (on-prem) to ensure only the required, necessary people have the right level of access to Splunk.",serol,,,serol
+2025-01-10T00:00:00,CREATED,QA-F0B974,B2B_Customer flag in Splunk,Splunk,Medium,Backlog,0,,2025-01-14,,the list of B2B flagged customers account codes available  -  Sumanth,serol,,,serol
+2025-01-02T00:00:00,CREATED,QA-2D2EA1,Data Request: Shipment Performance for BW WORLD MARKETING,Others,Medium,Backlog,0,,,,,serol,Update: in retrieving the shipment data for delivered vs. delivery failed for the customer BW WORLD MARKETING (Sold to: 5279845665).,,serol
+2025-01-02T00:00:00,CREATED,QA-1D2775,DHLeC pending status - Delyva,Others,Medium,Backlog,0,,2025-01-22,,Track pending shipment for Delyva,serol,,,serol
+2025-01-03T00:00:00,CREATED,QA-9A423B,Data Extraction for B2B Delivery,Others,Medium,Done,100,,2025-01-05,Data Request,data extraction for successful delivered parcels with a Definite Delivery (DD) indicator on the label,serol,,,serol
+2025-01-03T00:00:00,CREATED,QA-792875,Al-Ikhsan Data for 3 months.,Others,Medium,Done,100,,2025-01-07,Data Request,,serol,,,serol
+2025-01-07T00:00:00,CREATED,QA-CDE8B3,SUMMARY ODD DNR - DEC 2024,Others,Medium,Done,100,,2025-01-07,Report Request,,serol,,,serol
+2024-11-14T00:00:00,CREATED,QA-7A6875,RS COMPONENTS || SAMPLE OF DAILY PERFORMANCE REPORT,Others,Medium,Backlog,0,,,,Setup automated report for RS component,serol,,,serol
+2025-01-10T00:00:00,CREATED,QA-898FC6,PDE DELIVERY TIME - URBAN FOOD PRDOUCTS SDN BHD,Others,Medium,Backlog,0,,2025-01-15,,Request for list of parcelid for Urban Food,serol,,,serol
+2025-01-13T00:00:00,CREATED,QA-6E0149,Inbound Report,Others,Medium,Backlog,0,,2025-01-13,,Request by OD to have automated email for inbound summary,serol,,,serol
+2025-01-17T00:00:00,CREATED,QA-EB772F,ESR Motor May to Sept SCNC,Others,Medium,Done,100,,2025-01-17,Data Request,Performance for ESR Motor,serol,,,serol
+2025-01-17T00:00:00,CREATED,QA-AB6AAB,Splunk Governance,Splunk,Medium,Backlog,0,,2025-01-20,,Review PII Data,serol,,,serol
+2025-01-21T00:00:00,CREATED,QA-6FB30F,SCNC - Cutoff Refine,Others,Medium,Backlog,0,,2025-01-23,,To review all the cutoff for first scan,serol,,,serol
+2025-01-21T00:00:00,CREATED,QA-3088C5,Maintenance For CNDN Flow In Power Automate,Others,Medium,Backlog,0,,,,Reviewing Flow in power automate,serol,,,serol
+2025-01-23T00:00:00,CREATED,QA-2A5699,Request Detail of PC,Others,Medium,Backlog,0,,,,List of workstation for Encoding station,serol,,,serol
+2025-01-23T00:00:00,CREATED,QA-018128,WEB ENQUIRY,Others,Medium,Backlog,0,,2025-01-24,,Request by saurabh to check on 3month record for recipient,serol,,,serol
+2025-01-24T00:00:00,CREATED,QA-9939FB,Daily Pickup Timing Report for Transport Team,Others,Medium,Backlog,0,,2025-01-28,,"Request by Zul to generate a daily report that focuses specifically on pickup timings for transport team, particularly for the milkrun merchants",serol,,,serol
+2025-01-24T00:00:00,CREATED,QA-5BE0AF,DAILY REPORT CEN 2,Others,Medium,Backlog,0,,2025-01-28,,Request by Warren to have a full list of CEN2 parcel for backlog monitoring,serol,,,serol
+2025-01-24T00:00:00,CREATED,QA-F7C7B6,APR - SCNC Redefine First Scan Cut Off and Reingest Data,Others,Medium,Backlog,0,,2025-04-03,,APR 2680,serol,,,serol
+2025-01-28T00:00:00,CREATED,QA-E64CFB,Samsung Pre orders S25: New model launching and planning,Others,Medium,Backlog,0,,,,Setup a daily report to monitor pickup parcel for Samsung,serol,,,serol
+2025-01-31T00:00:00,CREATED,QA-A4F5D8,CS Undel Report: MY Use Case [Apollo],Others,Medium,Backlog,0,,2025-02-03,,,serol,,,serol
+2025-02-05T00:00:00,CREATED,QA-527FFD,Self Collection More Than 2 Days,Others,Medium,Backlog,0,,2025-02-05,,Review the report after Apollo update failure reason,serol,,,serol
+2026-03-06T14:21:10,CREATED,QA-A40682,PII data on BRS,Others,Medium,Backlog,0,,,,Review PII Data to be exported to,serol,,,serol
+2025-02-13T00:00:00,CREATED,QA-59E013,Al-Ikhsan (Data requirement),Others,Medium,Backlog,0,,2025-03-10,,Setup daily auto report for alikhsan,serol,,,serol
+2025-03-03T00:00:00,CREATED,QA-C6A6D8,Unreturned PPOD -  YEW CHIAN HAW (MALAYSIA) SDN BHD,Others,Medium,Backlog,0,,,,Request by Careen to have PPOD list for the merchant,serol,,,serol
+2025-03-03T00:00:00,CREATED,QA-DB5017,Merchant: Oasis Swiss Sdn Bhd | Outbound Report Request,Others,Medium,Backlog,0,,2025-03-11,,Setup Monthly auto report for the merchant -summarise version,serol,,,serol
+2025-03-04T00:00:00,CREATED,QA-2D48D3,Migration of Power Apps & Flows,Others,Medium,Backlog,0,,,,Moving all the power automate flow to personal automation,serol,,,serol
+2025-03-04T00:00:00,CREATED,QA-F2A028,Splunk Dashboard for CS Monitoring,Splunk,Medium,Backlog,0,,2025-03-06,,,serol,,,serol
+2025-03-07T00:00:00,CREATED,QA-540548,Data Transition from (MyOps) WhatsApp Group to SharePoint,Others,Medium,Backlog,0,,,,,serol,,,serol
+2025-02-27T00:00:00,CREATED,QA-6743FC,Be international Daily Report,Others,Medium,Backlog,0,,2025-03-10,,Setup Daily report for be international with aging logic,serol,,,serol
+2025-03-10T00:00:00,CREATED,QA-DEB2F1,Customer Feedback - Sephora,Others,Medium,Backlog,0,,2025-03-12,,Review performance for sephora for the last 3 month,serol,,,serol
+2025-03-13T00:00:00,CREATED,QA-B14C7F,Data needed for activating minihub NR1,Others,Medium,Backlog,0,,2025-03-14,,Analysis for shipment profile for northen for the last 3 month,serol,,,serol
+2025-03-13T00:00:00,CREATED,QA-BF7795,Review on storage limit on Server 2244,Others,Medium,Backlog,0,,2025-03-14,,Cleanup reports and data files stored on server 2244 to save up space,serol,,,serol
+2025-03-14T00:00:00,CREATED,QA-58AFEA,Renaming Setel Express to,Others,Medium,Backlog,0,,,,Renaming Setel Express to  Mesra Retail & Café Sdn Bhd on all automated report,serol,,,serol
+2025-05-14T00:00:00,CREATED,QA-F0DB32,Overload Hub Dashboard In Power BI,Power BI,Medium,Backlog,0,AlYu,,,,serol,,,serol
+2025-05-15T00:00:00,CREATED,QA-2218E5,SCNC dashboard in Power BI,Power BI,Medium,Backlog,0,AlYu,,,,serol,,,serol
+2025-05-16T00:00:00,CREATED,QA-8E8948,Splunk Sales Dashboard,Splunk,Medium,Backlog,0,Sumanth,,,,serol,,,serol
+2025-07-21T00:00:00,CREATED,QA-49AE5C,Finance - Worklfow maintenance,Others,Medium,Backlog,0,Naemah,,,Updating Workflow from Ethan to baizura,serol,,,serol
+2025-06-30T00:00:00,CREATED,QA-3A4040,TH - SC/NC (First Mile Failure) dashboard,Others,Medium,Backlog,0,Alyu,,,To replicate dashboard In splunk for TH,serol,Remarks: queries were build independently,,serol
+2025-06-05T00:00:00,CREATED,QA-73082C,Power BI Training,Power BI,Medium,Done,100,shannon,2025-07-14,New Initiative,To conduct the training for power BI,serol,,,serol
+2025-07-01T00:00:00,CREATED,QA-A567E9,Delyva Biweekly Report,Others,Medium,In Progress,50,,,,To send summary delyva shipment on biweekly basis,serol,,,serol
+2025-07-15T00:00:00,CREATED,QA-B6C28E,SC Failure Deep Dive,Others,Medium,In Progress,50,,,New Initiative,"To analyse and provide insight on failure, whether it’s a first mile/ mid mile/ last mile failure",serol,,,serol
+2025-05-21T00:00:00,CREATED,QA-76B985,Information Template with QR Code for Customer Inquiries,Others,Medium,Done,100,,,,,serol,Remarks: Hanis to distribute to all depot,,serol
+2025-06-09T00:00:00,CREATED,QA-7C44BC,Auto charging of Rerouting Charges,Others,Medium,Done,100,Vijaya,2025-06-09,Data Request,Parcel Compilation from Jan 25 - May 25,serol,,,serol
+2025-06-11T00:00:00,CREATED,QA-21DD7C,MYPSM1_Deposit Summary from March 2025,Others,Medium,Done,100,Muhar,2025-06-12,Data Request,All list of deposit id for PSM,serol,,,serol
+2025-06-12T00:00:00,CREATED,QA-A121BC,Special Handling Request | EKIWI GLOBAL SDN BHD - Reports Deepdive,Others,Medium,Done,100,Saurabh,2025-06-13,Data Request,To analyse EKIWI performance,serol,,,serol
+2025-06-17T00:00:00,CREATED,QA-C26A9E,Delyva 2.0 Project 2025,Others,Medium,Done,100,Desiree,2025-07-01,New Process,To brief Depot on this new Delyva project,serol,,,serol
+2025-06-17T00:00:00,CREATED,QA-A0544F,"Request for Parcel Data Volume – Mac, April & May 2025 (Selected Postcodes)",Others,Medium,Done,100,Iszaham,2025-06-18,Data Request,Parcel volume for postcode,serol,,,serol
+2025-06-24T00:00:00,CREATED,QA-C01A90,APR - Adding Geocode In POD,Others,Medium,Done,100,AlYu,2025-06-24,New Initiative,to add geocode in POD,serol,Update: Still waiting allocation for this,,serol
+2025-07-04T00:00:00,CREATED,QA-E1265A,Valiram Monthly Report,Others,Medium,Done,100,Kent,2025-07-04,Report Request,Report summary for Valiram,serol,,,serol
+2025-07-03T00:00:00,CREATED,QA-2A281E,BA/RD reports for SP Customer,Others,Medium,Done,100,Taufik,2025-07-07,Report Request,To send BA/RD reports for SP customer using pickupaccount,serol,,,serol
+2025-07-17T00:00:00,CREATED,QA-C628F4,"Single Dashboard for Pickup, Encoded, Delivered daily",Others,Medium,In Progress,50,AlYu,,Report Request,,serol,,,serol
+2025-05-08T00:00:00,CREATED,QA-F77DE2,SCNC Daily Summary,Others,Medium,Done,100,Saurabh,2025-05-08,Report Request,To have summary on daily basis,serol,,,serol
+2025-07-15T00:00:00,CREATED,QA-14800F,Relabel Report Esysms,Others,Medium,Backlog,0,Amin,2025-07-15,,,serol,,,serol
+2025-04-04T00:00:00,CREATED,QA-27C33E,QL Ansan Poultry: customized report,Others,Medium,Done,100,Gomathy,2025-04-07,Report Request,New customized report,serol,,,serol
+2025-04-08T00:00:00,CREATED,QA-0AE3B3,Request for MPS list,Others,Medium,Done,100,Amin,2025-04-08,Data Request,extract list of shipment (MPS only) for March 2025 that has been encoded from splunk.,serol,,,serol
+2025-04-07T00:00:00,CREATED,QA-94B8CB,Proposal for Amendment to MY - 30 Days Encoded Volume Dashboard,Others,Medium,Done,100,AlYu,2025-04-09,Report Request,Amend dashboard,serol,,,serol
+2025-04-09T00:00:00,CREATED,QA-B37163,Migration MyOps to Sharepoint,Others,Medium,Done,100,Adillah,2025-04-09,New Initiative,Using sharepoint instead of Local network for a more seamless operation,serol,,,serol
+2025-04-10T00:00:00,CREATED,QA-FC4D29,MY_EncodeDispatch_Daily report,Others,Medium,Backlog,0,,,,Sending a report generated from splunk via server,serol,,,serol
+2025-03-28T00:00:00,CREATED,QA-F98DA8,Amendment In Backlog Dashboard,Others,Medium,Backlog,0,AlYu,2025-04-10,,Additional panel in Backlog Dashboard to show shipment pending at depot,serol,,,serol
+2025-12-12T00:00:00,CREATED,QA-BE5F71,Total Volume MTD,Others,Medium,Done,100,Saurabh,2025-12-17,Report Request,To have summary on daily basis and send to saurabh,serol,,,serol
+2025-11-20T00:00:00,CREATED,QA-99E149,Data Loss in Splunk,Splunk,Medium,Backlog,0,,,,Data loss affecting both MY and TH,serol,,,serol
