@@ -166,13 +166,12 @@ def badge(label, bg, fg="#fff"):
             f'border-radius:4px;font-size:12px;font-weight:700">{label}</span>')
 
 def progress_bar(pct, color=DHL_YELLOW):
-    border = DHL_BORDER
-    gray   = DHL_GRAY
+    pct = int(float(pct)) if str(pct).replace('.','',1).isdigit() else 0
     return (
-        f'<div style="background:{border};border-radius:4px;height:12px;'
-        f'width:100%;overflow:hidden;margin:6px 0 2px">'
-        f'<div style="background:{color};width:{pct}%;height:100%;border-radius:4px"></div></div>'
-        f'<small style="color:{gray};font-size:12px">{pct}% complete</small>'
+        '<div style="background:#E0E0E0;border-radius:4px;height:12px;'
+        'width:100%;overflow:hidden;margin:6px 0 2px">'
+        '<div style="background:' + color + ';width:' + str(pct) + '%;height:100%;border-radius:4px"></div></div>'
+        '<small style="color:#6B6B6B;font-size:12px">' + str(pct) + '% complete</small>'
     )
 
 
@@ -671,7 +670,7 @@ if page == "Dashboard":
                     unsafe_allow_html=True)
         recent = df.sort_values("timestamp", ascending=False).head(5)
         for _, t in recent.iterrows():
-            pct = int(t.get("progress", 0))
+            pct = int(float(t.get("progress", 0) or 0))
             bc  = STATUS_COLORS.get(t["status"], DHL_YELLOW)
             tag_html = " ".join(
                 f'<span style="background:{DHL_LIGHT};color:{DHL_DARK};border:1px solid {DHL_BORDER};'
@@ -733,7 +732,7 @@ elif page == "All Tickets":
 
         if view_mode == "Cards":
             for _, t in df.iterrows():
-                pct = int(t.get("progress", 0)) if str(t.get("progress","0")).isdigit() else 0
+                pct = int(float(t.get("progress", 0) or 0))
                 bc  = STATUS_COLORS.get(t["status"], DHL_YELLOW)
                 tag_html = " ".join(
                     f'<span style="background:{DHL_LIGHT};color:{DHL_DARK};border:1px solid {DHL_BORDER};'
@@ -844,7 +843,7 @@ elif page == "Update / Delete Ticket":
         t         = tickets[tickets["ticket_id"] == sel_id].iloc[0]
 
         # Show current state
-        pct = int(t.get("progress",0)) if str(t.get("progress","0")).isdigit() else 0
+        pct = int(float(t.get("progress", 0) or 0))
         st.markdown(f"""<div class="ticket-card">
           <div class="ticket-id">{t['ticket_id']} · Requestor: {t.get('requestor','')} · Due: {t.get('due_date','')}</div>
           <div class="ticket-title">{t['title']}</div>
