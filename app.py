@@ -684,20 +684,18 @@ with st.sidebar:
     if user:
         nav_options += ["Update / Delete Ticket"]
 
-    # Keep radio in sync with session state nav_page
     if st.session_state.nav_page not in nav_options:
         st.session_state.nav_page = nav_options[0]
-    nav_idx = nav_options.index(st.session_state.nav_page)
-    page = st.radio("Navigation", nav_options, index=nav_idx,
-                    label_visibility="collapsed", key="nav_radio")
-    # Sync back — if user clicks sidebar, update nav_page
-    if page != st.session_state.nav_page:
-        st.session_state.nav_page = page
+
+    # Radio shows current page — clicking it updates nav_page
+    selected = st.radio("Navigation", nav_options,
+                        index=nav_options.index(st.session_state.nav_page),
+                        label_visibility="collapsed", key="nav_radio")
+    if selected != st.session_state.nav_page:
+        st.session_state.nav_page  = selected
         st.session_state.my_tasks_mode = False
         st.rerun()
-    # Clear My Tasks mode if not on Update page
-    if page != "Update / Delete Ticket":
-        st.session_state.my_tasks_mode = False
+
     st.markdown("---")
 
     # ── Quick stats ───────────────────────────────────────────────────────────
@@ -773,6 +771,9 @@ with st.sidebar:
                 st.rerun()
             except Exception as e:
                 st.error(str(e))
+
+# ── Page is always driven by session state, never by radio directly ──────────
+page    = st.session_state.nav_page
 
 # Refresh local references after sidebar
 log_df  = st.session_state.log_df
