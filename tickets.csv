@@ -1,4 +1,4 @@
-timestamp,action,ticket_id,title,platform,priority,status,progress,requestor,due_date,tags,description,updated_by,notes,complexity,assigned_to
+timestamp,action,ticket_id,title,platform,priority,status,progress,requestor,due_date,tags,description,updated_by,notes,complexity,assigned_to,image
 2025-05-02T00:00:00,CREATED,QA-749DBC,Retrieve POD for 799999999999995,Others,Medium,Done,100,,2025-05-03,POD Request,"- POD for 7999999999999995
 - Delivered date: 2 February 2025
 - Requested by CS",serol,Update: - Done retrieve the POD | Remarks: Sample,,
