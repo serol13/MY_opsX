@@ -6,7 +6,9 @@ import requests
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from datetime import datetime, date
+from datetime import datetime, date, timezone, timedelta
+TZ_GMT8 = timezone(timedelta(hours=8))
+def now8(): return datetime.now(TZ_GMT8)
 import uuid
 import plotly.express as px
 try:
@@ -136,10 +138,36 @@ if "log_df" not in st.session_state:
             st.session_state.log_df = pd.DataFrame(columns=CSV_COLS)
 
 if "logged_in_user" not in st.session_state:
-    st.session_state.logged_in_user = None   # None = not logged in
+    st.session_state.logged_in_user = None
 
 if "show_login_form" not in st.session_state:
     st.session_state.show_login_form = False
+
+if "app_unlocked" not in st.session_state:
+    st.session_state.app_unlocked = False
+
+# ── Guest PIN wall ────────────────────────────────────────────────────────────
+GUEST_PIN = str(st.secrets.get("GUEST_PIN", ""))
+
+if GUEST_PIN and not st.session_state.app_unlocked:
+    st.markdown(f"""
+    <div style="max-width:380px;margin:80px auto;background:#fff;border-radius:10px;
+                border-top:6px solid #FFCC00;padding:36px 32px;box-shadow:0 4px 20px rgba(0,0,0,.1)">
+      <div style="font-size:28px;font-weight:900;color:#D40511;letter-spacing:1px;margin-bottom:4px">DHL</div>
+      <div style="font-size:20px;font-weight:700;color:#1A1A1A;margin-bottom:6px">Operation Excellence Tracker</div>
+      <div style="font-size:13px;color:#6B6B6B;margin-bottom:24px">Enter PIN to access the app</div>
+    </div>""", unsafe_allow_html=True)
+    col_pin, _ = st.columns([1, 2])
+    with col_pin:
+        entered = st.text_input("Access PIN", type="password", placeholder="Enter PIN",
+                                label_visibility="collapsed")
+        if st.button("Unlock App", use_container_width=True):
+            if entered == GUEST_PIN:
+                st.session_state.app_unlocked = True
+                st.rerun()
+            else:
+                st.error("Incorrect PIN. Please try again.")
+    st.stop()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # COLOURS & CONSTANTS
@@ -368,7 +396,7 @@ def build_excel(log_df: pd.DataFrame) -> bytes:
         h(DHL_YELLOW), h(DHL_DARK), merge_to=len(CSV_COLS), ht=34)
     ws1["A1"].font = Font(bold=True, color=h(DHL_DARK), name="Arial", size=13)
     hdr(ws1, 2, 1,
-        f"Generated: {datetime.now().strftime('%d %B %Y %H:%M')}  |  Total rows: {len(log_df)}",
+        f"Generated: {now8().strftime('%d %B %Y %H:%M')}  |  Total rows: {len(log_df)}",
         h(DHL_DARK), h(DHL_YELLOW), merge_to=len(CSV_COLS), ht=18)
     ws1["A2"].font = Font(italic=True, color=h(DHL_YELLOW), name="Arial", size=10)
     ws1.row_dimensions[3].height = 5
@@ -406,7 +434,7 @@ def build_excel(log_df: pd.DataFrame) -> bytes:
         h(DHL_YELLOW), h(DHL_DARK), merge_to=11, ht=34)
     ws2["A1"].font = Font(bold=True, color=h(DHL_DARK), name="Arial", size=13)
     hdr(ws2, 2, 1,
-        f"Snapshot: {datetime.now().strftime('%d %B %Y %H:%M')}  |  Active tickets: {len(latest)}",
+        f"Snapshot: {now8().strftime('%d %B %Y %H:%M')}  |  Active tickets: {len(latest)}",
         h(DHL_DARK), h(DHL_YELLOW), merge_to=11, ht=18)
     ws2["A2"].font = Font(italic=True, color=h(DHL_YELLOW), name="Arial", size=10)
     ws2.row_dimensions[3].height = 5
@@ -456,7 +484,7 @@ def build_excel(log_df: pd.DataFrame) -> bytes:
 
     hdr(ws3, 1, 1, "SUMMARY", h(DHL_YELLOW), h(DHL_DARK), merge_to=4, ht=30)
     ws3["A1"].font = Font(bold=True, color=h(DHL_DARK), name="Arial", size=13)
-    hdr(ws3, 2, 1, f"As of {datetime.now().strftime('%d %B %Y')}",
+    hdr(ws3, 2, 1, f"As of {now8().strftime('%d %B %Y')}",
         h(DHL_DARK), h(DHL_YELLOW), merge_to=4, ht=18)
     ws3["A2"].font = Font(italic=True, color=h(DHL_YELLOW), name="Arial", size=10)
 
@@ -637,7 +665,7 @@ with st.sidebar:
         st.download_button(
             "Download Excel Report",
             data=excel_data,
-            file_name=f"QA_Tracker_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx",
+            file_name=f"QA_Tracker_{now8().strftime('%Y%m%d_%H%M')}.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
     st.markdown("")
@@ -901,13 +929,17 @@ elif page == "Submit Request":
     submit_image = image_widget("submit")
 
     if submitted:
-        if not title_val or not requestor_val or not desc_val:
-            st.error("Please fill in all required fields (*).")
+        missing = []
+        if not title_val:    missing.append("Ticket Title")
+        if not requestor_val: missing.append("Your Name")
+        if not desc_val:     missing.append("Description / Requirements")
+        if missing:
+            st.error(f"Please fill in the following required fields: **{', '.join(missing)}**")
         else:
             tid = "QA-" + str(uuid.uuid4())[:6].upper()
             updated_by = user if user else f"Guest:{requestor_val}"
             row = {
-                "timestamp":   datetime.now().isoformat(timespec="seconds"),
+                "timestamp":   now8().isoformat(timespec="seconds"),
                 "action":      "CREATED",
                 "ticket_id":   tid,
                 "title":       title_val,
@@ -952,8 +984,26 @@ elif page == "Update / Delete Ticket":
     elif tickets.empty:
         st.info("No tickets found.")
     else:
-        options = {f"{r['ticket_id']} - {r['title']}": r['ticket_id']
-                   for _, r in tickets.iterrows()}
+        # Filter + sort before dropdown
+        uf1, uf2 = st.columns([1, 2])
+        with uf1:
+            filter_status = st.multiselect(
+                "Filter by Status", STATUS_ORDER,
+                default=[s for s in STATUS_ORDER if s != "Done"],
+                key="update_status_filter"
+            )
+        with uf2:
+            st.markdown("")  # spacer
+
+        filtered_tickets = tickets[tickets["status"].isin(filter_status)] if filter_status else tickets
+        filtered_tickets = filtered_tickets.sort_values("timestamp", ascending=False)
+
+        if filtered_tickets.empty:
+            st.info("No tickets match the selected status filter.")
+            st.stop()
+
+        options = {f"[{r['status']}] {r['ticket_id']} - {r['title']}": r['ticket_id']
+                   for _, r in filtered_tickets.iterrows()}
         sel_label = st.selectbox("Select Ticket", list(options.keys()))
         sel_id    = options[sel_label]
         t         = tickets[tickets["ticket_id"] == sel_id].iloc[0]
@@ -1008,7 +1058,7 @@ elif page == "Update / Delete Ticket":
                 st.error("Please add a note describing the update.")
             else:
                 row = {
-                    "timestamp":   datetime.now().isoformat(timespec="seconds"),
+                    "timestamp":   now8().isoformat(timespec="seconds"),
                     "action":      "UPDATED",
                     "ticket_id":   sel_id,
                     "title":       t["title"],
@@ -1072,7 +1122,7 @@ elif page == "Update / Delete Ticket":
                     st.error("Please provide a reason for deletion.")
                 else:
                     row = {
-                        "timestamp":   datetime.now().isoformat(timespec="seconds"),
+                        "timestamp":   now8().isoformat(timespec="seconds"),
                         "action":      "DELETED",
                         "ticket_id":   sel_id,
                         "title":       t["title"],
