@@ -442,7 +442,8 @@ st.markdown(f"""
 html,body,[class*="css"],.stApp{{font-family:'Roboto',sans-serif!important;background:{DHL_LIGHT}!important;color:{DHL_DARK}!important}}
 .main .block-container{{background:{DHL_LIGHT};padding-top:1.2rem!important;max-width:1400px}}
 [data-testid="stSidebar"]{{background:{DHL_DARK}!important;border-right:4px solid {DHL_YELLOW}!important}}
-[data-testid="stSidebar"] *{{color:{DHL_WHITE}!important}}
+[data-testid="stSidebar"] p,[data-testid="stSidebar"] span,[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] div,[data-testid="stSidebar"] a{{color:{DHL_WHITE}!important}}
 [data-testid="stSidebar"] hr{{border-color:#444!important}}
 .dhl-topbar{{background:{DHL_YELLOW};padding:12px 20px;border-radius:8px;margin-bottom:20px;
             border-left:6px solid {DHL_RED};display:flex;align-items:center;justify-content:space-between}}
@@ -478,12 +479,7 @@ html,body,[class*="css"],.stApp{{font-family:'Roboto',sans-serif!important;backg
 .stTextInput>div>div>input:focus,.stTextArea>div>div>textarea:focus{{border-color:{DHL_YELLOW}!important}}
 .stSelectbox>div>div,.stMultiSelect>div>div{{background:{DHL_WHITE}!important;color:{DHL_DARK}!important}}
 .stSlider>div>div>div>div{{background:{DHL_YELLOW}!important}}
-#MainMenu{{visibility:hidden}}
-footer{{visibility:hidden}}
-/* Do NOT hide header — it controls sidebar toggle in newer Streamlit */
-header[data-testid="stHeader"]{{background:transparent!important;}}
-/* Hide only the deploy/hamburger menu items inside header */
-header[data-testid="stHeader"] button:not([data-testid="baseButton-headerNoPadding"]){{visibility:hidden}}
+#MainMenu{{visibility:hidden}}footer{{visibility:hidden}}
 </style>
 """, unsafe_allow_html=True)
 
