@@ -1,91 +1,147 @@
 import streamlit as st
 import pandas as pd
-import json
-import base64
 import io
+import base64
 import requests
 from datetime import datetime, date
 import uuid
 import plotly.express as px
-import plotly.graph_objects as go
-from collections import Counter
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
-# ── Page config ───────────────────────────────────────────────────────────────
-st.set_page_config(
-    page_title="QA Viz Tracker",
-    page_icon=None,
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE CONFIG
+# ─────────────────────────────────────────────────────────────────────────────
+st.set_page_config(page_title="QA Viz Tracker", layout="wide",
+                   initial_sidebar_state="expanded")
 
-# ── GitHub config ─────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
+# GITHUB CONFIG
+# ─────────────────────────────────────────────────────────────────────────────
 GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 GITHUB_REPO  = st.secrets["GITHUB_REPO"]
-FILE_PATH    = "tickets.json"
+FILE_PATH    = "tickets.csv"
 BRANCH       = "main"
 GITHUB_API   = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FILE_PATH}"
-HEADERS      = {
+GH_HEADERS   = {
     "Authorization": f"token {GITHUB_TOKEN}",
     "Accept": "application/vnd.github.v3+json",
 }
 
-# ── GitHub helpers ────────────────────────────────────────────────────────────
-def gh_load():
-    r = requests.get(GITHUB_API, headers=HEADERS)
+# ─────────────────────────────────────────────────────────────────────────────
+# USERS  (stored in Streamlit secrets)
+# secrets.toml format:
+#   [users]
+#   serol   = "1234"
+#   ahmad   = "5678"
+#   nurul   = "9012"
+#   razif   = "3456"
+# ─────────────────────────────────────────────────────────────────────────────
+USERS: dict = dict(st.secrets.get("users", {}))
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CSV SCHEMA  — every action appends one row; nothing is ever overwritten
+# ─────────────────────────────────────────────────────────────────────────────
+CSV_COLS = [
+    "timestamp",   # ISO datetime of the action
+    "action",      # CREATED | UPDATED | DELETED
+    "ticket_id",   # QA-XXXXXX
+    "title",
+    "platform",    # Splunk | Power BI | Others
+    "priority",    # Low | Medium | High | Critical
+    "status",      # Backlog | In Progress | In Review | Blocked | Done
+    "progress",    # 0-100
+    "requestor",   # person who raised the original request
+    "due_date",
+    "tags",        # comma-separated
+    "description",
+    "updated_by",  # username (logged-in) or "Guest:<name>" (public submit)
+    "notes",       # comment added with this action
+]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GITHUB HELPERS
+# ─────────────────────────────────────────────────────────────────────────────
+def gh_load() -> tuple[pd.DataFrame, str | None]:
+    """Pull tickets.csv from GitHub. Returns (dataframe, sha)."""
+    r = requests.get(GITHUB_API, headers=GH_HEADERS)
     if r.status_code == 404:
-        return [], None
+        return pd.DataFrame(columns=CSV_COLS), None
     r.raise_for_status()
     data    = r.json()
     content = base64.b64decode(data["content"]).decode("utf-8")
-    return json.loads(content), data["sha"]
+    df = pd.read_csv(io.StringIO(content), dtype=str).fillna("")
+    # ensure all expected columns exist
+    for col in CSV_COLS:
+        if col not in df.columns:
+            df[col] = ""
+    return df[CSV_COLS], data["sha"]
 
-def gh_save(tickets, sha):
-    content = base64.b64encode(
-        json.dumps(tickets, indent=2, default=str).encode("utf-8")
-    ).decode("utf-8")
+def gh_append(new_row: dict) -> None:
+    """Append one row to tickets.csv and push to GitHub."""
+    df, sha = gh_load()
+    updated = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+    csv_bytes = updated.to_csv(index=False).encode("utf-8")
     payload = {
-        "message": f"Update tickets [{datetime.utcnow().strftime('%Y-%m-%d %H:%M')} UTC]",
-        "content": content,
+        "message": (f"[{new_row['action']}] {new_row['ticket_id']} "
+                    f"by {new_row['updated_by']} — {new_row['timestamp'][:16]}"),
+        "content": base64.b64encode(csv_bytes).decode("utf-8"),
         "branch":  BRANCH,
     }
     if sha:
         payload["sha"] = sha
-    r = requests.put(GITHUB_API, headers=HEADERS, json=payload)
+    r = requests.put(GITHUB_API, headers=GH_HEADERS, json=payload)
     r.raise_for_status()
-    return r.json()["content"]["sha"]
+    # refresh session cache
+    st.session_state.log_df = updated
 
-# ── Session bootstrap ─────────────────────────────────────────────────────────
-if "tickets" not in st.session_state:
-    with st.spinner("Loading tickets from GitHub..."):
+def current_tickets(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Derive the current state of every ticket by taking the
+    latest CREATED/UPDATED row per ticket_id, then removing DELETED ones.
+    """
+    if df.empty:
+        return pd.DataFrame(columns=CSV_COLS)
+    active  = df[df["action"].isin(["CREATED", "UPDATED"])].copy()
+    if active.empty:
+        return pd.DataFrame(columns=CSV_COLS)
+    active["progress"] = pd.to_numeric(active["progress"], errors="coerce").fillna(0).astype(int)
+    latest  = (active.sort_values("timestamp")
+                     .groupby("ticket_id", as_index=False)
+                     .last())
+    deleted = set(df[df["action"] == "DELETED"]["ticket_id"].tolist())
+    return latest[~latest["ticket_id"].isin(deleted)].reset_index(drop=True)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SESSION STATE BOOTSTRAP
+# ─────────────────────────────────────────────────────────────────────────────
+if "log_df" not in st.session_state:
+    with st.spinner("Loading from GitHub..."):
         try:
-            st.session_state.tickets, st.session_state.gh_sha = gh_load()
+            st.session_state.log_df, _ = gh_load()
         except Exception as e:
             st.error(f"Could not reach GitHub: {e}")
-            st.session_state.tickets, st.session_state.gh_sha = [], None
+            st.session_state.log_df = pd.DataFrame(columns=CSV_COLS)
 
-def save_and_sync(tickets):
-    try:
-        new_sha = gh_save(tickets, st.session_state.get("gh_sha"))
-        st.session_state.gh_sha  = new_sha
-        st.session_state.tickets = tickets
-    except Exception as e:
-        st.error(f"GitHub sync failed: {e}")
+if "logged_in_user" not in st.session_state:
+    st.session_state.logged_in_user = None   # None = not logged in
 
-# ── DHL Colour Palette ────────────────────────────────────────────────────────
-# Primary: DHL Yellow #FFCC00, DHL Red #D40511
-# Neutrals: white bg, dark charcoal text
-DHL_YELLOW  = "#FFCC00"
-DHL_RED     = "#D40511"
-DHL_DARK    = "#1A1A1A"
-DHL_GRAY    = "#6B6B6B"
-DHL_LIGHT   = "#F5F5F5"
-DHL_BORDER  = "#E0E0E0"
-DHL_WHITE   = "#FFFFFF"
+if "show_login_form" not in st.session_state:
+    st.session_state.show_login_form = False
 
-PLATFORM_COLORS = {"Splunk": DHL_RED, "Power BI": "#0078D4", "Others": "#6B6B6B"}
+# ─────────────────────────────────────────────────────────────────────────────
+# COLOURS & CONSTANTS
+# ─────────────────────────────────────────────────────────────────────────────
+DHL_YELLOW = "#FFCC00"
+DHL_RED    = "#D40511"
+DHL_DARK   = "#1A1A1A"
+DHL_GRAY   = "#6B6B6B"
+DHL_LIGHT  = "#F5F5F5"
+DHL_BORDER = "#E0E0E0"
+DHL_WHITE  = "#FFFFFF"
+
+PLATFORM_COLORS = {"Splunk": DHL_RED, "Power BI": "#0078D4", "Others": DHL_GRAY}
 STATUS_COLORS   = {
     "Backlog":     "#9E9E9E",
     "In Progress": "#0078D4",
@@ -102,723 +158,505 @@ PRIORITY_COLORS = {
 PRIORITY_ORDER = ["Low", "Medium", "High", "Critical"]
 STATUS_ORDER   = ["Backlog", "In Progress", "In Review", "Blocked", "Done"]
 
-def badge(label, bg_color, text_color="#FFFFFF"):
-    return (
-        f'<span style="background:{bg_color};color:{text_color};padding:3px 12px;'
-        f'border-radius:4px;font-size:12px;font-weight:700;letter-spacing:.3px">{label}</span>'
-    )
+def badge(label, bg, fg="#fff"):
+    return (f'<span style="background:{bg};color:{fg};padding:3px 12px;'
+            f'border-radius:4px;font-size:12px;font-weight:700">{label}</span>')
 
-def progress_bar_html(pct, color=DHL_YELLOW):
-    text_color = DHL_DARK if color == DHL_YELLOW else "#FFFFFF"
+def progress_bar(pct, color=DHL_YELLOW):
     return (
-        f'<div style="background:{DHL_BORDER};border-radius:4px;height:12px;width:100%;overflow:hidden;margin:6px 0 2px">'
+        f'<div style="background:{DHL_BORDER};border-radius:4px;height:12px;'
+        f'width:100%;overflow:hidden;margin:6px 0 2px">'
         f'<div style="background:{color};width:{pct}%;height:100%;border-radius:4px"></div></div>'
         f'<small style="color:{DHL_GRAY};font-size:12px">{pct}% complete</small>'
     )
 
-# ── Excel export builder ──────────────────────────────────────────────────────
-def _thin_border():
-    s = Side(style="thin", color="E0E0E0")
-    return Border(left=s, right=s, top=s, bottom=s)
-
-def _hdr(ws, row, col, value, bg, fg="FFFFFF", merge_to=None, height=None):
-    cell = ws.cell(row=row, column=col, value=value)
-    cell.fill = PatternFill("solid", start_color=bg)
-    cell.font = Font(bold=True, color=fg, name="Arial", size=10)
-    cell.alignment = Alignment(horizontal="center", vertical="center")
-    cell.border = _thin_border()
-    if merge_to:
-        ws.merge_cells(f"{get_column_letter(col)}{row}:{get_column_letter(merge_to)}{row}")
-    if height:
-        ws.row_dimensions[row].height = height
-    return cell
-
-def build_excel_export(tickets):
-    # strip leading # from hex colours for openpyxl
+# ─────────────────────────────────────────────────────────────────────────────
+# EXCEL EXPORT
+# ─────────────────────────────────────────────────────────────────────────────
+def build_excel(log_df: pd.DataFrame) -> bytes:
     def h(c): return c.lstrip("#")
-
-    P_COLORS = {k: h(v) for k, v in PLATFORM_COLORS.items()}
-    S_COLORS = {k: h(v) for k, v in STATUS_COLORS.items()}
-    R_COLORS = {k: h(v) for k, v in PRIORITY_COLORS.items()}
+    def thin():
+        s = Side(style="thin", color="E0E0E0")
+        return Border(left=s, right=s, top=s, bottom=s)
+    def hdr(ws, row, col, val, bg, fg="FFFFFF", merge_to=None, ht=None):
+        c = ws.cell(row=row, column=col, value=val)
+        c.fill = PatternFill("solid", start_color=bg)
+        c.font = Font(bold=True, color=fg, name="Arial", size=10)
+        c.alignment = Alignment(horizontal="center", vertical="center")
+        c.border = thin()
+        if merge_to:
+            ws.merge_cells(f"{get_column_letter(col)}{row}:{get_column_letter(merge_to)}{row}")
+        if ht:
+            ws.row_dimensions[row].height = ht
+        return c
 
     wb = Workbook()
 
-    # ── Sheet 1: All Tickets ──────────────────────────────────────────────
-    ws = wb.active
-    ws.title = "All Tickets"
-    ws.sheet_view.showGridLines = False
+    # ── Sheet 1: Full Audit Log ───────────────────────────────────────────────
+    ws1 = wb.active
+    ws1.title = "Audit Log"
+    ws1.sheet_view.showGridLines = False
 
-    _hdr(ws, 1, 1, "QA VISUALIZATION TRACKER — TICKET EXPORT",
-         h(DHL_YELLOW), h(DHL_DARK), merge_to=11, height=36)
-    ws["A1"].font = Font(bold=True, color=h(DHL_DARK), name="Arial", size=14)
+    hdr(ws1, 1, 1, "QA VIZ TRACKER — FULL AUDIT LOG",
+        h(DHL_YELLOW), h(DHL_DARK), merge_to=len(CSV_COLS), ht=34)
+    ws1["A1"].font = Font(bold=True, color=h(DHL_DARK), name="Arial", size=13)
+    hdr(ws1, 2, 1,
+        f"Generated: {datetime.now().strftime('%d %B %Y %H:%M')}  |  Total rows: {len(log_df)}",
+        h(DHL_DARK), h(DHL_YELLOW), merge_to=len(CSV_COLS), ht=18)
+    ws1["A2"].font = Font(italic=True, color=h(DHL_YELLOW), name="Arial", size=10)
+    ws1.row_dimensions[3].height = 5
 
-    _hdr(ws, 2, 1,
-         f"Generated: {datetime.now().strftime('%d %B %Y, %H:%M')}  |  Total: {len(tickets)} tickets",
-         h(DHL_DARK), h(DHL_YELLOW), merge_to=11, height=20)
-    ws["A2"].font = Font(italic=True, color=h(DHL_YELLOW), name="Arial", size=10)
+    col_widths = [20, 10, 14, 32, 12, 12, 14, 10, 16, 14, 20, 40, 16, 30]
+    for i, (col, w) in enumerate(zip(CSV_COLS, col_widths), 1):
+        hdr(ws1, 4, i, col.upper().replace("_", " "), h(DHL_RED), "FFFFFF")
+        ws1.column_dimensions[get_column_letter(i)].width = w
+    ws1.row_dimensions[4].height = 22
+    ws1.freeze_panes = "A5"
 
-    ws.row_dimensions[3].height = 5
-
-    col_headers = ["Ticket ID","Title","Platform","Priority","Status","Progress %",
-                   "Requestor","Due Date","Tags","Description","Created"]
-    col_widths  = [14, 36, 12, 12, 14, 13, 16, 14, 22, 50, 20]
-    for i, (hd, w) in enumerate(zip(col_headers, col_widths), 1):
-        _hdr(ws, 4, i, hd, h(DHL_RED), "FFFFFF")
-        ws.column_dimensions[get_column_letter(i)].width = w
-    ws.row_dimensions[4].height = 22
-
-    for r, t in enumerate(tickets, 5):
-        row_bg = "FFFFFF" if r % 2 == 1 else "F5F5F5"
-        data = [
-            t.get("id",""), t.get("title",""), t.get("platform",""),
-            t.get("priority",""), t.get("status",""), t.get("progress", 0),
-            t.get("requestor",""), t.get("due_date",""),
-            ", ".join(t.get("tags",[])), t.get("description",""),
-            t.get("created_at","")[:10],
-        ]
-        ws.row_dimensions[r].height = 20
-        for ci, val in enumerate(data, 1):
-            cell = ws.cell(row=r, column=ci, value=val)
-            cell.border = _thin_border()
-            cell.font = Font(name="Arial", size=10, color=h(DHL_DARK))
-            cell.alignment = Alignment(vertical="center", wrap_text=(ci == 10))
-
-            if ci == 3:    # Platform
-                cell.fill = PatternFill("solid", start_color=P_COLORS.get(val, h(DHL_GRAY)))
+    action_colors = {"CREATED": "2E7D32", "UPDATED": "0078D4", "DELETED": "D40511"}
+    for r, (_, row) in enumerate(log_df.iterrows(), 5):
+        bg = "FFFFFF" if r % 2 == 1 else "F5F5F5"
+        ws1.row_dimensions[r].height = 18
+        for ci, col in enumerate(CSV_COLS, 1):
+            val = row.get(col, "")
+            cell = ws1.cell(row=r, column=ci, value=val)
+            cell.border = thin()
+            cell.font   = Font(name="Arial", size=10, color=h(DHL_DARK))
+            cell.fill   = PatternFill("solid", start_color=bg)
+            cell.alignment = Alignment(vertical="center", wrap_text=(ci == 12))
+            if ci == 2:  # action column
+                ac = action_colors.get(str(val), h(DHL_GRAY))
+                cell.fill = PatternFill("solid", start_color=ac)
                 cell.font = Font(name="Arial", size=10, color="FFFFFF", bold=True)
                 cell.alignment = Alignment(horizontal="center", vertical="center")
-            elif ci == 4:  # Priority
-                cell.fill = PatternFill("solid", start_color=R_COLORS.get(val, h(DHL_GRAY)))
-                cell.font = Font(name="Arial", size=10, color="FFFFFF", bold=True)
-                cell.alignment = Alignment(horizontal="center", vertical="center")
-            elif ci == 5:  # Status
-                cell.fill = PatternFill("solid", start_color=S_COLORS.get(val, h(DHL_GRAY)))
-                cell.font = Font(name="Arial", size=10, color="FFFFFF", bold=True)
-                cell.alignment = Alignment(horizontal="center", vertical="center")
-            elif ci == 6:  # Progress
-                cell.fill = PatternFill("solid", start_color=row_bg)
-                cell.alignment = Alignment(horizontal="center", vertical="center")
-                cell.number_format = '0"%"'
-            else:
-                cell.fill = PatternFill("solid", start_color=row_bg)
 
-    ws.freeze_panes = "A5"
-
-    # ── Sheet 2: Summary ──────────────────────────────────────────────────
-    ws2 = wb.create_sheet("Summary")
+    # ── Sheet 2: Current Tickets ──────────────────────────────────────────────
+    ws2 = wb.create_sheet("Current Tickets")
     ws2.sheet_view.showGridLines = False
-    for col, w in zip("ABCD", [22, 12, 14, 14]):
-        ws2.column_dimensions[col].width = w
 
-    _hdr(ws2, 1, 1, "TICKET SUMMARY", h(DHL_YELLOW), h(DHL_DARK), merge_to=4, height=32)
+    latest = current_tickets(log_df)
+    hdr(ws2, 1, 1, "CURRENT TICKET STATUS",
+        h(DHL_YELLOW), h(DHL_DARK), merge_to=11, ht=34)
     ws2["A1"].font = Font(bold=True, color=h(DHL_DARK), name="Arial", size=13)
-    _hdr(ws2, 2, 1, f"As of {datetime.now().strftime('%d %B %Y')}",
-         h(DHL_DARK), h(DHL_YELLOW), merge_to=4, height=18)
+    hdr(ws2, 2, 1,
+        f"Snapshot: {datetime.now().strftime('%d %B %Y %H:%M')}  |  Active tickets: {len(latest)}",
+        h(DHL_DARK), h(DHL_YELLOW), merge_to=11, ht=18)
+    ws2["A2"].font = Font(italic=True, color=h(DHL_YELLOW), name="Arial", size=10)
+    ws2.row_dimensions[3].height = 5
 
-    status_counts   = Counter(t["status"]   for t in tickets)
-    priority_counts = Counter(t["priority"] for t in tickets)
-    platform_counts = Counter(t["platform"] for t in tickets)
+    show_cols   = ["ticket_id","title","platform","priority","status",
+                   "progress","requestor","due_date","tags","updated_by","timestamp"]
+    show_widths = [14, 34, 12, 12, 14, 11, 16, 14, 22, 16, 20]
+    for i, (col, w) in enumerate(zip(show_cols, show_widths), 1):
+        hdr(ws2, 4, i, col.upper().replace("_"," "), h(DHL_RED), "FFFFFF")
+        ws2.column_dimensions[get_column_letter(i)].width = w
+    ws2.row_dimensions[4].height = 22
+    ws2.freeze_panes = "A5"
 
-    def summary_section(ws, start_row, label, items, color_map, order):
-        # Section label row - spans all columns
-        _hdr(ws, start_row, 1, label, h(DHL_RED), "FFFFFF", merge_to=4, height=20)
-        # Column sub-headers on the NEXT row (avoids writing into merged cells)
-        for ci, col_label in enumerate(["Category", "Count", "% of Total"], 1):
-            _hdr(ws, start_row + 1, ci, col_label, h(DHL_DARK), "FFFFFF")
-        ws.row_dimensions[start_row + 1].height = 18
-        r = start_row + 2
-        total = sum(items.values())
+    for r, (_, row) in enumerate(latest.iterrows(), 5):
+        bg = "FFFFFF" if r % 2 == 1 else "F5F5F5"
+        ws2.row_dimensions[r].height = 18
+        for ci, col in enumerate(show_cols, 1):
+            val = row.get(col, "")
+            cell = ws2.cell(row=r, column=ci, value=str(val))
+            cell.border = thin()
+            cell.font   = Font(name="Arial", size=10, color=h(DHL_DARK))
+            cell.fill   = PatternFill("solid", start_color=bg)
+            cell.alignment = Alignment(vertical="center")
+            if col == "platform":
+                cell.fill = PatternFill("solid", start_color=h(PLATFORM_COLORS.get(val, DHL_GRAY)))
+                cell.font = Font(name="Arial", size=10, color="FFFFFF", bold=True)
+                cell.alignment = Alignment(horizontal="center", vertical="center")
+            elif col == "priority":
+                cell.fill = PatternFill("solid", start_color=h(PRIORITY_COLORS.get(val, DHL_GRAY)))
+                cell.font = Font(name="Arial", size=10, color="FFFFFF", bold=True)
+                cell.alignment = Alignment(horizontal="center", vertical="center")
+            elif col == "status":
+                cell.fill = PatternFill("solid", start_color=h(STATUS_COLORS.get(val, DHL_GRAY)))
+                cell.font = Font(name="Arial", size=10, color="FFFFFF", bold=True)
+                cell.alignment = Alignment(horizontal="center", vertical="center")
+            elif col == "progress":
+                cell.value = int(val) if str(val).isdigit() else 0
+                cell.number_format = '0"%"'
+                cell.alignment = Alignment(horizontal="center", vertical="center")
+                cell.fill = PatternFill("solid", start_color=bg)
+
+    # ── Sheet 3: Summary ─────────────────────────────────────────────────────
+    ws3 = wb.create_sheet("Summary")
+    ws3.sheet_view.showGridLines = False
+    for col, w in zip("ABCD", [22, 12, 14, 14]):
+        ws3.column_dimensions[col].width = w
+
+    hdr(ws3, 1, 1, "SUMMARY", h(DHL_YELLOW), h(DHL_DARK), merge_to=4, ht=30)
+    ws3["A1"].font = Font(bold=True, color=h(DHL_DARK), name="Arial", size=13)
+    hdr(ws3, 2, 1, f"As of {datetime.now().strftime('%d %B %Y')}",
+        h(DHL_DARK), h(DHL_YELLOW), merge_to=4, ht=18)
+    ws3["A2"].font = Font(italic=True, color=h(DHL_YELLOW), name="Arial", size=10)
+
+    def summary_block(ws, start, title, counts, color_map, order):
+        hdr(ws, start, 1, title, h(DHL_RED), "FFFFFF", merge_to=4, ht=20)
+        for ci, lbl in enumerate(["Category", "Count", "% of Total"], 1):
+            hdr(ws, start+1, ci, lbl, h(DHL_DARK), "FFFFFF")
+        ws.row_dimensions[start+1].height = 18
+        r = start + 2
+        total = sum(counts.values()) or 1
         for key in order:
-            cnt = items.get(key, 0)
+            cnt = counts.get(key, 0)
             ca = ws.cell(row=r, column=1, value=key)
-            ca.fill = PatternFill("solid", start_color=color_map.get(h(key) if key in color_map else key, h(DHL_GRAY)))
-
-            # Use correct colour map (already stripped)
-            bg = color_map.get(key, h(DHL_GRAY))
-            ca.fill = PatternFill("solid", start_color=bg)
+            ca.fill = PatternFill("solid", start_color=h(color_map.get(key, DHL_GRAY)))
             ca.font = Font(bold=True, color="FFFFFF", name="Arial", size=10)
             ca.alignment = Alignment(horizontal="center", vertical="center")
-            ca.border = _thin_border()
-
+            ca.border = thin()
             cb = ws.cell(row=r, column=2, value=cnt)
             cb.font = Font(name="Arial", size=10, bold=True, color=h(DHL_DARK))
-            cb.alignment = Alignment(horizontal="center")
-            cb.border = _thin_border()
+            cb.alignment = Alignment(horizontal="center"); cb.border = thin()
             cb.fill = PatternFill("solid", start_color="FFFFFF")
-
-            pct = round(cnt / total * 100, 1) if total else 0
-            cc = ws.cell(row=r, column=3, value=pct)
+            cc = ws.cell(row=r, column=3, value=round(cnt/total*100, 1))
             cc.number_format = '0.0"%"'
             cc.font = Font(name="Arial", size=10, color=h(DHL_DARK))
-            cc.alignment = Alignment(horizontal="center")
-            cc.border = _thin_border()
+            cc.alignment = Alignment(horizontal="center"); cc.border = thin()
             cc.fill = PatternFill("solid", start_color="F5F5F5")
             ws.row_dimensions[r].height = 20
             r += 1
-
-        # Total row
         ct = ws.cell(row=r, column=1, value="TOTAL")
         ct.fill = PatternFill("solid", start_color=h(DHL_DARK))
         ct.font = Font(bold=True, color="FFFFFF", name="Arial")
-        ct.alignment = Alignment(horizontal="center")
-        ct.border = _thin_border()
-        ctv = ws.cell(row=r, column=2, value=total)
+        ct.alignment = Alignment(horizontal="center"); ct.border = thin()
+        ctv = ws.cell(row=r, column=2, value=sum(counts.values()))
         ctv.fill = PatternFill("solid", start_color=h(DHL_YELLOW))
         ctv.font = Font(bold=True, name="Arial", color=h(DHL_DARK))
-        ctv.alignment = Alignment(horizontal="center")
-        ctv.border = _thin_border()
+        ctv.alignment = Alignment(horizontal="center"); ctv.border = thin()
         ws.row_dimensions[r].height = 22
         return r + 2
 
-    next_row = summary_section(ws2, 4, "BY STATUS",   status_counts,
-                               {k: h(v) for k,v in STATUS_COLORS.items()}, STATUS_ORDER)
-    next_row = summary_section(ws2, next_row, "BY PRIORITY", priority_counts,
-                               {k: h(v) for k,v in PRIORITY_COLORS.items()}, PRIORITY_ORDER)
-    summary_section(ws2, next_row, "BY PLATFORM", platform_counts,
-                    {k: h(v) for k,v in PLATFORM_COLORS.items()}, ["Splunk","Power BI","Others"])
-
-    # ── Sheet 3: Comments ─────────────────────────────────────────────────
-    ws3 = wb.create_sheet("Comments")
-    ws3.sheet_view.showGridLines = False
-    _hdr(ws3, 1, 1, "COMMENT HISTORY", h(DHL_YELLOW), h(DHL_DARK), merge_to=4, height=30)
-    ws3["A1"].font = Font(bold=True, color=h(DHL_DARK), name="Arial", size=13)
-
-    for i, (hd, w) in enumerate(zip(["Ticket ID","Ticket Title","Timestamp","Comment"],
-                                     [14, 36, 20, 72]), 1):
-        _hdr(ws3, 3, i, hd, h(DHL_RED), "FFFFFF")
-        ws3.column_dimensions[get_column_letter(i)].width = w
-    ws3.row_dimensions[3].height = 22
-    ws3.freeze_panes = "A4"
-
-    cmt_row = 4
-    for t in tickets:
-        for cmt in t.get("comments", []):
-            bg = "FFFFFF" if cmt_row % 2 == 0 else "F5F5F5"
-            for ci, val in enumerate([
-                t["id"], t["title"],
-                cmt["timestamp"][:16].replace("T", " "),
-                cmt["text"]
-            ], 1):
-                cell = ws3.cell(row=cmt_row, column=ci, value=val)
-                cell.fill = PatternFill("solid", start_color=bg)
-                cell.font = Font(name="Arial", size=10, color=h(DHL_DARK))
-                cell.border = _thin_border()
-                cell.alignment = Alignment(vertical="center", wrap_text=(ci == 4))
-            ws3.row_dimensions[cmt_row].height = 20
-            cmt_row += 1
-
-    if cmt_row == 4:
-        c = ws3.cell(row=4, column=1, value="No comments recorded yet.")
-        c.font = Font(italic=True, color=h(DHL_GRAY), name="Arial")
+    if not latest.empty:
+        sc = dict(latest["status"].value_counts())
+        pc = dict(latest["priority"].value_counts())
+        pl = dict(latest["platform"].value_counts())
+        nr = summary_block(ws3, 4,  "BY STATUS",   sc, STATUS_COLORS,   STATUS_ORDER)
+        nr = summary_block(ws3, nr, "BY PRIORITY", pc, PRIORITY_COLORS, PRIORITY_ORDER)
+        summary_block(ws3, nr, "BY PLATFORM", pl, PLATFORM_COLORS, ["Splunk","Power BI","Others"])
 
     out = io.BytesIO()
     wb.save(out)
     out.seek(0)
     return out.getvalue()
 
-# ── Streamlit theme override via config ───────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
+# CSS
+# ─────────────────────────────────────────────────────────────────────────────
 st.markdown(f"""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Delivery+Grotesque:wght@400;700&family=Roboto:wght@400;500;700&display=swap');
-
-/* Global reset to light theme */
-html, body, [class*="css"], .stApp {{
-    font-family: 'Roboto', sans-serif !important;
-    background-color: {DHL_LIGHT} !important;
-    color: {DHL_DARK} !important;
-}}
-
-/* Main content area */
-.main .block-container {{
-    background-color: {DHL_LIGHT};
-    padding-top: 1.5rem !important;
-    max-width: 1400px;
-}}
-
-/* Sidebar */
-[data-testid="stSidebar"] {{
-    background-color: {DHL_DARK} !important;
-    border-right: 4px solid {DHL_YELLOW} !important;
-}}
-[data-testid="stSidebar"] * {{
-    color: {DHL_WHITE} !important;
-}}
-[data-testid="stSidebar"] .stRadio label {{
-    color: {DHL_WHITE} !important;
-    font-weight: 500;
-}}
-[data-testid="stSidebar"] hr {{
-    border-color: #444 !important;
-}}
-
-/* Top header bar */
-.dhl-header {{
-    background: {DHL_YELLOW};
-    padding: 14px 24px;
-    border-radius: 8px;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    border-left: 6px solid {DHL_RED};
-}}
-.dhl-header h1 {{
-    margin: 0;
-    font-size: 22px;
-    font-weight: 700;
-    color: {DHL_DARK};
-    letter-spacing: .5px;
-    text-transform: uppercase;
-}}
-.dhl-header span {{
-    font-size: 13px;
-    color: #555;
-    font-weight: 500;
-}}
-
-/* Metric card */
-.metric-card {{
-    background: {DHL_WHITE};
-    border: 1px solid {DHL_BORDER};
-    border-top: 4px solid {DHL_YELLOW};
-    border-radius: 8px;
-    padding: 18px 20px;
-    margin-bottom: 8px;
-    box-shadow: 0 1px 4px rgba(0,0,0,.06);
-}}
-.metric-card .val {{
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: {DHL_DARK};
-    line-height: 1;
-    margin-bottom: 4px;
-}}
-.metric-card .lbl {{
-    font-size: 12px;
-    font-weight: 600;
-    color: {DHL_GRAY};
-    text-transform: uppercase;
-    letter-spacing: .06em;
-}}
-.metric-card.red {{ border-top-color: {DHL_RED}; }}
-.metric-card.green {{ border-top-color: #2E7D32; }}
-.metric-card.blue {{ border-top-color: #0078D4; }}
-.metric-card.orange {{ border-top-color: #FF8C00; }}
-
-/* Section header */
-.section-header {{
-    font-size: 18px;
-    font-weight: 700;
-    color: {DHL_DARK};
-    border-left: 5px solid {DHL_YELLOW};
-    padding-left: 12px;
-    margin: 28px 0 16px;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-}}
-
-/* Ticket card */
-.ticket-card {{
-    background: {DHL_WHITE};
-    border: 1px solid {DHL_BORDER};
-    border-left: 5px solid {DHL_YELLOW};
-    border-radius: 8px;
-    padding: 16px 20px;
-    margin-bottom: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.05);
-}}
-.ticket-card:hover {{
-    border-left-color: {DHL_RED};
-    box-shadow: 0 3px 10px rgba(0,0,0,.08);
-}}
-.ticket-id {{
-    font-size: 11px;
-    font-weight: 700;
-    color: {DHL_GRAY};
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    margin-bottom: 4px;
-}}
-.ticket-title {{
-    font-size: 16px;
-    font-weight: 700;
-    color: {DHL_DARK};
-    margin: 4px 0 10px;
-}}
-.pills {{
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin: 8px 0 10px;
-}}
-
-/* Sync badge */
-.sync-badge {{
-    background: #333;
-    border: 1px solid #555;
-    border-radius: 4px;
-    padding: 5px 12px;
-    font-size: 12px;
-    color: {DHL_YELLOW};
-    font-weight: 600;
-    display: inline-block;
-    margin-bottom: 10px;
-    letter-spacing: .04em;
-}}
-
-/* Buttons */
-.stButton > button {{
-    background-color: {DHL_YELLOW} !important;
-    color: {DHL_DARK} !important;
-    border: none !important;
-    border-radius: 5px !important;
-    font-weight: 700 !important;
-    font-size: 14px !important;
-    padding: 10px 24px !important;
-    letter-spacing: .02em;
-    transition: background .2s;
-}}
-.stButton > button:hover {{
-    background-color: {DHL_RED} !important;
-    color: {DHL_WHITE} !important;
-}}
-
-/* Form inputs — force light */
-.stTextInput > div > div > input,
-.stTextArea > div > div > textarea {{
-    background: {DHL_WHITE} !important;
-    color: {DHL_DARK} !important;
-    border: 1px solid {DHL_BORDER} !important;
-    border-radius: 5px !important;
-    font-size: 14px !important;
-}}
-.stTextInput > div > div > input:focus,
-.stTextArea > div > div > textarea:focus {{
-    border-color: {DHL_YELLOW} !important;
-    box-shadow: 0 0 0 2px {DHL_YELLOW}44 !important;
-}}
-.stSelectbox > div > div,
-.stMultiSelect > div > div {{
-    background: {DHL_WHITE} !important;
-    color: {DHL_DARK} !important;
-    border-color: {DHL_BORDER} !important;
-}}
-
-/* Slider */
-.stSlider > div > div > div > div {{
-    background: {DHL_YELLOW} !important;
-}}
-
-/* Tabs */
-.stTabs [data-baseweb="tab"] {{
-    font-weight: 600;
-    color: {DHL_GRAY};
-}}
-.stTabs [aria-selected="true"] {{
-    color: {DHL_RED} !important;
-    border-bottom-color: {DHL_RED} !important;
-}}
-
-/* Dataframe */
-[data-testid="stDataFrame"] {{
-    border: 1px solid {DHL_BORDER} !important;
-    border-radius: 8px !important;
-}}
-
-/* Radio */
-.stRadio > div {{
-    gap: 8px;
-}}
-
-/* Hide Streamlit chrome */
-#MainMenu, footer, header {{ visibility: hidden; }}
-
-/* Alert boxes */
-.stSuccess {{ background: #E8F5E9 !important; color: #1B5E20 !important; border-left-color: #2E7D32 !important; }}
-.stError   {{ background: #FFEBEE !important; color: #B71C1C !important; border-left-color: {DHL_RED} !important; }}
-.stInfo    {{ background: #FFF9E6 !important; color: #5C4A00 !important; border-left-color: {DHL_YELLOW} !important; }}
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+html,body,[class*="css"],.stApp{{font-family:'Roboto',sans-serif!important;background:{DHL_LIGHT}!important;color:{DHL_DARK}!important}}
+.main .block-container{{background:{DHL_LIGHT};padding-top:1.2rem!important;max-width:1400px}}
+[data-testid="stSidebar"]{{background:{DHL_DARK}!important;border-right:4px solid {DHL_YELLOW}!important}}
+[data-testid="stSidebar"] *{{color:{DHL_WHITE}!important}}
+[data-testid="stSidebar"] hr{{border-color:#444!important}}
+.dhl-topbar{{background:{DHL_YELLOW};padding:12px 20px;border-radius:8px;margin-bottom:20px;
+            border-left:6px solid {DHL_RED};display:flex;align-items:center;justify-content:space-between}}
+.dhl-topbar h1{{margin:0;font-size:20px;font-weight:700;color:{DHL_DARK};text-transform:uppercase;letter-spacing:.5px}}
+.dhl-topbar span{{font-size:12px;color:#555}}
+.metric-card{{background:{DHL_WHITE};border:1px solid {DHL_BORDER};border-top:4px solid {DHL_YELLOW};
+             border-radius:8px;padding:18px 20px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06)}}
+.metric-card .val{{font-size:2.2rem;font-weight:700;color:{DHL_DARK};line-height:1;margin-bottom:4px}}
+.metric-card .lbl{{font-size:12px;font-weight:600;color:{DHL_GRAY};text-transform:uppercase;letter-spacing:.06em}}
+.metric-card.red{{border-top-color:{DHL_RED}}}
+.metric-card.blue{{border-top-color:#0078D4}}
+.metric-card.green{{border-top-color:#2E7D32}}
+.metric-card.orange{{border-top-color:#FF8C00}}
+.section-header{{font-size:17px;font-weight:700;color:{DHL_DARK};border-left:5px solid {DHL_YELLOW};
+                padding-left:12px;margin:24px 0 14px;text-transform:uppercase;letter-spacing:.04em}}
+.ticket-card{{background:{DHL_WHITE};border:1px solid {DHL_BORDER};border-left:5px solid {DHL_YELLOW};
+             border-radius:8px;padding:15px 18px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}}
+.ticket-card:hover{{border-left-color:{DHL_RED}}}
+.ticket-id{{font-size:11px;font-weight:700;color:{DHL_GRAY};text-transform:uppercase;letter-spacing:.08em}}
+.ticket-title{{font-size:15px;font-weight:700;color:{DHL_DARK};margin:4px 0 8px}}
+.pills{{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 8px}}
+.login-box{{background:{DHL_WHITE};border:1px solid {DHL_BORDER};border-top:4px solid {DHL_YELLOW};
+           border-radius:8px;padding:20px;margin-bottom:16px}}
+.user-chip{{background:{DHL_YELLOW};color:{DHL_DARK};padding:4px 14px;border-radius:20px;
+           font-size:13px;font-weight:700;display:inline-block}}
+.readonly-banner{{background:#FFF9E6;border:1px solid {DHL_YELLOW};border-radius:6px;
+                 padding:8px 14px;font-size:13px;color:#7a6000;margin-bottom:12px}}
+.stButton>button{{background:{DHL_YELLOW}!important;color:{DHL_DARK}!important;border:none!important;
+                 border-radius:5px!important;font-weight:700!important;font-size:14px!important;padding:9px 22px!important}}
+.stButton>button:hover{{background:{DHL_RED}!important;color:{DHL_WHITE}!important}}
+.stTextInput>div>div>input,.stTextArea>div>div>textarea{{background:{DHL_WHITE}!important;
+  color:{DHL_DARK}!important;border:1px solid {DHL_BORDER}!important;border-radius:5px!important}}
+.stTextInput>div>div>input:focus,.stTextArea>div>div>textarea:focus{{border-color:{DHL_YELLOW}!important}}
+.stSelectbox>div>div,.stMultiSelect>div>div{{background:{DHL_WHITE}!important;color:{DHL_DARK}!important}}
+.stSlider>div>div>div>div{{background:{DHL_YELLOW}!important}}
+#MainMenu,footer,header{{visibility:hidden}}
 </style>
 """, unsafe_allow_html=True)
 
-tickets = st.session_state.tickets
+# ─────────────────────────────────────────────────────────────────────────────
+# SIDEBAR
+# ─────────────────────────────────────────────────────────────────────────────
+user = st.session_state.logged_in_user  # None or username string
 
-# ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("""
-    <div style="padding:16px 0 8px">
-      <div style="font-size:24px;font-weight:900;color:#FFCC00;letter-spacing:1px">DHL</div>
-      <div style="font-size:13px;color:#aaa;margin-top:2px">QA Visualization Tracker</div>
-    </div>
-    """, unsafe_allow_html=True)
-    st.markdown('<div class="sync-badge">Synced to GitHub</div>', unsafe_allow_html=True)
+    <div style="padding:14px 0 6px">
+      <div style="font-size:26px;font-weight:900;color:#FFCC00;letter-spacing:1px">DHL</div>
+      <div style="font-size:12px;color:#aaa;margin-top:2px">QA Visualization Tracker</div>
+    </div>""", unsafe_allow_html=True)
+
+    # ── Login / user block ────────────────────────────────────────────────────
     st.markdown("---")
-    page = st.radio("Navigation", [
-        "Dashboard", "Submit Request", "All Tickets", "Update Ticket"
-    ], label_visibility="collapsed")
+    if user:
+        st.markdown(f'<div class="user-chip" style="background:#FFCC00;color:#1A1A1A;'
+                    f'padding:5px 14px;border-radius:20px;font-size:13px;font-weight:700">'
+                    f'Logged in as: {user}</div>', unsafe_allow_html=True)
+        st.markdown("")
+        if st.button("Logout"):
+            st.session_state.logged_in_user = None
+            st.session_state.show_login_form = False
+            st.rerun()
+    else:
+        if not st.session_state.show_login_form:
+            if st.button("Login"):
+                st.session_state.show_login_form = True
+                st.rerun()
+        else:
+            with st.form("login_form"):
+                uname = st.text_input("Username")
+                pin   = st.text_input("PIN", type="password")
+                ok    = st.form_submit_button("Sign in")
+            if ok:
+                if uname in USERS and USERS[uname] == pin:
+                    st.session_state.logged_in_user   = uname
+                    st.session_state.show_login_form  = False
+                    st.rerun()
+                else:
+                    st.error("Incorrect username or PIN.")
+
     st.markdown("---")
+
+    # ── Navigation ────────────────────────────────────────────────────────────
+    nav_options = ["Dashboard", "All Tickets", "Submit Request"]
+    if user:
+        nav_options += ["Update / Delete Ticket"]
+
+    page = st.radio("Navigation", nav_options, label_visibility="collapsed")
+    st.markdown("---")
+
+    # ── Quick stats ───────────────────────────────────────────────────────────
+    log_df  = st.session_state.log_df
+    tickets = current_tickets(log_df)
     total   = len(tickets)
-    done    = sum(1 for t in tickets if t["status"] == "Done")
-    blocked = sum(1 for t in tickets if t["status"] == "Blocked")
+    done    = len(tickets[tickets["status"] == "Done"]) if not tickets.empty else 0
+    blocked = len(tickets[tickets["status"] == "Blocked"]) if not tickets.empty else 0
     st.markdown(f"""
-    <div style="font-size:13px;color:#ccc;line-height:2">
-      <b style="color:#fff">Total:</b> {total}<br>
+    <div style="font-size:13px;color:#ccc;line-height:2.2">
+      <b style="color:#fff">Active tickets:</b> {total}<br>
       <b style="color:#FFCC00">Done:</b> {done}<br>
       <b style="color:#D40511">Blocked:</b> {blocked}
-    </div>
-    """, unsafe_allow_html=True)
+    </div>""", unsafe_allow_html=True)
     st.markdown("")
-    st.markdown("")
-    if tickets:
-        excel_bytes = build_excel_export(tickets)
+
+    # ── Export + Refresh ─────────────────────────────────────────────────────
+    if not log_df.empty:
+        excel_data = build_excel(log_df)
         st.download_button(
-            label="Export to Excel",
-            data=excel_bytes,
-            file_name=f"QA_Tickets_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx",
+            "Download Excel Report",
+            data=excel_data,
+            file_name=f"QA_Tracker_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
-    st.markdown("---")
+    st.markdown("")
     if st.button("Refresh from GitHub"):
         with st.spinner("Syncing..."):
             try:
-                st.session_state.tickets, st.session_state.gh_sha = gh_load()
+                st.session_state.log_df, _ = gh_load()
                 st.rerun()
             except Exception as e:
                 st.error(str(e))
 
-# ── Page header ───────────────────────────────────────────────────────────────
-PAGE_TITLES = {
-    "Dashboard":      ("Dashboard Overview", "Track all QA visualization requests at a glance"),
-    "Submit Request": ("Submit New Request", "Log a new Splunk, Power BI, or other visualization request"),
-    "All Tickets":    ("All Tickets", "Browse, filter, and search all submitted tickets"),
-    "Update Ticket":  ("Update Ticket", "Update status, progress, and add comments"),
-}
-title, subtitle = PAGE_TITLES.get(page, ("QA Viz Tracker", ""))
-st.markdown(f"""
-<div class="dhl-header">
-  <div>
-    <h1>{title}</h1>
-    <span>{subtitle}</span>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+# Refresh local references after sidebar
+log_df  = st.session_state.log_df
+tickets = current_tickets(log_df)
 
-# ── Plotly chart defaults ─────────────────────────────────────────────────────
-CHART_LAYOUT = dict(
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="#FFFFFF",
+# ── Plotly defaults ───────────────────────────────────────────────────────────
+CHART = dict(
+    paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor=DHL_WHITE,
     font=dict(color=DHL_DARK, family="Roboto"),
-    title_font=dict(color=DHL_DARK, size=15, family="Roboto"),
+    title_font=dict(color=DHL_DARK, size=14),
     margin=dict(t=40, b=20, l=10, r=10),
 )
 
-# ══════════════════════════════════════════════════════════════════════════════
-# DASHBOARD
-# ══════════════════════════════════════════════════════════════════════════════
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE HEADER helper
+# ─────────────────────────────────────────────────────────────────────────────
+PAGE_META = {
+    "Dashboard":              ("Dashboard Overview",        "Live summary of all QA visualization requests"),
+    "All Tickets":            ("All Tickets",               "Browse and filter every submitted ticket"),
+    "Submit Request":         ("Submit New Request",        "Anyone can raise a new visualization request"),
+    "Update / Delete Ticket": ("Update / Delete Ticket",   f"Editing as: {user}"),
+}
+title, subtitle = PAGE_META.get(page, ("QA Viz Tracker", ""))
+st.markdown(f"""
+<div class="dhl-topbar">
+  <div><h1>{title}</h1><span>{subtitle}</span></div>
+</div>""", unsafe_allow_html=True)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE: DASHBOARD
+# ─────────────────────────────────────────────────────────────────────────────
 if page == "Dashboard":
-    df = pd.DataFrame(tickets) if tickets else pd.DataFrame(
-        columns=["id","title","platform","priority","status","progress",
-                 "created_at","due_date","description","requestor","tags"])
+    df = tickets
 
-    # KPI cards
     c1,c2,c3,c4,c5 = st.columns(5)
-    kpis = [
-        (c1, "Total Tickets",  len(df),                                              "", ""),
-        (c2, "In Progress",    len(df[df.status=="In Progress"]) if len(df) else 0,  "blue", ""),
-        (c3, "In Review",      len(df[df.status=="In Review"])   if len(df) else 0,  "orange", ""),
-        (c4, "Blocked",        len(df[df.status=="Blocked"])     if len(df) else 0,  "red", ""),
-        (c5, "Done",           len(df[df.status=="Done"])        if len(df) else 0,  "green", ""),
-    ]
-    for col, label, value, cls, _ in kpis:
+    for col, label, val, cls in [
+        (c1, "Total Tickets",  len(df),                                                  ""),
+        (c2, "In Progress",    len(df[df.status=="In Progress"]) if not df.empty else 0, "blue"),
+        (c3, "In Review",      len(df[df.status=="In Review"])   if not df.empty else 0, "orange"),
+        (c4, "Blocked",        len(df[df.status=="Blocked"])     if not df.empty else 0, "red"),
+        (c5, "Done",           len(df[df.status=="Done"])        if not df.empty else 0, "green"),
+    ]:
         with col:
-            st.markdown(f"""
-            <div class="metric-card {cls}">
-              <div class="val">{value}</div>
-              <div class="lbl">{label}</div>
-            </div>""", unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-card {cls}"><div class="val">{val}</div>'
+                        f'<div class="lbl">{label}</div></div>', unsafe_allow_html=True)
 
-    if not df.empty:
+    if df.empty:
+        st.info("No tickets yet. Submit the first request using the sidebar.")
+    else:
         st.markdown("---")
         r1a, r1b = st.columns(2)
-
         with r1a:
             sc = df["status"].value_counts().reset_index()
-            sc.columns = ["Status", "Count"]
+            sc.columns = ["Status","Count"]
             fig = px.pie(sc, names="Status", values="Count", hole=0.55,
-                         title="Tickets by Status", color="Status",
-                         color_discrete_map=STATUS_COLORS)
-            fig.update_layout(**CHART_LAYOUT)
-            fig.update_traces(textfont_color=DHL_WHITE)
+                         title="By Status", color="Status", color_discrete_map=STATUS_COLORS)
+            fig.update_layout(**CHART)
             st.plotly_chart(fig, use_container_width=True)
-
         with r1b:
             pc = df["platform"].value_counts().reset_index()
-            pc.columns = ["Platform", "Count"]
-            fig2 = px.bar(pc, x="Platform", y="Count", title="Tickets by Platform",
+            pc.columns = ["Platform","Count"]
+            fig2 = px.bar(pc, x="Platform", y="Count", title="By Platform",
                           color="Platform", color_discrete_map=PLATFORM_COLORS, text="Count")
-            fig2.update_layout(**CHART_LAYOUT,
-                xaxis=dict(gridcolor=DHL_BORDER, linecolor=DHL_BORDER),
-                yaxis=dict(gridcolor=DHL_BORDER, linecolor=DHL_BORDER))
-            fig2.update_traces(textposition="outside", marker_line_width=0,
-                               textfont_color=DHL_DARK)
+            fig2.update_layout(**CHART, showlegend=False,
+                               xaxis=dict(gridcolor=DHL_BORDER),
+                               yaxis=dict(gridcolor=DHL_BORDER))
+            fig2.update_traces(textposition="outside", marker_line_width=0)
             st.plotly_chart(fig2, use_container_width=True)
 
         r2a, r2b = st.columns(2)
-
         with r2a:
-            pric = df["priority"].value_counts().reindex(PRIORITY_ORDER, fill_value=0).reset_index()
-            pric.columns = ["Priority", "Count"]
-            fig3 = px.bar(pric, x="Priority", y="Count", title="Tickets by Priority",
+            prc = df["priority"].value_counts().reindex(PRIORITY_ORDER, fill_value=0).reset_index()
+            prc.columns = ["Priority","Count"]
+            fig3 = px.bar(prc, x="Priority", y="Count", title="By Priority",
                           color="Priority", color_discrete_map=PRIORITY_COLORS, text="Count")
-            fig3.update_layout(**CHART_LAYOUT,
-                xaxis=dict(gridcolor=DHL_BORDER), yaxis=dict(gridcolor=DHL_BORDER))
-            fig3.update_traces(textposition="outside", marker_line_width=0,
-                               textfont_color=DHL_DARK)
+            fig3.update_layout(**CHART, showlegend=False,
+                               xaxis=dict(gridcolor=DHL_BORDER),
+                               yaxis=dict(gridcolor=DHL_BORDER))
+            fig3.update_traces(textposition="outside", marker_line_width=0)
             st.plotly_chart(fig3, use_container_width=True)
-
         with r2b:
+            df["progress"] = pd.to_numeric(df["progress"], errors="coerce").fillna(0)
             ap = df.groupby("status")["progress"].mean().reset_index()
-            ap.columns = ["Status", "Avg Progress"]
-            fig4 = px.bar(ap, x="Status", y="Avg Progress", title="Avg Progress % by Status",
+            ap.columns = ["Status","Avg"]
+            fig4 = px.bar(ap, x="Status", y="Avg", title="Avg Progress % by Status",
                           color="Status", color_discrete_map=STATUS_COLORS,
-                          text=ap["Avg Progress"].round(1).astype(str) + "%")
-            fig4.update_layout(**CHART_LAYOUT,
-                xaxis=dict(gridcolor=DHL_BORDER), yaxis=dict(gridcolor=DHL_BORDER, range=[0,115]))
-            fig4.update_traces(textposition="outside", marker_line_width=0,
-                               textfont_color=DHL_DARK)
+                          text=ap["Avg"].round(1).astype(str)+"%")
+            fig4.update_layout(**CHART, showlegend=False,
+                               xaxis=dict(gridcolor=DHL_BORDER),
+                               yaxis=dict(gridcolor=DHL_BORDER, range=[0,115]))
+            fig4.update_traces(textposition="outside", marker_line_width=0)
             st.plotly_chart(fig4, use_container_width=True)
 
-        st.markdown('<div class="section-header">Recent Tickets</div>', unsafe_allow_html=True)
-        for t in sorted(tickets, key=lambda x: x.get("created_at", ""), reverse=True)[:5]:
-            bar_color = STATUS_COLORS.get(t["status"], DHL_YELLOW)
-            st.markdown(f"""
-            <div class="ticket-card">
-              <div class="ticket-id">{t['id']}</div>
+        # Activity timeline from audit log
+        if not log_df.empty:
+            st.markdown('<div class="section-header">Activity Timeline</div>',
+                        unsafe_allow_html=True)
+            tl = log_df.copy()
+            tl["date"] = tl["timestamp"].str[:10]
+            daily = tl.groupby(["date","action"]).size().reset_index(name="count")
+            fig5 = px.bar(daily, x="date", y="count", color="action",
+                          title="Daily Actions",
+                          color_discrete_map={"CREATED":"#2E7D32",
+                                              "UPDATED":"#0078D4",
+                                              "DELETED":"#D40511"})
+            fig5.update_layout(**CHART, xaxis=dict(gridcolor=DHL_BORDER),
+                               yaxis=dict(gridcolor=DHL_BORDER))
+            st.plotly_chart(fig5, use_container_width=True)
+
+        st.markdown('<div class="section-header">Recent Tickets</div>',
+                    unsafe_allow_html=True)
+        recent = df.sort_values("timestamp", ascending=False).head(5)
+        for _, t in recent.iterrows():
+            pct = int(t.get("progress", 0))
+            bc  = STATUS_COLORS.get(t["status"], DHL_YELLOW)
+            tag_html = " ".join(
+                f'<span style="background:{DHL_LIGHT};color:{DHL_DARK};border:1px solid {DHL_BORDER};'
+                f'padding:1px 8px;border-radius:4px;font-size:11px;font-weight:600">{tg}</span>'
+                for tg in str(t.get("tags","")).split(",") if tg.strip()
+            )
+            st.markdown(f"""<div class="ticket-card">
+              <div class="ticket-id">{t['ticket_id']} · {t.get('requestor','')} · Due {t.get('due_date','—')}</div>
               <div class="ticket-title">{t['title']}</div>
               <div class="pills">
                 {badge(t['platform'], PLATFORM_COLORS.get(t['platform'], DHL_GRAY))}
-                {badge(t['status'],   STATUS_COLORS.get(t['status'],   DHL_GRAY))}
+                {badge(t['status'],   STATUS_COLORS.get(t['status'],     DHL_GRAY))}
                 {badge(t['priority'], PRIORITY_COLORS.get(t['priority'], DHL_GRAY))}
+                {tag_html}
               </div>
-              {progress_bar_html(t.get('progress', 0), bar_color)}
-            </div>""", unsafe_allow_html=True)
-    else:
-        st.info("No tickets yet. Head to Submit Request to log your first one.")
-
-# ══════════════════════════════════════════════════════════════════════════════
-# SUBMIT REQUEST
-# ══════════════════════════════════════════════════════════════════════════════
-elif page == "Submit Request":
-    with st.form("submit_form", clear_on_submit=True):
-        c1, c2 = st.columns(2)
-        with c1:
-            title     = st.text_input("Ticket Title *", placeholder="e.g. Sales Dashboard KPI refresh")
-            platform  = st.selectbox("Platform *", ["Splunk", "Power BI", "Others"])
-            priority  = st.selectbox("Priority *", PRIORITY_ORDER)
-        with c2:
-            requestor = st.text_input("Requestor Name *", placeholder="Your name")
-            due_date  = st.date_input("Target Due Date", value=date.today())
-            tags      = st.text_input("Tags (comma-separated)", placeholder="e.g. kpi, finance, Q2")
-        description = st.text_area("Description / Requirements *",
-            placeholder="Describe the dashboard or report request in detail...", height=160)
-        submitted = st.form_submit_button("Submit Ticket")
-
-    if submitted:
-        if not title or not requestor or not description:
-            st.error("Please fill in all required fields (*).")
-        else:
-            ticket_id = "QA-" + str(uuid.uuid4())[:6].upper()
-            new_ticket = {
-                "id":          ticket_id,
-                "title":       title,
-                "platform":    platform,
-                "priority":    priority,
-                "status":      "Backlog",
-                "progress":    0,
-                "requestor":   requestor,
-                "due_date":    str(due_date),
-                "tags":        [t.strip() for t in tags.split(",") if t.strip()],
-                "description": description,
-                "created_at":  datetime.now().isoformat(),
-                "updated_at":  datetime.now().isoformat(),
-                "comments":    [],
-            }
-            with st.spinner("Saving to GitHub..."):
-                save_and_sync(st.session_state.tickets + [new_ticket])
-            st.success(f"Ticket {ticket_id} submitted and saved to GitHub.")
-            st.markdown(f"""
-            <div class="ticket-card">
-              <div class="ticket-id">{ticket_id}</div>
-              <div class="ticket-title">{title}</div>
-              <div class="pills">
-                {badge(platform, PLATFORM_COLORS.get(platform, DHL_GRAY))}
-                {badge('Backlog', STATUS_COLORS['Backlog'])}
-                {badge(priority,  PRIORITY_COLORS.get(priority, DHL_GRAY))}
-              </div>
+              {progress_bar(pct, bc)}
             </div>""", unsafe_allow_html=True)
 
-# ══════════════════════════════════════════════════════════════════════════════
-# ALL TICKETS
-# ══════════════════════════════════════════════════════════════════════════════
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE: ALL TICKETS
+# ─────────────────────────────────────────────────────────────────────────────
 elif page == "All Tickets":
-    if not tickets:
-        st.info("No tickets yet. Submit your first request!")
+    if tickets.empty:
+        st.info("No tickets yet.")
     else:
-        # Export button at top
-        excel_bytes = build_excel_export(tickets)
-        st.download_button(
-            label="Export All Tickets to Excel",
-            data=excel_bytes,
-            file_name=f"QA_Tickets_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        )
-        st.markdown("")
-        fc1, fc2, fc3, fc4 = st.columns(4)
-        with fc1: f_platform = st.multiselect("Platform", ["Splunk","Power BI","Others"], default=["Splunk","Power BI","Others"])
-        with fc2: f_status   = st.multiselect("Status", STATUS_ORDER, default=STATUS_ORDER)
-        with fc3: f_priority = st.multiselect("Priority", PRIORITY_ORDER, default=PRIORITY_ORDER)
-        with fc4: f_search   = st.text_input("Search", placeholder="title or requestor...")
+        fc1,fc2,fc3,fc4 = st.columns(4)
+        with fc1: fp = st.multiselect("Platform", ["Splunk","Power BI","Others"],
+                                      default=["Splunk","Power BI","Others"])
+        with fc2: fs = st.multiselect("Status",   STATUS_ORDER,   default=STATUS_ORDER)
+        with fc3: fr = st.multiselect("Priority", PRIORITY_ORDER, default=PRIORITY_ORDER)
+        with fc4: fq = st.text_input("Search", placeholder="title / requestor...")
 
-        filtered = [
-            t for t in tickets
-            if t["platform"] in f_platform
-            and t["status"] in f_status
-            and t["priority"] in f_priority
-            and (not f_search
-                 or f_search.lower() in t["title"].lower()
-                 or f_search.lower() in t.get("requestor", "").lower())
-        ]
+        df = tickets
+        df = df[df["platform"].isin(fp) & df["status"].isin(fs) & df["priority"].isin(fr)]
+        if fq:
+            mask = (df["title"].str.contains(fq, case=False, na=False) |
+                    df["requestor"].str.contains(fq, case=False, na=False))
+            df = df[mask]
 
-        sc1, sc2 = st.columns([2, 1])
+        sc1,sc2 = st.columns([2,1])
         with sc1:
-            sort_by = st.selectbox("Sort by", [
-                "Created (newest)", "Created (oldest)",
-                "Priority (high to low)", "Progress (high to low)", "Due Date"
-            ])
+            sort_by = st.selectbox("Sort by", ["Newest first","Oldest first",
+                                               "Priority (high to low)",
+                                               "Progress (high to low)","Due Date"])
         with sc2:
-            view_mode = st.radio("View", ["Cards", "Table"], horizontal=True)
+            view_mode = st.radio("View", ["Cards","Table"], horizontal=True)
 
-        def sort_key(t):
-            if sort_by == "Created (newest)":       return t.get("created_at", "")
-            if sort_by == "Created (oldest)":       return t.get("created_at", "")
-            if sort_by == "Priority (high to low)": return PRIORITY_ORDER.index(t["priority"])
-            if sort_by == "Progress (high to low)": return -t.get("progress", 0)
-            return t.get("due_date", "")
+        def skey(row):
+            if sort_by == "Newest first":           return row["timestamp"]
+            if sort_by == "Oldest first":           return row["timestamp"]
+            if sort_by == "Priority (high to low)": return PRIORITY_ORDER.index(row["priority"]) if row["priority"] in PRIORITY_ORDER else 99
+            if sort_by == "Progress (high to low)": return -int(row["progress"]) if str(row["progress"]).isdigit() else 0
+            return row.get("due_date","")
 
-        reverse = sort_by in ["Created (newest)", "Progress (high to low)"]
-        filtered = sorted(filtered, key=sort_key, reverse=reverse)
-        st.caption(f"Showing {len(filtered)} of {len(tickets)} tickets")
+        df = df.copy()
+        df["_sk"] = df.apply(skey, axis=1)
+        df = df.sort_values("_sk", ascending=(sort_by not in ["Newest first","Progress (high to low)"]))
+        st.caption(f"Showing {len(df)} ticket(s)")
 
         if view_mode == "Cards":
-            for t in filtered:
-                bar_color = STATUS_COLORS.get(t["status"], DHL_YELLOW)
+            for _, t in df.iterrows():
+                pct = int(t.get("progress", 0)) if str(t.get("progress","0")).isdigit() else 0
+                bc  = STATUS_COLORS.get(t["status"], DHL_YELLOW)
                 tag_html = " ".join(
                     f'<span style="background:{DHL_LIGHT};color:{DHL_DARK};border:1px solid {DHL_BORDER};'
-                    f'padding:1px 8px;border-radius:4px;font-size:11px;font-weight:600">{tag}</span>'
-                    for tag in t.get("tags", [])
+                    f'padding:1px 8px;border-radius:4px;font-size:11px;font-weight:600">{tg}</span>'
+                    for tg in str(t.get("tags","")).split(",") if tg.strip()
                 )
-                st.markdown(f"""
-                <div class="ticket-card">
-                  <div class="ticket-id">{t['id']} · {t.get('requestor','')} · Due {t.get('due_date','—')}</div>
+                st.markdown(f"""<div class="ticket-card">
+                  <div class="ticket-id">{t['ticket_id']} · {t.get('requestor','')} · Due {t.get('due_date','—')} · Last updated by {t.get('updated_by','')}</div>
                   <div class="ticket-title">{t['title']}</div>
                   <div class="pills">
                     {badge(t['platform'], PLATFORM_COLORS.get(t['platform'], DHL_GRAY))}
@@ -826,92 +664,206 @@ elif page == "All Tickets":
                     {badge(t['priority'], PRIORITY_COLORS.get(t['priority'], DHL_GRAY))}
                     {tag_html}
                   </div>
-                  {progress_bar_html(t.get('progress', 0), bar_color)}
-                  <p style="color:{DHL_GRAY};font-size:13px;margin-top:8px">
-                    {t.get('description','')[:200]}{'...' if len(t.get('description',''))>200 else ''}
+                  {progress_bar(pct, bc)}
+                  <p style="color:{DHL_GRAY};font-size:13px;margin-top:6px">
+                    {str(t.get('description',''))[:200]}{'...' if len(str(t.get('description','')))>200 else ''}
                   </p>
                 </div>""", unsafe_allow_html=True)
         else:
-            rows = [{
-                "ID":         t["id"],
-                "Title":      t["title"],
-                "Platform":   t["platform"],
-                "Status":     t["status"],
-                "Priority":   t["priority"],
-                "Progress %": t.get("progress", 0),
-                "Requestor":  t.get("requestor", ""),
-                "Due Date":   t.get("due_date", ""),
-                "Created":    t.get("created_at", "")[:10],
-            } for t in filtered]
-            st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+            show = ["ticket_id","title","platform","priority","status","progress",
+                    "requestor","due_date","updated_by","timestamp"]
+            st.dataframe(df[show].rename(columns=lambda c: c.replace("_"," ").title()),
+                         use_container_width=True, hide_index=True)
 
-# ══════════════════════════════════════════════════════════════════════════════
-# UPDATE TICKET
-# ══════════════════════════════════════════════════════════════════════════════
-elif page == "Update Ticket":
-    if not tickets:
-        st.info("No tickets to update yet.")
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE: SUBMIT REQUEST  (open to everyone)
+# ─────────────────────────────────────────────────────────────────────────────
+elif page == "Submit Request":
+    if not user:
+        st.markdown(
+            '<div class="readonly-banner">You are submitting as a guest. '
+            'Login (top-left) to enable ticket updates and deletions.</div>',
+            unsafe_allow_html=True)
+
+    with st.form("submit_form", clear_on_submit=True):
+        c1,c2 = st.columns(2)
+        with c1:
+            title_val    = st.text_input("Ticket Title *", placeholder="e.g. Sales Dashboard KPI refresh")
+            platform_val = st.selectbox("Platform *", ["Splunk","Power BI","Others"])
+            priority_val = st.selectbox("Priority *", PRIORITY_ORDER)
+        with c2:
+            # If logged in, pre-fill name but still allow editing
+            default_name = user if user else ""
+            requestor_val = st.text_input("Your Name *", value=default_name,
+                                          placeholder="Enter your name")
+            due_val  = st.date_input("Target Due Date", value=date.today())
+            tags_val = st.text_input("Tags (comma-separated)", placeholder="e.g. kpi, finance, Q2")
+        desc_val = st.text_area("Description / Requirements *",
+                                placeholder="Describe the request in detail...", height=150)
+        notes_val = st.text_input("Notes (optional)", placeholder="Any additional notes for this submission...")
+        submitted = st.form_submit_button("Submit Ticket")
+
+    if submitted:
+        if not title_val or not requestor_val or not desc_val:
+            st.error("Please fill in all required fields (*).")
+        else:
+            tid = "QA-" + str(uuid.uuid4())[:6].upper()
+            updated_by = user if user else f"Guest:{requestor_val}"
+            row = {
+                "timestamp":   datetime.now().isoformat(timespec="seconds"),
+                "action":      "CREATED",
+                "ticket_id":   tid,
+                "title":       title_val,
+                "platform":    platform_val,
+                "priority":    priority_val,
+                "status":      "Backlog",
+                "progress":    0,
+                "requestor":   requestor_val,
+                "due_date":    str(due_val),
+                "tags":        ", ".join([t.strip() for t in tags_val.split(",") if t.strip()]),
+                "description": desc_val,
+                "updated_by":  updated_by,
+                "notes":       notes_val,
+            }
+            with st.spinner("Saving to GitHub..."):
+                try:
+                    gh_append(row)
+                    st.success(f"Ticket **{tid}** submitted and logged to CSV.")
+                    st.markdown(f"""<div class="ticket-card">
+                      <div class="ticket-id">{tid}</div>
+                      <div class="ticket-title">{title_val}</div>
+                      <div class="pills">
+                        {badge(platform_val, PLATFORM_COLORS.get(platform_val, DHL_GRAY))}
+                        {badge('Backlog', STATUS_COLORS['Backlog'])}
+                        {badge(priority_val, PRIORITY_COLORS.get(priority_val, DHL_GRAY))}
+                      </div>
+                      <small style="color:{DHL_GRAY}">Logged by: {updated_by}</small>
+                    </div>""", unsafe_allow_html=True)
+                except Exception as e:
+                    st.error(f"GitHub sync failed: {e}")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE: UPDATE / DELETE  (logged-in only)
+# ─────────────────────────────────────────────────────────────────────────────
+elif page == "Update / Delete Ticket":
+    if not user:
+        st.warning("You must be logged in to update or delete tickets.")
+    elif tickets.empty:
+        st.info("No tickets found.")
     else:
-        ticket_options = {f"{t['id']} - {t['title']}": i for i, t in enumerate(tickets)}
-        selected_label = st.selectbox("Select Ticket", list(ticket_options.keys()))
-        idx = ticket_options[selected_label]
-        t   = st.session_state.tickets[idx]
+        options = {f"{r['ticket_id']} - {r['title']}": r['ticket_id']
+                   for _, r in tickets.iterrows()}
+        sel_label = st.selectbox("Select Ticket", list(options.keys()))
+        sel_id    = options[sel_label]
+        t         = tickets[tickets["ticket_id"] == sel_id].iloc[0]
 
-        st.markdown(f"""
-        <div class="ticket-card">
-          <div class="ticket-id">{t['id']} · Created {t.get('created_at','')[:10]} · Requestor: {t.get('requestor','')}</div>
+        # Show current state
+        pct = int(t.get("progress",0)) if str(t.get("progress","0")).isdigit() else 0
+        st.markdown(f"""<div class="ticket-card">
+          <div class="ticket-id">{t['ticket_id']} · Requestor: {t.get('requestor','')} · Due: {t.get('due_date','')}</div>
           <div class="ticket-title">{t['title']}</div>
           <div class="pills">
             {badge(t['platform'], PLATFORM_COLORS.get(t['platform'], DHL_GRAY))}
             {badge(t['status'],   STATUS_COLORS.get(t['status'],     DHL_GRAY))}
             {badge(t['priority'], PRIORITY_COLORS.get(t['priority'], DHL_GRAY))}
           </div>
-          <p style="color:{DHL_GRAY};font-size:14px;margin-top:8px">{t.get('description','')}</p>
+          {progress_bar(pct, STATUS_COLORS.get(t['status'], DHL_YELLOW))}
+          <p style="color:{DHL_GRAY};font-size:13px;margin-top:6px">{t.get('description','')}</p>
         </div>""", unsafe_allow_html=True)
 
         st.markdown("#### Update Fields")
-        uc1, uc2, uc3 = st.columns(3)
-        with uc1: new_status   = st.selectbox("Status",   STATUS_ORDER,   index=STATUS_ORDER.index(t["status"]))
-        with uc2: new_priority = st.selectbox("Priority", PRIORITY_ORDER, index=PRIORITY_ORDER.index(t["priority"]))
-        with uc3: new_progress = st.slider("Progress %", 0, 100, t.get("progress", 0), step=5)
+        uc1,uc2,uc3 = st.columns(3)
+        cur_status   = t["status"]   if t["status"]   in STATUS_ORDER   else STATUS_ORDER[0]
+        cur_priority = t["priority"] if t["priority"] in PRIORITY_ORDER else PRIORITY_ORDER[0]
+        with uc1: new_status   = st.selectbox("Status",   STATUS_ORDER,
+                                               index=STATUS_ORDER.index(cur_status))
+        with uc2: new_priority = st.selectbox("Priority", PRIORITY_ORDER,
+                                               index=PRIORITY_ORDER.index(cur_priority))
+        with uc3: new_progress = st.slider("Progress %", 0, 100, pct, step=5)
+        new_notes = st.text_area("Notes / Comment *",
+                                 placeholder="Describe what changed or why...")
 
-        new_comment = st.text_area("Add Comment / Note", placeholder="Describe progress, blockers, or updates...")
+        if st.button("Save Update"):
+            if not new_notes.strip():
+                st.error("Please add a note describing the update.")
+            else:
+                row = {
+                    "timestamp":   datetime.now().isoformat(timespec="seconds"),
+                    "action":      "UPDATED",
+                    "ticket_id":   sel_id,
+                    "title":       t["title"],
+                    "platform":    t["platform"],
+                    "priority":    new_priority,
+                    "status":      new_status,
+                    "progress":    new_progress,
+                    "requestor":   t["requestor"],
+                    "due_date":    t["due_date"],
+                    "tags":        t["tags"],
+                    "description": t["description"],
+                    "updated_by":  user,
+                    "notes":       new_notes.strip(),
+                }
+                with st.spinner("Saving to GitHub..."):
+                    try:
+                        gh_append(row)
+                        st.success(f"Ticket {sel_id} updated and logged to CSV.")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"GitHub sync failed: {e}")
 
-        if st.button("Save and Sync to GitHub"):
-            updated = list(st.session_state.tickets)
-            updated[idx]["status"]     = new_status
-            updated[idx]["priority"]   = new_priority
-            updated[idx]["progress"]   = new_progress
-            updated[idx]["updated_at"] = datetime.now().isoformat()
-            if new_comment.strip():
-                updated[idx].setdefault("comments", []).append({
-                    "text":      new_comment.strip(),
-                    "timestamp": datetime.now().isoformat(),
-                })
-            with st.spinner("Syncing to GitHub..."):
-                save_and_sync(updated)
-            st.success("Ticket updated and saved to GitHub.")
-            st.rerun()
-
-        comments = t.get("comments", [])
-        if comments:
-            st.markdown("#### Comment History")
-            for c in reversed(comments):
+        # History for this ticket
+        ticket_log = log_df[log_df["ticket_id"] == sel_id].sort_values("timestamp", ascending=False)
+        if not ticket_log.empty:
+            st.markdown("#### History for this ticket")
+            for _, row in ticket_log.iterrows():
+                action_color = {"CREATED":"#2E7D32","UPDATED":"#0078D4","DELETED":"#D40511"}
+                ac = row["action"]
                 st.markdown(f"""
-                <div style="background:{DHL_LIGHT};border:1px solid {DHL_BORDER};border-left:4px solid {DHL_YELLOW};
-                            border-radius:6px;padding:12px 16px;margin-bottom:8px">
-                  <p style="color:{DHL_GRAY};font-size:11px;font-weight:600;margin:0 0 6px;text-transform:uppercase;letter-spacing:.05em">
-                    {c['timestamp'][:16].replace('T', ' at ')}
-                  </p>
-                  <p style="color:{DHL_DARK};margin:0;font-size:14px">{c['text']}</p>
+                <div style="background:{DHL_LIGHT};border:1px solid {DHL_BORDER};
+                            border-left:4px solid {action_color.get(ac, DHL_GRAY)};
+                            border-radius:6px;padding:10px 14px;margin-bottom:8px">
+                  <div style="display:flex;gap:12px;align-items:center;margin-bottom:4px">
+                    {badge(ac, action_color.get(ac, DHL_GRAY))}
+                    <span style="font-size:12px;color:{DHL_GRAY}">{row['timestamp'][:16].replace('T',' at ')}</span>
+                    <span style="font-size:12px;font-weight:700;color:{DHL_DARK}">by {row['updated_by']}</span>
+                  </div>
+                  <div style="font-size:13px;color:{DHL_DARK}">
+                    Status: <b>{row['status']}</b> &nbsp;|&nbsp;
+                    Priority: <b>{row['priority']}</b> &nbsp;|&nbsp;
+                    Progress: <b>{row['progress']}%</b>
+                  </div>
+                  {f'<div style="font-size:13px;color:{DHL_GRAY};margin-top:4px">{row["notes"]}</div>' if row.get("notes") else ""}
                 </div>""", unsafe_allow_html=True)
 
+        # Delete
         st.markdown("---")
         with st.expander("Danger Zone"):
-            st.warning("This will permanently delete this ticket from GitHub.")
-            if st.button("Delete This Ticket", type="secondary"):
-                updated = [tk for i, tk in enumerate(st.session_state.tickets) if i != idx]
-                with st.spinner("Deleting..."):
-                    save_and_sync(updated)
-                st.success("Ticket deleted.")
-                st.rerun()
+            st.warning("This logs a DELETED action. The ticket will be removed from the active view but the full history is preserved in the CSV.")
+            del_note = st.text_input("Reason for deletion *")
+            if st.button("Delete Ticket", type="secondary"):
+                if not del_note.strip():
+                    st.error("Please provide a reason for deletion.")
+                else:
+                    row = {
+                        "timestamp":   datetime.now().isoformat(timespec="seconds"),
+                        "action":      "DELETED",
+                        "ticket_id":   sel_id,
+                        "title":       t["title"],
+                        "platform":    t["platform"],
+                        "priority":    t["priority"],
+                        "status":      t["status"],
+                        "progress":    t["progress"],
+                        "requestor":   t["requestor"],
+                        "due_date":    t["due_date"],
+                        "tags":        t["tags"],
+                        "description": t["description"],
+                        "updated_by":  user,
+                        "notes":       del_note.strip(),
+                    }
+                    with st.spinner("Logging deletion..."):
+                        try:
+                            gh_append(row)
+                            st.success("Ticket deleted from active view. History preserved in CSV.")
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"GitHub sync failed: {e}")
