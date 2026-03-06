@@ -200,7 +200,7 @@ def send_new_ticket_email(ticket: dict) -> None:
     <html><body style="font-family:Arial,sans-serif;background:#f5f5f5;padding:20px">
     <div style="max-width:600px;margin:auto;background:#fff;border-radius:8px;
                 border-top:5px solid #FFCC00;padding:28px 32px;box-shadow:0 2px 8px rgba(0,0,0,.08)">
-      <div style="font-size:22px;font-weight:900;color:#D40511;letter-spacing:1px;margin-bottom:4px">Operation Excellence</div>
+      <div style="font-size:22px;font-weight:900;color:#D40511;letter-spacing:1px;margin-bottom:4px">DHL</div>
       <div style="font-size:18px;font-weight:700;color:#1A1A1A;margin-bottom:20px">New QA Ticket Submitted</div>
       <table style="width:100%;border-collapse:collapse;font-size:14px">
         <tr style="background:#FFCC00">
