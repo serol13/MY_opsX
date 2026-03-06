@@ -80,7 +80,7 @@ DHL_LIGHT   = "#F5F5F5"
 DHL_BORDER  = "#E0E0E0"
 DHL_WHITE   = "#FFFFFF"
 
-PLATFORM_COLORS = {"Splunk": DHL_RED, "Power BI": "#0078D4"}
+PLATFORM_COLORS = {"Splunk": DHL_RED, "Power BI": "#0078D4", "Others": "#6B6B6B"}
 STATUS_COLORS   = {
     "Backlog":     "#9E9E9E",
     "In Progress": "#0078D4",
@@ -373,7 +373,7 @@ with st.sidebar:
 # ── Page header ───────────────────────────────────────────────────────────────
 PAGE_TITLES = {
     "Dashboard":      ("Dashboard Overview", "Track all QA visualization requests at a glance"),
-    "Submit Request": ("Submit New Request", "Log a new Splunk or Power BI visualization request"),
+    "Submit Request": ("Submit New Request", "Log a new Splunk, Power BI, or other visualization request"),
     "All Tickets":    ("All Tickets", "Browse, filter, and search all submitted tickets"),
     "Update Ticket":  ("Update Ticket", "Update status, progress, and add comments"),
 }
@@ -497,7 +497,7 @@ elif page == "Submit Request":
         c1, c2 = st.columns(2)
         with c1:
             title     = st.text_input("Ticket Title *", placeholder="e.g. Sales Dashboard KPI refresh")
-            platform  = st.selectbox("Platform *", ["Splunk", "Power BI"])
+            platform  = st.selectbox("Platform *", ["Splunk", "Power BI", "Others"])
             priority  = st.selectbox("Priority *", PRIORITY_ORDER)
         with c2:
             requestor = st.text_input("Requestor Name *", placeholder="Your name")
@@ -549,7 +549,7 @@ elif page == "All Tickets":
         st.info("No tickets yet. Submit your first request!")
     else:
         fc1, fc2, fc3, fc4 = st.columns(4)
-        with fc1: f_platform = st.multiselect("Platform", ["Splunk","Power BI"], default=["Splunk","Power BI"])
+        with fc1: f_platform = st.multiselect("Platform", ["Splunk","Power BI","Others"], default=["Splunk","Power BI","Others"])
         with fc2: f_status   = st.multiselect("Status", STATUS_ORDER, default=STATUS_ORDER)
         with fc3: f_priority = st.multiselect("Priority", PRIORITY_ORDER, default=PRIORITY_ORDER)
         with fc4: f_search   = st.text_input("Search", placeholder="title or requestor...")
