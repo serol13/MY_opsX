@@ -1130,12 +1130,95 @@ elif page == "All Tickets":
                     + '</div>',
                     unsafe_allow_html=True)
         else:
-            show = ["ticket_id","title","platform","priority","status","progress",
-                    "requestor","due_date","updated_by","timestamp"]
-            df_display = df[show].copy()
+            # ── Column-level filters ──────────────────────────────────────────
+            st.markdown("#### Column Filters")
+            tf1, tf2, tf3, tf4, tf5 = st.columns(5)
+            with tf1:
+                all_assigned = sorted([x for x in df["assigned_to"].dropna().unique() if x])
+                tf_assigned = st.multiselect("Assigned To", all_assigned, default=all_assigned, key="tf_assigned")
+            with tf2:
+                all_complexity = [c for c in COMPLEXITY_ORDER if c in df["complexity"].values]
+                tf_complexity = st.multiselect("Complexity", COMPLEXITY_ORDER,
+                                               default=[c for c in COMPLEXITY_ORDER if c in df["complexity"].values],
+                                               key="tf_complexity")
+            with tf3:
+                tf_progress_min, tf_progress_max = st.select_slider(
+                    "Progress %", options=list(range(0, 101, 5)),
+                    value=(0, 100), key="tf_progress")
+            with tf4:
+                all_tags = sorted(set(
+                    tag.strip() for tags in df["tags"].dropna()
+                    for tag in str(tags).split(",") if tag.strip()
+                ))
+                tf_tags = st.multiselect("Tags", all_tags, key="tf_tags")
+            with tf5:
+                all_updaters = sorted([x for x in df["updated_by"].dropna().unique() if x])
+                tf_updater = st.multiselect("Last Updated By", all_updaters, default=all_updaters, key="tf_updater")
+
+            # Apply column filters
+            df_tbl = df.copy()
+            df_tbl["progress"] = pd.to_numeric(df_tbl["progress"], errors="coerce").fillna(0).astype(int)
+            if tf_assigned:
+                df_tbl = df_tbl[df_tbl["assigned_to"].isin(tf_assigned) | (df_tbl["assigned_to"] == "")]
+            if tf_complexity:
+                df_tbl = df_tbl[df_tbl["complexity"].isin(tf_complexity) | (df_tbl["complexity"] == "")]
+            df_tbl = df_tbl[
+                (df_tbl["progress"] >= tf_progress_min) &
+                (df_tbl["progress"] <= tf_progress_max)
+            ]
+            if tf_tags:
+                def has_tag(tag_str):
+                    row_tags = [t.strip() for t in str(tag_str).split(",")]
+                    return any(t in row_tags for t in tf_tags)
+                df_tbl = df_tbl[df_tbl["tags"].apply(has_tag)]
+            if tf_updater:
+                df_tbl = df_tbl[df_tbl["updated_by"].isin(tf_updater)]
+
+            st.caption(f"Showing {len(df_tbl)} ticket(s)")
+
+            # Build display table with all relevant columns
+            show = ["ticket_id","title","platform","priority","complexity",
+                    "status","progress","requestor","assigned_to",
+                    "due_date","tags","updated_by","timestamp","notes"]
+            df_display = df_tbl[[c for c in show if c in df_tbl.columns]].copy()
             df_display["timestamp"] = df_display["timestamp"].apply(fmt_ts)
-            st.dataframe(df_display.rename(columns=lambda c: c.replace("_"," ").title()),
-                         use_container_width=True, hide_index=True)
+            df_display["progress"]  = df_display["progress"].astype(str) + "%"
+
+            # Colour-map status and priority columns using pandas Styler
+            def colour_status(val):
+                c = STATUS_COLORS.get(val, "")
+                return f"background-color:{c};color:#fff;font-weight:700;border-radius:4px;padding:2px 6px" if c else ""
+            def colour_priority(val):
+                c = PRIORITY_COLORS.get(val, "")
+                return f"background-color:{c};color:#fff;font-weight:700;border-radius:4px;padding:2px 6px" if c else ""
+            def colour_complexity(val):
+                c = COMPLEXITY_COLORS.get(val, "")
+                return f"background-color:{c};color:#fff;font-weight:700;border-radius:4px;padding:2px 6px" if c else ""
+
+            styled = (
+                df_display
+                .rename(columns={
+                    "ticket_id":   "Ticket ID",
+                    "title":       "Title",
+                    "platform":    "Platform",
+                    "priority":    "Priority",
+                    "complexity":  "Complexity",
+                    "status":      "Status",
+                    "progress":    "Progress",
+                    "requestor":   "Requestor",
+                    "assigned_to": "Assigned To",
+                    "due_date":    "Due Date",
+                    "tags":        "Tags",
+                    "updated_by":  "Last Updated By",
+                    "timestamp":   "Last Updated At",
+                    "notes":       "Latest Notes",
+                })
+                .style
+                .applymap(colour_status,     subset=["Status"])
+                .applymap(colour_priority,   subset=["Priority"])
+                .applymap(colour_complexity, subset=["Complexity"])
+            )
+            st.dataframe(styled, use_container_width=True, hide_index=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PAGE: RECURRING TASKS
