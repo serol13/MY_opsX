@@ -107,3 +107,4 @@ Depot Volume By Week to Daily volume by Depot
 2026-03-09T16:14:10+08:00,UPDATED,QA-414F8E,New added Postcode 47310,Splunk,High,Done,100,Adillah,2026-03-06,"TT Matrix, SLA",Adding new postcode in Splunk ,Syamil,added postcode in Splunk,Simple,serol,
 2026-03-09T16:15:02+08:00,UPDATED,QA-B878FD,MY Hypercare Performance - Amway,Splunk,Medium,Done,100,Alyu,2026-03-06,"amway, dashboard","Add summary by day/date
 Add filter to view monthly data",Syamil,Added summary by date,Medium,serol,
+2026-03-09T16:18:22+08:00,UPDATED,QA-E50879,Missing Lost Report,Others,Medium,In Progress,80,serol,2026-03-06,"lost, missing",Add opsx email in daily missing lost report - have to raise ticket for 2244 server,Syamil,INC68853752 has been raised. waiting for update from IT support,Simple,serol,
