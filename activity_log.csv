@@ -1,3 +1,4 @@
 timestamp,date,username,category,description,duration_min
 2026-03-09T10:08:08+08:00,2026-03-09,serol,Support,Flyer Request,30
 2026-03-09T12:52:21+08:00,2026-03-09,Syamil,Review,Updated QA-0B65FA [OTP Feature Adjustment – VORWERK MALAYSIA ENTERPRISES SDN BHD - Sold-To: 9000000121] → Backlog 100% | Proposed to aliah to enable SI,10
+2026-03-09T16:14:11+08:00,2026-03-09,Syamil,Review,Updated QA-414F8E [New added Postcode 47310] → Done 100% | added postcode in Splunk,5
