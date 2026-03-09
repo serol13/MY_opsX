@@ -728,15 +728,11 @@ with st.sidebar:
     if st.session_state.nav_page not in nav_options:
         st.session_state.nav_page = nav_options[0]
 
-    # Sync the radio widget key to session state so programmatic nav_page
-    # changes (e.g. "View My Tasks" button) are reflected immediately
-    st.session_state["nav_radio"] = st.session_state.nav_page
-
     selected = st.radio("Navigation", nav_options,
                         index=nav_options.index(st.session_state.nav_page),
-                        label_visibility="collapsed", key="nav_radio")
+                        label_visibility="collapsed")
     if selected != st.session_state.nav_page:
-        st.session_state.nav_page     = selected
+        st.session_state.nav_page      = selected
         st.session_state.my_tasks_mode = False
         st.rerun()
 
