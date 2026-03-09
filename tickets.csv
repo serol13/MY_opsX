@@ -104,3 +104,4 @@ Depot Volume By Week to Daily volume by Depot
 2026-03-07T02:17:26+08:00,CREATED,QA-E50879,Missing Lost Report,Others,Low,Backlog,0,serol,2026-03-06,"lost, missing",Add opsx email in daily missing lost report - have to raise ticket for 2244 server,serol,,,,
 2026-03-09T12:51:22+08:00,CREATED,QA-0B65FA,OTP Feature Adjustment – VORWERK MALAYSIA ENTERPRISES SDN BHD - Sold-To: 9000000121,Others,High,Backlog,0,Syamil,2026-03-09,SI,special instruction for Vorwerk,Syamil,[Email: a.mat_zin@dhl.com] ,,,
 2026-03-09T12:52:20+08:00,UPDATED,QA-0B65FA,OTP Feature Adjustment – VORWERK MALAYSIA ENTERPRISES SDN BHD - Sold-To: 9000000121,Others,High,Backlog,100,Syamil,2026-03-09,SI,special instruction for Vorwerk,Syamil,Proposed to aliah to enable SI,Medium,Syamil,
+2026-03-09T16:14:10+08:00,UPDATED,QA-414F8E,New added Postcode 47310,Splunk,High,Done,100,Adillah,2026-03-06,"TT Matrix, SLA",Adding new postcode in Splunk ,Syamil,added postcode in Splunk,Simple,serol,
