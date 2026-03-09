@@ -105,3 +105,5 @@ Depot Volume By Week to Daily volume by Depot
 2026-03-09T12:51:22+08:00,CREATED,QA-0B65FA,OTP Feature Adjustment – VORWERK MALAYSIA ENTERPRISES SDN BHD - Sold-To: 9000000121,Others,High,Backlog,0,Syamil,2026-03-09,SI,special instruction for Vorwerk,Syamil,[Email: a.mat_zin@dhl.com] ,,,
 2026-03-09T12:52:20+08:00,UPDATED,QA-0B65FA,OTP Feature Adjustment – VORWERK MALAYSIA ENTERPRISES SDN BHD - Sold-To: 9000000121,Others,High,Backlog,100,Syamil,2026-03-09,SI,special instruction for Vorwerk,Syamil,Proposed to aliah to enable SI,Medium,Syamil,
 2026-03-09T16:14:10+08:00,UPDATED,QA-414F8E,New added Postcode 47310,Splunk,High,Done,100,Adillah,2026-03-06,"TT Matrix, SLA",Adding new postcode in Splunk ,Syamil,added postcode in Splunk,Simple,serol,
+2026-03-09T16:15:02+08:00,UPDATED,QA-B878FD,MY Hypercare Performance - Amway,Splunk,Medium,Done,100,Alyu,2026-03-06,"amway, dashboard","Add summary by day/date
+Add filter to view monthly data",Syamil,Added summary by date,Medium,serol,
