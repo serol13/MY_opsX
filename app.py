@@ -1439,8 +1439,12 @@ elif page == "Update / Delete Ticket":
         with uc5: new_assigned   = st.selectbox("Assign To",  user_list,
                                                  index=user_list.index(cur_assigned) if cur_assigned in user_list else 0)
 
-        new_notes = st.text_area("Notes / Comment *",
-                                 placeholder="Describe what changed or why...")
+        nt1, nt2 = st.columns([4, 1])
+        with nt1:
+            new_notes = st.text_area("Notes / Comment *",
+                                     placeholder="Describe what changed or why...")
+        with nt2:
+            time_taken = st.number_input("Time taken (min)", min_value=5, max_value=480, value=30, step=5)
         update_image = image_widget("update")
 
         if st.button("Save Update"):
@@ -1469,6 +1473,15 @@ elif page == "Update / Delete Ticket":
                 with st.spinner("Saving to GitHub..."):
                     try:
                         gh_append(row)
+                        # Auto-log to activity tracker
+                        act_append({
+                            "timestamp":   now8().isoformat(timespec="seconds"),
+                            "date":        now8().strftime("%Y-%m-%d"),
+                            "username":    user,
+                            "category":   "Review",
+                            "description": f"Updated {sel_id} [{t['title']}] → {new_status} {new_progress}% | {new_notes.strip()[:120]}",
+                            "duration_min": str(time_taken),
+                        })
                         st.success(f"Ticket {sel_id} updated and logged to CSV.")
                         st.rerun()
                     except Exception as e:
@@ -1530,6 +1543,15 @@ elif page == "Update / Delete Ticket":
                     with st.spinner("Logging deletion..."):
                         try:
                             gh_append(row)
+                            # Auto-log to activity tracker
+                            act_append({
+                                "timestamp":   now8().isoformat(timespec="seconds"),
+                                "date":        now8().strftime("%Y-%m-%d"),
+                                "username":    user,
+                                "category":   "Admin",
+                                "description": f"Deleted {sel_id} [{t['title']}] | Reason: {del_note.strip()[:120]}",
+                                "duration_min": "5",
+                            })
                             st.success("Ticket deleted from active view. History preserved in CSV.")
                             st.rerun()
                         except Exception as e:
