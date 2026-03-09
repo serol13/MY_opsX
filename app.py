@@ -47,9 +47,13 @@ GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 GITHUB_REPO  = st.secrets["GITHUB_REPO"]
 FILE_PATH    = "tickets.csv"
 REC_PATH     = "recurring.csv"
+ACT_PATH     = "activity_log.csv"
 BRANCH       = "main"
 GITHUB_API   = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FILE_PATH}"
 REC_API      = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{REC_PATH}"
+ACT_API      = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{ACT_PATH}"
+ACT_COLS     = ["timestamp", "date", "username", "category", "description", "duration_min"]
+# category: Meeting | Development | Review | Support | Admin | Other
 GH_HEADERS   = {
     "Authorization": f"token {GITHUB_TOKEN}",
     "Accept": "application/vnd.github.v3+json",
@@ -174,6 +178,34 @@ def rec_save(df: pd.DataFrame, sha, msg: str) -> None:
     r.raise_for_status()
     st.session_state.rec_df = df
 
+def act_load() -> tuple:
+    r = requests.get(ACT_API, headers=GH_HEADERS)
+    if r.status_code == 404:
+        return pd.DataFrame(columns=ACT_COLS), None
+    r.raise_for_status()
+    data    = r.json()
+    content = base64.b64decode(data["content"]).decode("utf-8")
+    df = pd.read_csv(io.StringIO(content), dtype=str).fillna("")
+    for col in ACT_COLS:
+        if col not in df.columns:
+            df[col] = ""
+    return df[ACT_COLS], data["sha"]
+
+def act_append(new_row: dict) -> None:
+    df, sha = act_load()
+    updated = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+    csv_bytes = updated.to_csv(index=False).encode("utf-8")
+    payload = {
+        "message": f"[ACTIVITY] {new_row['username']} — {new_row['date']}",
+        "content": base64.b64encode(csv_bytes).decode("utf-8"),
+        "branch":  BRANCH,
+    }
+    if sha:
+        payload["sha"] = sha
+    r = requests.put(ACT_API, headers=GH_HEADERS, json=payload)
+    r.raise_for_status()
+    st.session_state.act_df = updated
+
 # ─────────────────────────────────────────────────────────────────────────────
 # SESSION STATE BOOTSTRAP
 # ─────────────────────────────────────────────────────────────────────────────
@@ -202,6 +234,12 @@ if "rec_df" not in st.session_state:
 
 if "my_tasks_mode" not in st.session_state:
     st.session_state.my_tasks_mode = False
+
+if "act_df" not in st.session_state:
+    try:
+        st.session_state.act_df, _ = act_load()
+    except:
+        st.session_state.act_df = pd.DataFrame(columns=ACT_COLS)
 
 if "nav_page" not in st.session_state:
     st.session_state.nav_page = "Dashboard"
@@ -755,9 +793,9 @@ with st.sidebar:
     st.markdown("---")
 
     # ── Navigation ────────────────────────────────────────────────────────────
-    nav_options = ["Dashboard", "All Tickets", "Recurring Tasks", "Submit Request"]
+    nav_options = ["Dashboard", "All Tickets", "Submit Request"]
     if user:
-        nav_options += ["Update / Delete Ticket"]
+        nav_options += ["Recurring Tasks", "Update / Delete Ticket", "Activity Log"]
 
     if st.session_state.nav_page not in nav_options:
         st.session_state.nav_page = nav_options[0]
@@ -871,6 +909,7 @@ PAGE_META = {
     "Recurring Tasks":        ("Recurring Tasks",           "Daily, weekly and monthly task reference"),
     "Submit Request":         ("Submit New Request",        "Anyone can raise a new request"),
     "Update / Delete Ticket": ("Update / Delete Ticket",   f"Editing as: {user}"),
+    "Activity Log":           ("Activity Log",              f"Daily work log & contribution heatmap — {user}"),
 }
 title, subtitle = PAGE_META.get(page, ("Operation Excellence Tracker", ""))
 st.markdown(f"""
@@ -1242,6 +1281,7 @@ elif page == "Submit Request":
             default_name = user if user else ""
             requestor_val = st.text_input("Your Name *", value=default_name,
                                           placeholder="Enter your name")
+            requestor_email = st.text_input("Your Email (optional)", placeholder="e.g. you@example.com")
             due_val  = st.date_input("Target Due Date", value=date.today())
             tags_val = st.text_input("Tags (comma-separated)", placeholder="e.g. kpi, finance, Q2")
         desc_val = st.text_area("Description / Requirements *",
@@ -1263,6 +1303,7 @@ elif page == "Submit Request":
         else:
             tid = "QA-" + str(uuid.uuid4())[:6].upper()
             updated_by = user if user else f"Guest:{requestor_val}"
+            email_note = f"[Email: {requestor_email.strip()}] " if requestor_email.strip() else ""
             row = {
                 "timestamp":   now8().isoformat(timespec="seconds"),
                 "action":      "CREATED",
@@ -1277,7 +1318,7 @@ elif page == "Submit Request":
                 "tags":        ", ".join([t.strip() for t in tags_val.split(",") if t.strip()]),
                 "description": desc_val,
                 "updated_by":  updated_by,
-                "notes":       notes_val,
+                "notes":       email_note + notes_val,
                 "complexity":  "",
                 "assigned_to": "",
                 "image":       submit_image,
@@ -1493,3 +1534,253 @@ elif page == "Update / Delete Ticket":
                             st.rerun()
                         except Exception as e:
                             st.error(f"GitHub sync failed: {e}")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE: ACTIVITY LOG  (admin only — GitHub-style heatmap + daily entries)
+# ─────────────────────────────────────────────────────────────────────────────
+elif page == "Activity Log":
+    if not user:
+        st.warning("You must be logged in to access the Activity Log.")
+        st.stop()
+
+    ACT_CATEGORIES = ["Development", "Review", "Meeting", "Support", "Admin", "Other"]
+    ACT_COLORS = {
+        "Development": "#0078D4",
+        "Review":      "#FF8C00",
+        "Meeting":     "#6A0DAD",
+        "Support":     "#D40511",
+        "Admin":       "#2E7D32",
+        "Other":       "#6B6B6B",
+    }
+
+    act_df = st.session_state.act_df
+
+    # ── Log new activity ──────────────────────────────────────────────────────
+    with st.expander("➕ Log Today's Activity", expanded=True):
+        lc1, lc2, lc3 = st.columns([2, 1, 1])
+        with lc1:
+            act_desc = st.text_input("What did you work on? *", placeholder="e.g. Fixed Splunk alert threshold for APAC dashboard")
+        with lc2:
+            act_cat = st.selectbox("Category", ACT_CATEGORIES)
+        with lc3:
+            act_dur = st.number_input("Duration (min)", min_value=5, max_value=480, value=30, step=5)
+        act_date = st.date_input("Date", value=date.today())
+        if st.button("Log Activity", use_container_width=False):
+            if not act_desc.strip():
+                st.error("Please describe what you worked on.")
+            else:
+                new_act = {
+                    "timestamp":    now8().isoformat(timespec="seconds"),
+                    "date":         str(act_date),
+                    "username":     user,
+                    "category":     act_cat,
+                    "description":  act_desc.strip(),
+                    "duration_min": str(act_dur),
+                }
+                with st.spinner("Saving..."):
+                    try:
+                        act_append(new_act)
+                        st.success("Activity logged!")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Save failed: {e}")
+
+    st.markdown("---")
+
+    # ── Build heatmap data ────────────────────────────────────────────────────
+    import numpy as np
+
+    # Filter to selected user scope
+    view_scope = st.radio("View", ["My Activity", "All Team"], horizontal=True)
+    heatmap_df = act_df.copy() if not act_df.empty else pd.DataFrame(columns=ACT_COLS)
+
+    if view_scope == "My Activity":
+        heatmap_df = heatmap_df[heatmap_df["username"] == user]
+
+    if not heatmap_df.empty:
+        heatmap_df["date"] = pd.to_datetime(heatmap_df["date"], errors="coerce")
+        heatmap_df = heatmap_df.dropna(subset=["date"])
+        heatmap_df["duration_min"] = pd.to_numeric(heatmap_df["duration_min"], errors="coerce").fillna(0)
+
+        # ── GitHub-style contribution heatmap ─────────────────────────────────
+        st.markdown('<div class="section-header">Contribution Heatmap</div>', unsafe_allow_html=True)
+
+        today = date.today()
+        # Show last 52 weeks (364 days) + pad to start on Sunday
+        end_date   = today
+        start_date = today - timedelta(days=364)
+
+        date_range = pd.date_range(start=start_date, end=end_date, freq="D")
+        daily_counts = heatmap_df.groupby("date")["duration_min"].sum().reset_index()
+        daily_counts.columns = ["date", "total_min"]
+        daily_counts["date"] = pd.to_datetime(daily_counts["date"])
+
+        date_df = pd.DataFrame({"date": date_range})
+        date_df = date_df.merge(daily_counts, on="date", how="left").fillna(0)
+        date_df["total_min"] = date_df["total_min"].astype(int)
+
+        # Pad to start on Monday (weekday 0)
+        pad_start = date_df["date"].iloc[0].weekday()  # 0=Mon
+        padded = pd.concat([
+            pd.DataFrame({"date": [None]*pad_start, "total_min": [None]*pad_start}),
+            date_df
+        ], ignore_index=True)
+
+        # Reshape into weeks × 7
+        num_weeks = int(np.ceil(len(padded) / 7))
+        while len(padded) < num_weeks * 7:
+            padded = pd.concat([padded, pd.DataFrame({"date":[None],"total_min":[None]})], ignore_index=True)
+
+        grid = padded["total_min"].values.reshape(num_weeks, 7)
+        date_grid = padded["date"].values.reshape(num_weeks, 7)
+
+        # Build colour levels (0=empty, 1-4 intensity)
+        max_val = max(date_df["total_min"].max(), 1)
+        def intensity_color(v):
+            if v is None or (isinstance(v, float) and np.isnan(v)):
+                return "#EEEEEE"
+            if v == 0: return "#EEEEEE"
+            ratio = v / max_val
+            if ratio < 0.25:  return "#C6E48B"
+            if ratio < 0.50:  return "#7BC96F"
+            if ratio < 0.75:  return "#239A3B"
+            return "#196127"
+
+        # Render heatmap as HTML table
+        days_label = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+        month_labels = []
+        last_month = None
+        for w in range(num_weeks):
+            for d in range(7):
+                cell_date = date_grid[w, d]
+                if cell_date is not None and not (isinstance(cell_date, float) and np.isnan(cell_date)):
+                    try:
+                        dt = pd.Timestamp(cell_date)
+                        m = dt.strftime("%b")
+                        if m != last_month:
+                            month_labels.append((w, m))
+                            last_month = m
+                    except:
+                        pass
+
+        month_row = [""] * num_weeks
+        for (wi, ml) in month_labels:
+            month_row[wi] = ml
+
+        month_html = "".join(
+            f'<td style="font-size:10px;color:#6B6B6B;text-align:center;padding:0 1px;width:14px">{m}</td>'
+            for m in month_row
+        )
+
+        rows_html = ""
+        for d in range(7):
+            cells = ""
+            for w in range(num_weeks):
+                val = grid[w, d]
+                col = intensity_color(val)
+                tip = ""
+                cell_date = date_grid[w, d]
+                if cell_date is not None and not (isinstance(cell_date, float) and np.isnan(cell_date)):
+                    try:
+                        tip = f"{pd.Timestamp(cell_date).strftime('%d %b %Y')}: {int(val) if val else 0} min"
+                    except:
+                        tip = ""
+                cells += (
+                    f'<td title="{tip}" style="width:14px;height:14px;background:{col};'
+                    f'border-radius:2px;margin:1px;padding:0"></td>'
+                )
+            rows_html += (
+                f'<tr><td style="font-size:10px;color:#6B6B6B;padding-right:6px;white-space:nowrap">'
+                f'{days_label[d]}</td>{cells}</tr>'
+            )
+
+        legend_html = "".join(
+            f'<span style="display:inline-block;width:12px;height:12px;background:{c};'
+            f'border-radius:2px;margin-right:3px;vertical-align:middle"></span>'
+            for c in ["#EEEEEE","#C6E48B","#7BC96F","#239A3B","#196127"]
+        )
+
+        total_days_logged = int((date_df["total_min"] > 0).sum())
+        total_mins = int(date_df["total_min"].sum())
+
+        st.markdown(f"""
+        <div style="background:#fff;border:1px solid #E0E0E0;border-radius:10px;padding:20px 24px;margin-bottom:16px;overflow-x:auto">
+          <div style="font-size:13px;color:#6B6B6B;margin-bottom:10px">
+            <b style="color:#1A1A1A">{total_days_logged}</b> active days &nbsp;·&nbsp;
+            <b style="color:#1A1A1A">{total_mins}</b> total minutes logged in the past year
+          </div>
+          <table style="border-collapse:separate;border-spacing:2px;table-layout:fixed">
+            <thead><tr><td></td>{month_html}</tr></thead>
+            <tbody>{rows_html}</tbody>
+          </table>
+          <div style="margin-top:10px;font-size:11px;color:#6B6B6B">
+            Less {legend_html} More
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # ── Per-user summary cards (team view) ───────────────────────────────
+        if view_scope == "All Team":
+            st.markdown('<div class="section-header">Team Summary</div>', unsafe_allow_html=True)
+            team_sum = (
+                heatmap_df.groupby("username")
+                .agg(entries=("description","count"), total_min=("duration_min","sum"))
+                .reset_index()
+                .sort_values("total_min", ascending=False)
+            )
+            cols = st.columns(min(len(team_sum), 4))
+            for i, (_, row) in enumerate(team_sum.iterrows()):
+                with cols[i % len(cols)]:
+                    hrs = int(row["total_min"]) // 60
+                    mins = int(row["total_min"]) % 60
+                    st.markdown(f"""
+                    <div class="metric-card">
+                      <div class="lbl">{row['username']}</div>
+                      <div class="val" style="font-size:1.6rem">{hrs}h {mins}m</div>
+                      <div style="font-size:11px;color:#6B6B6B">{int(row['entries'])} entries logged</div>
+                    </div>""", unsafe_allow_html=True)
+
+        # ── Category breakdown ────────────────────────────────────────────────
+        st.markdown('<div class="section-header">Category Breakdown</div>', unsafe_allow_html=True)
+        cat_sum = (
+            heatmap_df.groupby("category")["duration_min"].sum()
+            .reset_index().sort_values("duration_min", ascending=False)
+        )
+        if not cat_sum.empty:
+            fig_cat = px.bar(
+                cat_sum, x="category", y="duration_min",
+                color="category",
+                color_discrete_map=ACT_COLORS,
+                labels={"duration_min": "Total Minutes", "category": "Category"},
+                title="Time by Category",
+            )
+            fig_cat.update_layout(**CHART)
+            st.plotly_chart(fig_cat, use_container_width=True)
+
+        # ── Recent entries table ──────────────────────────────────────────────
+        st.markdown('<div class="section-header">Recent Entries</div>', unsafe_allow_html=True)
+        show_user = st.selectbox("Filter by user", ["All"] + sorted(act_df["username"].unique().tolist()), key="act_user_filter") if view_scope == "All Team" else user
+        recent_acts = heatmap_df.copy()
+        if show_user != "All" and view_scope == "All Team":
+            recent_acts = recent_acts[recent_acts["username"] == show_user]
+        recent_acts = recent_acts.sort_values("date", ascending=False).head(50)
+
+        for _, row in recent_acts.iterrows():
+            cat_col = ACT_COLORS.get(row.get("category","Other"), "#6B6B6B")
+            dur = int(float(row.get("duration_min", 0) or 0))
+            hrs_str = f"{dur//60}h {dur%60}m" if dur >= 60 else f"{dur}m"
+            st.markdown(f"""
+            <div style="background:#fff;border:1px solid #E0E0E0;border-left:4px solid {cat_col};
+                        border-radius:6px;padding:10px 14px;margin-bottom:6px;display:flex;
+                        justify-content:space-between;align-items:center">
+              <div>
+                <span style="font-size:11px;color:#6B6B6B;font-weight:700;text-transform:uppercase">
+                  {row.get('date','')} · {row.get('username','')}
+                </span>
+                <div style="font-size:14px;color:#1A1A1A;margin:3px 0">{row.get('description','')}</div>
+                {badge(row.get('category','Other'), cat_col)}
+              </div>
+              <div style="font-size:18px;font-weight:700;color:#1A1A1A;white-space:nowrap;padding-left:16px">{hrs_str}</div>
+            </div>""", unsafe_allow_html=True)
+    else:
+        st.info("No activity logged yet. Use the form above to log your first entry!")
