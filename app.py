@@ -206,27 +206,92 @@ if "my_tasks_mode" not in st.session_state:
 if "nav_page" not in st.session_state:
     st.session_state.nav_page = "Dashboard"
 
-# ── Guest PIN wall ────────────────────────────────────────────────────────────
+# ── Unified Login Wall ────────────────────────────────────────────────────────
 GUEST_PIN = str(st.secrets.get("GUEST_PIN", ""))
 
+if "login_mode" not in st.session_state:
+    st.session_state.login_mode = None  # None | "admin" | "guest"
+
 if GUEST_PIN and not st.session_state.app_unlocked:
-    st.markdown(f"""
-    <div style="max-width:380px;margin:80px auto;background:#fff;border-radius:10px;
-                border-top:6px solid #FFCC00;padding:36px 32px;box-shadow:0 4px 20px rgba(0,0,0,.1)">
-      <div style="font-size:28px;font-weight:900;color:#D40511;letter-spacing:1px;margin-bottom:4px">DHL</div>
-      <div style="font-size:20px;font-weight:700;color:#1A1A1A;margin-bottom:6px">Operation Excellence Tracker</div>
-      <div style="font-size:13px;color:#6B6B6B;margin-bottom:24px">Enter PIN to access the app</div>
+    # ── Branding header ───────────────────────────────────────────────────────
+    st.markdown("""
+    <style>
+    .login-wrap{max-width:420px;margin:60px auto 0}
+    .login-card{background:#fff;border-radius:12px;border-top:6px solid #FFCC00;
+                padding:36px 32px 28px;box-shadow:0 6px 28px rgba(0,0,0,.12)}
+    .login-brand{font-size:30px;font-weight:900;color:#D40511;letter-spacing:1px;margin-bottom:2px}
+    .login-title{font-size:20px;font-weight:700;color:#1A1A1A;margin-bottom:4px}
+    .login-sub{font-size:13px;color:#6B6B6B;margin-bottom:28px}
+    .mode-btn-row{display:flex;gap:12px;margin-bottom:8px}
+    .divider-label{text-align:center;font-size:12px;color:#9E9E9E;margin:18px 0 14px;
+                   border-bottom:1px solid #E0E0E0;line-height:0}
+    .divider-label span{background:#fff;padding:0 10px}
+    </style>
+    <div class="login-wrap">
+      <div class="login-card">
+        <div class="login-brand">DHL</div>
+        <div class="login-title">Operation Excellence Tracker</div>
+        <div class="login-sub">Select how you want to access the app</div>
+      </div>
     </div>""", unsafe_allow_html=True)
-    col_pin, _ = st.columns([1, 2])
-    with col_pin:
-        entered = st.text_input("Access PIN", type="password", placeholder="Enter PIN",
-                                label_visibility="collapsed")
-        if st.button("Unlock App", use_container_width=True):
-            if entered == GUEST_PIN:
-                st.session_state.app_unlocked = True
+
+    _, center, _ = st.columns([1, 2, 1])
+    with center:
+        st.markdown("")
+
+        # ── Mode selector buttons ─────────────────────────────────────────────
+        if st.session_state.login_mode is None:
+            col_a, col_g = st.columns(2)
+            with col_a:
+                if st.button("🔐  Admin Login", use_container_width=True):
+                    st.session_state.login_mode = "admin"
+                    st.rerun()
+            with col_g:
+                if st.button("👤  Guest Access", use_container_width=True):
+                    st.session_state.login_mode = "guest"
+                    st.rerun()
+
+        # ── Admin login form ──────────────────────────────────────────────────
+        elif st.session_state.login_mode == "admin":
+            st.markdown("#### 🔐 Admin Login")
+            with st.form("entry_admin_form"):
+                uname = st.selectbox("Username", list(USERS.keys()))
+                pin   = st.text_input("PIN", type="password", placeholder="Enter your PIN")
+                c1, c2 = st.columns(2)
+                with c1: ok   = st.form_submit_button("Sign In", use_container_width=True)
+                with c2: back = st.form_submit_button("← Back",  use_container_width=True)
+            if back:
+                st.session_state.login_mode = None
                 st.rerun()
-            else:
-                st.error("Incorrect PIN. Please try again.")
+            if ok:
+                if uname in USERS and USERS[uname] == pin:
+                    st.session_state.logged_in_user = uname
+                    st.session_state.app_unlocked   = True
+                    st.session_state.login_mode      = None
+                    st.rerun()
+                else:
+                    st.error("Incorrect PIN. Please try again.")
+
+        # ── Guest PIN form ────────────────────────────────────────────────────
+        elif st.session_state.login_mode == "guest":
+            st.markdown("#### 👤 Guest Access")
+            st.caption("Enter the shared guest PIN to view the tracker.")
+            with st.form("entry_guest_form"):
+                entered = st.text_input("Guest PIN", type="password", placeholder="Enter guest PIN")
+                c1, c2 = st.columns(2)
+                with c1: ok   = st.form_submit_button("Unlock App", use_container_width=True)
+                with c2: back = st.form_submit_button("← Back",     use_container_width=True)
+            if back:
+                st.session_state.login_mode = None
+                st.rerun()
+            if ok:
+                if entered == GUEST_PIN:
+                    st.session_state.app_unlocked = True
+                    st.session_state.login_mode   = None
+                    st.rerun()
+                else:
+                    st.error("Incorrect PIN. Please try again.")
+
     st.stop()
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -653,29 +718,39 @@ with st.sidebar:
     if user:
         st.markdown(f'<div class="user-chip" style="background:#FFCC00;color:#1A1A1A;'
                     f'padding:5px 14px;border-radius:20px;font-size:13px;font-weight:700">'
-                    f'Logged in as: {user}</div>', unsafe_allow_html=True)
+                    f'👤 {user}</div>', unsafe_allow_html=True)
         st.markdown("")
-        if st.button("Logout"):
-            st.session_state.logged_in_user = None
+        if st.button("Logout", use_container_width=True):
+            st.session_state.logged_in_user  = None
             st.session_state.show_login_form = False
+            st.session_state.app_unlocked    = False
+            st.session_state.login_mode      = None
             st.rerun()
     else:
-        if not st.session_state.show_login_form:
-            if st.button("Login"):
+        # Guest mode — offer admin upgrade without leaving the app
+        st.markdown('<div style="font-size:12px;color:#aaa;margin-bottom:6px">Browsing as Guest</div>',
+                    unsafe_allow_html=True)
+        if not st.session_state.get("show_login_form"):
+            if st.button("🔐 Admin Login", use_container_width=True):
                 st.session_state.show_login_form = True
                 st.rerun()
         else:
-            with st.form("login_form"):
-                uname = st.text_input("Username")
-                pin   = st.text_input("PIN", type="password")
-                ok    = st.form_submit_button("Sign in")
+            with st.form("sidebar_admin_form"):
+                uname = st.selectbox("Username", list(USERS.keys()))
+                pin   = st.text_input("PIN", type="password", placeholder="Enter PIN")
+                c1, c2 = st.columns(2)
+                with c1: ok   = st.form_submit_button("Sign In")
+                with c2: back = st.form_submit_button("Cancel")
+            if back:
+                st.session_state.show_login_form = False
+                st.rerun()
             if ok:
                 if uname in USERS and USERS[uname] == pin:
-                    st.session_state.logged_in_user   = uname
-                    st.session_state.show_login_form  = False
+                    st.session_state.logged_in_user  = uname
+                    st.session_state.show_login_form = False
                     st.rerun()
                 else:
-                    st.error("Incorrect username or PIN.")
+                    st.error("Incorrect PIN.")
 
     st.markdown("---")
 
