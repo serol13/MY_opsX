@@ -2,3 +2,4 @@ task_id,title,description,frequency,day_info,assigned_to,platform,created_by,cre
 REC-28748D,Volume Encode Past Week,,Weekly,Monday,serol,Others,serol,2026-03-07T02:15:26+08:00,Yes
 REC-20BF4E,Missing Lost Monthly Report,Send Missing Lost report to security team.,Monthly,5th,serol,Others,serol,2026-03-07T02:16:24+08:00,Yes
 REC-5C697C,POD Audit,Audit image,Daily,Every day,Syamil,Others,Syamil,2026-03-09T12:53:50+08:00,Yes
+REC-570B48,Hypercare Monitoring,Monitor and chase the depot to clear and update the hypercare shipments,Daily,Every day,Syamil,Others,Syamil,2026-03-09T15:28:52+08:00,Yes
