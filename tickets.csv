@@ -131,3 +131,7 @@ Target set by Amway:
 2026-03-12T10:46:22+08:00,CREATED,QA-6C7A81,SCNC Failure Distribution,Splunk,Medium,Backlog,0,Nazri,2026-03-12,scnc,Request failure distribution for Central,serol,,,,
 2026-03-12T11:26:29+08:00,UPDATED,QA-6C7A81,SCNC Failure Distribution,Splunk,High,Done,100,Nazri,2026-03-12,scnc,Request failure distribution for Central,serol,Share the files through ws,Complex,serol,
 2026-03-12T11:27:35+08:00,UPDATED,QA-7EE7E5,Volume Tracker Dashboard - Sales PIC volume,Power BI,High,In Progress,50,serol,2026-03-12,"sales, volume",Add sales lookup to map sales pic to account,serol,"Held a discussion with Gomathy & azihah. Azihah will update the files on daily basis, any movement for sales PIC will be on 15days cycle",Critical,serol,
+2026-03-12T11:28:31+08:00,UPDATED,QA-19955A,Amway Dashboard,Splunk,High,Done,100,serol,2026-03-12,amway,"add D+3 in summary panel 
+Target set by Amway:
+- Delivered next day (NC) = 70%
+- ⁠Delivered within 3 days (NC) = 99%",serol,added the view for total volume & percentage delivered in 3working days.,Complex,serol,
