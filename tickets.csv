@@ -135,3 +135,4 @@ Target set by Amway:
 Target set by Amway:
 - Delivered next day (NC) = 70%
 - ⁠Delivered within 3 days (NC) = 99%",serol,added the view for total volume & percentage delivered in 3working days.,Complex,serol,
+2026-03-12T11:29:45+08:00,UPDATED,QA-E50879,Missing Lost Report,Others,Medium,Done,100,serol,2026-03-06,"lost, missing",Add opsx email in daily missing lost report - have to raise ticket for 2244 server,serol,Report updated with opsx email as recipient,Simple,serol,
