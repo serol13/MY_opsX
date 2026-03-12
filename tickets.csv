@@ -123,3 +123,7 @@ Add filter to view monthly data",Syamil,Added summary by date,Medium,serol,
 7225104413050785 – 30 Oct 2025
 7226104346336685 – 01 Nov 2025
 ",Syamil,Already sent to email,Simple,serol,
+2026-03-12T10:44:23+08:00,CREATED,QA-19955A,Amway Dashboard,Splunk,High,Backlog,0,serol,2026-03-12,amway,"add D+3 in summary panel 
+Target set by Amway:
+- Delivered next day (NC) = 70%
+- ⁠Delivered within 3 days (NC) = 99%",serol,,,,
