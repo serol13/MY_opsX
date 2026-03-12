@@ -108,3 +108,8 @@ Depot Volume By Week to Daily volume by Depot
 2026-03-09T16:15:02+08:00,UPDATED,QA-B878FD,MY Hypercare Performance - Amway,Splunk,Medium,Done,100,Alyu,2026-03-06,"amway, dashboard","Add summary by day/date
 Add filter to view monthly data",Syamil,Added summary by date,Medium,serol,
 2026-03-09T16:18:22+08:00,UPDATED,QA-E50879,Missing Lost Report,Others,Medium,In Progress,80,serol,2026-03-06,"lost, missing",Add opsx email in daily missing lost report - have to raise ticket for 2244 server,Syamil,INC68853752 has been raised. waiting for update from IT support,Simple,serol,
+2026-03-12T10:18:30+08:00,CREATED,QA-8C3DF3,Request for POD by Aliah,Others,Medium,Backlog,0,Syamil,2026-03-12,,"Request POD images for this shipment
+
+7225104413050785 – 30 Oct 2025
+7226104346336685 – 01 Nov 2025
+",Syamil,[Email: muhammadsyamil.husmidi@dhl.com] ,,,
