@@ -6,3 +6,4 @@ timestamp,date,username,category,description,duration_min
 2026-03-09T16:18:22+08:00,2026-03-09,Syamil,Review,Updated QA-E50879 [Missing Lost Report] → In Progress 80% | INC68853752 has been raised. waiting for update from IT support,10
 2026-03-12T10:19:08+08:00,2026-03-12,Syamil,Review,Updated QA-8C3DF3 [Request for POD by Aliah] → Backlog 100% | Already sent to email,30
 2026-03-12T10:19:51+08:00,2026-03-12,Syamil,Review,Updated QA-8C3DF3 [Request for POD by Aliah] → Done 100% | Already sent to email,30
+2026-03-12T11:26:29+08:00,2026-03-12,serol,Review,Updated QA-6C7A81 [SCNC Failure Distribution] → Done 100% | Share the files through ws,45
