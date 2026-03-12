@@ -137,3 +137,4 @@ Target set by Amway:
 - ⁠Delivered within 3 days (NC) = 99%",serol,added the view for total volume & percentage delivered in 3working days.,Complex,serol,
 2026-03-12T11:29:45+08:00,UPDATED,QA-E50879,Missing Lost Report,Others,Medium,Done,100,serol,2026-03-06,"lost, missing",Add opsx email in daily missing lost report - have to raise ticket for 2244 server,serol,Report updated with opsx email as recipient,Simple,serol,
 2026-03-12T16:12:30+08:00,CREATED,QA-376404,Adding Samsung in Hypercare,Splunk,High,Backlog,0,Adillah,2026-03-12,"samsung, hypercare",add samsung in hypercare lookup,serol,,,,
+2026-03-12T16:13:31+08:00,UPDATED,QA-376404,Adding Samsung in Hypercare,Splunk,High,Done,100,Adillah,2026-03-12,"samsung, hypercare",add samsung in hypercare lookup,serol,add SAMSUNG SDS MALAYSIA SDN BHD in hypercare,Simple,serol,
