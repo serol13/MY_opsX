@@ -168,3 +168,13 @@ Target set by Amway:
 5247818428	AMWAY (MALAYSIA) SDN BHD	0005406835	AMWAY
 5247818428	AMWAY (MALAYSIA) SDN BHD	0005337988	AMWAY SHOP
 ",serol,It has been scheduled to send the report to depot at 8.20AM.,Complex,serol,
+2026-03-18T10:06:42+08:00,CREATED,QA-B65AE8,Self Collect Report for Chanel,Splunk,Critical,Backlog,0,Adillah,2026-03-18,"chanel, self collect","Requesting for Special Instruction | CHANEL (KUALA LUMPUR) SDN BHD.
+
+The SC auto-report should be set up similarly to the BA & RD reports, where the email is sent to the merchant (Chanel) and Copy (CC) to CS at mysupport@dhl.com.
+Upon receiving the report, the merchant (Chanel) can trigger the request to DHL CS by replying with the self-collection (SC) instruction.
+
+It would be preferable for the SC instruction to come directly from Chanel to ensure they are informed of the request. Couriers are advised to guide and direct any SC requests from the consignee to Chanel.
+-	If the consignee requests self-collection, the courier should inform them that shipments under Chanel require them to contact the merchant directly in order for the SC arrangement to be made.
+-	The courier will then need to scan the shipment under self-collect so that it appears in the auto-report to the merchant.
+Once the merchant receives the auto-report, they can liaise directly with the consignee to advise whether self-collection is possible and confirm the request. The merchant should then update DHLeC CS via email or the dedicated WhatsApp group so that the SC request can be raised in ODD. This ensures that all parties (Chanel, the consignee, and DHLeC) are aware of the request.
+",serol,,,,
