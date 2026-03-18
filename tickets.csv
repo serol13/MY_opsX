@@ -144,3 +144,15 @@ Target set by Amway:
 2026-03-17T10:14:16+08:00,UPDATED,QA-6AF447,Penalty Agent Labuan ,Others,Medium,Done,0,Syamil,2026-03-17,,proceed penalty RM 100 for agent Labuan due to failed to follow instruction to delivery urgent parcel regarding shipment 7027036594719966,Syamil,proceed penalty RM 100 for agent Labuan,Simple,Syamil,
 2026-03-17T10:15:35+08:00,UPDATED,QA-6AF447,Penalty Agent Labuan ,Others,Medium,Done,100,Syamil,2026-03-17,,proceed penalty RM 100 for agent Labuan due to failed to follow instruction to delivery urgent parcel regarding shipment 7027036594719966,Syamil,proceed penalty RM 100 for agent Labuan,Simple,Syamil,
 2026-03-18T10:02:35+08:00,CREATED,QA-0038C5,Request: Daily Chanel Parcel List for Depot Monitoring,Splunk,Medium,Backlog,0,Saidah,2026-03-18,close monitoring,Add chanel in close monitoring,serol,,,,
+2026-03-18T10:03:41+08:00,CREATED,QA-332901,Amway Delivery Failed Depot (Daily),Splunk,Critical,Backlog,0,Adillah,2026-03-18,amway,"Based on email subject above, I would like to request list of Amway shipment that failed delivery on previous day to be sent to depot on daily basis. Below is additional details fyi:
+
+1.	This report will be use by us during daily Amway-Hypercare meeting at 10am (kickoff: Wednesday, 18th March 2026)
+2.	Delivery depot is expected to give justification on the failure (genuine or not genuine, complete/incomplete POD, action taken/plan to delivered the shipment ASAP). 
+3.	Suggestion: Depot to get the report, latest by 8.30am.
+4.	Data should consists of these details; parcelid, ccn, delivery address, depot facility, ofd date, delivery failed date, attempt count, primary and secondary failure reason, call log (if any), call duration (if any).
+5.	Recipients should be the depot SV/TL.
+6.	Soldtoacc Amway as per below:
+5247818428	AMWAY (MALAYSIA) SDN BHD	5247818428	AMWAY (MALAYSIA) SDN BHD
+5247818428	AMWAY (MALAYSIA) SDN BHD	0005406835	AMWAY
+5247818428	AMWAY (MALAYSIA) SDN BHD	0005337988	AMWAY SHOP
+",serol,,,,
