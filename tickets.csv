@@ -182,3 +182,7 @@ Once the merchant receives the auto-report, they can liaise directly with the co
 Which mean monday 10 pm pickup also look for tue delivery for 1 day NC ?
 
 Hi, that will distort the reporting. Cuz we are suppose to pick and deliver next day irrespective of cutoff. Possible to make cutoff as 23:59 in all Amway reporting",serol,,,,
+2026-03-24T10:32:09+08:00,UPDATED,QA-1D289E,Recalculate EDD for Amway Dashboard,Splunk,Critical,In Review,80,Saurabh,2026-03-24,,"In amway dashboard...for 1 day SC/ NC number hope we are not putting any pickup cutoff?
+Which mean monday 10 pm pickup also look for tue delivery for 1 day NC ?
+
+Hi, that will distort the reporting. Cuz we are suppose to pick and deliver next day irrespective of cutoff. Possible to make cutoff as 23:59 in all Amway reporting",serol,extend the range to 120days and recalculate the EDD for startclockdate!=firstscanshow.,Critical,serol,
