@@ -178,3 +178,7 @@ It would be preferable for the SC instruction to come directly from Chanel to en
 -	The courier will then need to scan the shipment under self-collect so that it appears in the auto-report to the merchant.
 Once the merchant receives the auto-report, they can liaise directly with the consignee to advise whether self-collection is possible and confirm the request. The merchant should then update DHLeC CS via email or the dedicated WhatsApp group so that the SC request can be raised in ODD. This ensures that all parties (Chanel, the consignee, and DHLeC) are aware of the request.
 ",serol,,,,
+2026-03-24T10:30:30+08:00,CREATED,QA-1D289E,Recalculate EDD for Amway Dashboard,Splunk,Critical,Backlog,0,Saurabh,2026-03-24,,"In amway dashboard...for 1 day SC/ NC number hope we are not putting any pickup cutoff?
+Which mean monday 10 pm pickup also look for tue delivery for 1 day NC ?
+
+Hi, that will distort the reporting. Cuz we are suppose to pick and deliver next day irrespective of cutoff. Possible to make cutoff as 23:59 in all Amway reporting",serol,,,,
