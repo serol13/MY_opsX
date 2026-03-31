@@ -469,3 +469,36 @@ Please explore and suggest if failure reason summary should be enhance in this d
 ""Dashboard has been updated with depotcode columns.""
 
 for request on failure reason : ""Our current SCNC dashboard has the based data for failure reason. We will develop an analysis for failure reason in power BI under SCNC tab.""",Simple,serol,
+2026-04-01T01:04:51+08:00,UPDATED,QA-8935AB,New Dashboard,Splunk,Critical,In Progress,50,Alyu,6/03/2026,"dashboard, encoded","The objective is to view a summary of the overall status based on the selected encoded date.
+For example, when I filter the encoded date to 3rd February 2026, I should be able to see all shipments encoded on that date, along with a summary of their current overall status as of today.
+Please explore this requirement and share any limitations or challenges you may encounter in developing this dashboard.",serol,"explain to alyu and adillah in email
+
+""Dashboard Feasibility & Technical Challenges
+                                                              i.      The dashboard requirement is straightforward in concept — filter by encoded date, see all shipments from that date, and view their current status. However, given our current data infrastructure, there are significant technical challenges we need to address before development.
+
+ 
+
+The Core Problem: How Our Data is Stored in Splunk
+                                                              i.      Splunk is an event-logging platform, not a transactional database. Every time a parcel's status changes — whether it's picked up, in transit, out for delivery, or delivered — a new row is written. This means a single parcel can generate anywhere from 5 to 20+ log entries throughout its journey.
+
+                                                             ii.      With 1.6 million parcels per month, we're potentially dealing with 10 to 30+ million rows of data that need to be scanned and processed just to answer one simple question: ""What is the latest status of each parcel encoded on this date?""
+
+ 
+
+Specific Challenges
+                                                              i.      Identifying the ""latest"" status per parcel is expensive
+
+To show the current status of a parcel, we can't just pull all rows — we need to find the most recent row for each parcel. In Splunk, this requires a stats latest() or dedup operation across millions of records, which is computationally heavy and slow.
+                                                             ii.      Date filter doesn't reduce the scan size much
+
+Even when filtering by encoded date, Splunk still needs to trace the full history of every parcel from that date — including events that happened days or weeks later — to determine today's current status. The filtered date only narrows which parcels to look at, not how much data to scan.
+                                                           iii.      Query performance and timeout risk
+
+A single dashboard query that reconstructs the latest status for ~50,000–80,000 parcels encoded on one day (estimated daily volume) from a pool of millions of rows may exceed Splunk's query timeout limits, or return results so slowly it becomes unusable in a live dashboard.
+                                                           iv.      Concurrent usage multiplies the load
+
+If multiple users open the dashboard simultaneously with different date filters, the Splunk cluster will face parallel heavy queries, potentially degrading performance across all other operations that depend on Splunk.
+My Recommendation
+                                                              i.      Given these constraints, we recommend raising this request through APR and routing it to IT Support. Unlike our current Splunk setup, IT has direct database access where parcel records can be queried relationally and efficiently — making it far more suitable for this type of summary dashboard.
+
+                                                             ii.      With proper database access, IT would be able to build a scalable, performant solution that can handle our data volume without the limitations we face on Splunk. Any development done at that level will also be easier to maintain and extend as our operations grow.""",Critical,serol,
