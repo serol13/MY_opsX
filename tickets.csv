@@ -502,3 +502,4 @@ My Recommendation
                                                               i.      Given these constraints, we recommend raising this request through APR and routing it to IT Support. Unlike our current Splunk setup, IT has direct database access where parcel records can be queried relationally and efficiently — making it far more suitable for this type of summary dashboard.
 
                                                              ii.      With proper database access, IT would be able to build a scalable, performant solution that can handle our data volume without the limitations we face on Splunk. Any development done at that level will also be easier to maintain and extend as our operations grow.""",Critical,serol,
+2026-04-01T01:22:18+08:00,UPDATED,QA-C628F4,"Single Dashboard for Pickup, Encoded, Delivered daily",Others,Medium,Done,100,AlYu,,Report Request,,serol,closed this ticket and continue with ticket: QA-8935AB,Simple,serol,
