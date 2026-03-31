@@ -23,3 +23,4 @@ timestamp,date,username,category,description,duration_min
 2026-04-01T00:31:46+08:00,2026-04-01,serol,Review,Updated QA-B65AE8 [Self Collect Report for Chanel] → Done 100% | Merchant update they dont want any email report,20
 2026-04-01T00:33:05+08:00,2026-04-01,serol,Review,"Updated QA-332901 [Amway Delivery Failed Depot (Daily)] → In Progress 90% | added uniqlo to report list and renaming the report to priority merchant, tested and published",120
 2026-04-01T00:34:00+08:00,2026-04-01,serol,Review,Updated QA-0038C5 [Request: Daily Chanel Parcel List for Depot Monitoring] → Done 100% | tested and schedule the report in splunk,120
+2026-04-01T00:35:37+08:00,2026-04-01,serol,Review,Updated QA-0B65FA [OTP Feature Adjustment – VORWERK MALAYSIA ENTERPRISES SDN BHD - Sold-To: 9000000121] → Done 100% | adillah will reply to email,10
