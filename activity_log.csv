@@ -52,3 +52,6 @@ This is the closure summary of series of action taken to recover data lost du",3
 2026-04-01T00:57:38+08:00,2026-04-01,serol,Review,Updated QA-F98DA8 [Amendment In Backlog Dashboard] → Done 100% | add the panel in backlog dashboard,60
 2026-04-01T00:58:26+08:00,2026-04-01,serol,Review,Updated QA-FC4D29 [MY_EncodeDispatch_Daily report] → Done 100% | Setup and schedule the report in splunk,240
 2026-04-01T01:01:03+08:00,2026-04-01,serol,Review,"Updated QA-F34504 [Adding controllable and uncontrollable failure reason page in SCNC] → In Progress 50% | based data has been setup in sharepoint, next to build the measure",240
+2026-04-01T01:02:41+08:00,2026-04-01,serol,Review,"Updated QA-83FF9E [MY - Live Pickup Performance Today] → Done 100% | explain to alyu and adillah in email
+
+""It based on which one user pick : Job Creation, Job Acceptance, Job Start Date. I",40
