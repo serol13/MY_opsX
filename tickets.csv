@@ -189,3 +189,4 @@ Hi, that will distort the reporting. Cuz we are suppose to pick and deliver next
 2026-04-01T00:13:10+08:00,CREATED,QA-5E2F04,Recalculate EDD for Uniqlo Dashboard,Splunk,Critical,Backlog,0,Saurabh,2026-03-31,uniqlo,Recalculate EDD for uniqlo Dashboard same as amway,serol,,,,
 2026-04-01T00:18:09+08:00,UPDATED,QA-5E2F04,Recalculate EDD for Uniqlo Dashboard,Splunk,Critical,In Progress,80,Saurabh,2026-03-31,uniqlo,Recalculate EDD for uniqlo Dashboard same as amway,serol,"publish the dashboard and add the dropdown, pending target and benchmark",Critical,serol,
 2026-04-01T00:18:59+08:00,CREATED,QA-09A31F,Add raudhya,Splunk,High,Backlog,0,Adillah,2026-03-31,,Add raudhya into hypercare list and priority merchant,serol,,,,
+2026-04-01T00:19:28+08:00,UPDATED,QA-09A31F,Add raudhya,Splunk,Critical,Done,100,Adillah,2026-03-31,,Add raudhya into hypercare list and priority merchant,serol,Add raudhya into hypercare list and priority merchant,Medium,serol,
