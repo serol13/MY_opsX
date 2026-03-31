@@ -503,3 +503,4 @@ My Recommendation
 
                                                              ii.      With proper database access, IT would be able to build a scalable, performant solution that can handle our data volume without the limitations we face on Splunk. Any development done at that level will also be easier to maintain and extend as our operations grow.""",Critical,serol,
 2026-04-01T01:22:18+08:00,UPDATED,QA-C628F4,"Single Dashboard for Pickup, Encoded, Delivered daily",Others,Medium,Done,100,AlYu,,Report Request,,serol,closed this ticket and continue with ticket: QA-8935AB,Simple,serol,
+2026-04-01T01:35:44+08:00,UPDATED,QA-018128,WEB ENQUIRY,Others,Medium,Done,100,,24/01/2025,,Request by saurabh to check on 3month record for recipient,serol,shared to saurabh,Simple,serol,
