@@ -190,3 +190,13 @@ Hi, that will distort the reporting. Cuz we are suppose to pick and deliver next
 2026-04-01T00:18:09+08:00,UPDATED,QA-5E2F04,Recalculate EDD for Uniqlo Dashboard,Splunk,Critical,In Progress,80,Saurabh,2026-03-31,uniqlo,Recalculate EDD for uniqlo Dashboard same as amway,serol,"publish the dashboard and add the dropdown, pending target and benchmark",Critical,serol,
 2026-04-01T00:18:59+08:00,CREATED,QA-09A31F,Add raudhya,Splunk,High,Backlog,0,Adillah,2026-03-31,,Add raudhya into hypercare list and priority merchant,serol,,,,
 2026-04-01T00:19:28+08:00,UPDATED,QA-09A31F,Add raudhya,Splunk,Critical,Done,100,Adillah,2026-03-31,,Add raudhya into hypercare list and priority merchant,serol,Add raudhya into hypercare list and priority merchant,Medium,serol,
+2026-04-01T00:20:57+08:00,UPDATED,QA-B65AE8,Self Collect Report for Chanel,Splunk,Critical,In Review,85,Adillah,2026-03-18,"chanel, self collect","Requesting for Special Instruction | CHANEL (KUALA LUMPUR) SDN BHD.
+
+The SC auto-report should be set up similarly to the BA & RD reports, where the email is sent to the merchant (Chanel) and Copy (CC) to CS at mysupport@dhl.com.
+Upon receiving the report, the merchant (Chanel) can trigger the request to DHL CS by replying with the self-collection (SC) instruction.
+
+It would be preferable for the SC instruction to come directly from Chanel to ensure they are informed of the request. Couriers are advised to guide and direct any SC requests from the consignee to Chanel.
+-	If the consignee requests self-collection, the courier should inform them that shipments under Chanel require them to contact the merchant directly in order for the SC arrangement to be made.
+-	The courier will then need to scan the shipment under self-collect so that it appears in the auto-report to the merchant.
+Once the merchant receives the auto-report, they can liaise directly with the consignee to advise whether self-collection is possible and confirm the request. The merchant should then update DHLeC CS via email or the dedicated WhatsApp group so that the SC request can be raised in ODD. This ensures that all parties (Chanel, the consignee, and DHLeC) are aware of the request.
+",serol,already shared the sample report with sales/cs through email,Critical,serol,
