@@ -234,3 +234,8 @@ Once the merchant receives the auto-report, they can liaise directly with the co
 Overall volume (encoded) for MYKLG1 from 1-21 March 2026.
 Shipment volume for OFD under courier ID kumar100_lmpmy from 1–21 March 2026.
 If OFD data is not available, kindly provide the daily delivered and delivery failed volumes from 1-21 March 2026.",serol,,,,
+2026-04-01T00:39:25+08:00,UPDATED,QA-8A9E41,Request for Review of Delivery Rate Due to Rising Operating Costs,Splunk,High,Done,100,Tina,2026-03-31,"delivery rate, KLG, kumar100_lmpmy","Please assist Tina to provide below data:
+
+Overall volume (encoded) for MYKLG1 from 1-21 March 2026.
+Shipment volume for OFD under courier ID kumar100_lmpmy from 1–21 March 2026.
+If OFD data is not available, kindly provide the daily delivered and delivery failed volumes from 1-21 March 2026.",serol,Shared the file with tina on email,Medium,serol,
