@@ -31,3 +31,10 @@ timestamp,date,username,category,description,duration_min
 2026-04-01T00:48:39+08:00,2026-04-01,serol,Review,"Updated QA-C20841 [CNDN - CHUAN SIN SDN BHD - 12032615.52-5302955509-CHUAN SIN SDN BHD] → Done 100% | As per check, baizura wrongly upload the file in wrong folder thus directing the approval to go to kiattichai. Explanati",30
 2026-04-01T00:48:54+08:00,2026-04-01,serol,Review,"Updated QA-759832 [CNDN - CHUAN SIN SDN BHD - 12032615.52-5302955509-CHUAN SIN SDN BHD ] → Done 100% | As per check, baizura wrongly upload the file in wrong folder thus directing the approval to go to kiattichai. Explanati",30
 2026-04-01T00:50:45+08:00,2026-04-01,serol,Review,Updated QA-332901 [Amway Delivery Failed Depot (Daily)] → In Progress 90% | added raudhya (9000001040) into the list as well. tested the query to ensure lookup can sustain the failed volume,120
+2026-04-01T00:53:38+08:00,2026-04-01,serol,Review,"Updated QA-99E149 [Data Loss in Splunk] → Done 100% | Update from Tina under subjectemail: Production Issues: Splunk 
+
+Hi all,
+
+ 
+
+This is the closure summary of series of ac",30
