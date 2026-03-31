@@ -17,3 +17,4 @@ timestamp,date,username,category,description,duration_min
 2026-03-18T10:04:57+08:00,2026-03-18,serol,Review,Updated QA-332901 [Amway Delivery Failed Depot (Daily)] → In Progress 60% | It has been scheduled to send the report to depot at 8.20AM.,75
 2026-03-24T10:32:10+08:00,2026-03-24,serol,Review,Updated QA-1D289E [Recalculate EDD for Amway Dashboard] → In Review 80% | extend the range to 120days and recalculate the EDD for startclockdate!=firstscanshow.,480
 2026-04-01T00:18:10+08:00,2026-04-01,serol,Review,"Updated QA-5E2F04 [Recalculate EDD for Uniqlo Dashboard] → In Progress 80% | publish the dashboard and add the dropdown, pending target and benchmark",300
+2026-04-01T00:19:29+08:00,2026-04-01,serol,Review,Updated QA-09A31F [Add raudhya] → Done 100% | Add raudhya into hypercare list and priority merchant,60
