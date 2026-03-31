@@ -13,7 +13,6 @@ def fmt_ts(ts: str) -> str:
     """Convert ISO timestamp to dd/mm/yy hh:mm AM/PM"""
     if not ts: return "—"
     try:
-        # Handle both with and without timezone offset
         for fmt in ("%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S"):
             try:
                 dt = datetime.strptime(str(ts)[:25], fmt)
@@ -49,51 +48,29 @@ GITHUB_API   = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FILE_PATH}
 REC_API      = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{REC_PATH}"
 ACT_API      = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{ACT_PATH}"
 ACT_COLS     = ["timestamp", "date", "username", "category", "description", "duration_min"]
-# category: Meeting | Development | Review | Support | Admin | Other
 GH_HEADERS   = {
     "Authorization": f"token {GITHUB_TOKEN}",
     "Accept": "application/vnd.github.v3+json",
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
-# USERS  (stored in Streamlit secrets)
-# secrets.toml format:
-#   [users]
-#   serol   = "1234"
-#   ahmad   = "5678"
-#   nurul   = "9012"
-#   razif   = "3456"
+# USERS
 # ─────────────────────────────────────────────────────────────────────────────
 USERS: dict = dict(st.secrets.get("users", {}))
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CSV SCHEMA  — every action appends one row; nothing is ever overwritten
+# CSV SCHEMA
 # ─────────────────────────────────────────────────────────────────────────────
 CSV_COLS = [
-    "timestamp",   # ISO datetime of the action
-    "action",      # CREATED | UPDATED | DELETED
-    "ticket_id",   # QA-XXXXXX
-    "title",
-    "platform",    # Splunk | Power BI | Others
-    "priority",    # Low | Medium | High | Critical
-    "status",      # Backlog | In Progress | In Review | Blocked | Done
-    "progress",    # 0-100
-    "requestor",   # person who raised the original request
-    "due_date",
-    "tags",        # comma-separated
-    "description",
-    "updated_by",  # username (logged-in) or "Guest:<name>" (public submit)
-    "notes",        # comment added with this action
-    "complexity",   # Simple | Medium | Complex | Critical
-    "assigned_to",  # username from users list
-    "image",        # base64 encoded image (optional)
+    "timestamp", "action", "ticket_id", "title", "platform", "priority",
+    "status", "progress", "requestor", "due_date", "tags", "description",
+    "updated_by", "notes", "complexity", "assigned_to", "image",
 ]
 
 # ─────────────────────────────────────────────────────────────────────────────
 # GITHUB HELPERS
 # ─────────────────────────────────────────────────────────────────────────────
 def gh_load() -> tuple[pd.DataFrame, str | None]:
-    """Pull tickets.csv from GitHub. Returns (dataframe, sha)."""
     r = requests.get(GITHUB_API, headers=GH_HEADERS)
     if r.status_code == 404:
         return pd.DataFrame(columns=CSV_COLS), None
@@ -101,14 +78,12 @@ def gh_load() -> tuple[pd.DataFrame, str | None]:
     data    = r.json()
     content = base64.b64decode(data["content"]).decode("utf-8")
     df = pd.read_csv(io.StringIO(content), dtype=str).fillna("")
-    # ensure all expected columns exist
     for col in CSV_COLS:
         if col not in df.columns:
             df[col] = ""
     return df[CSV_COLS], data["sha"]
 
 def gh_append(new_row: dict) -> None:
-    """Append one row to tickets.csv and push to GitHub."""
     df, sha = gh_load()
     updated = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
     csv_bytes = updated.to_csv(index=False).encode("utf-8")
@@ -122,14 +97,9 @@ def gh_append(new_row: dict) -> None:
         payload["sha"] = sha
     r = requests.put(GITHUB_API, headers=GH_HEADERS, json=payload)
     r.raise_for_status()
-    # refresh session cache
     st.session_state.log_df = updated
 
 def current_tickets(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Derive the current state of every ticket by taking the
-    latest CREATED/UPDATED row per ticket_id, then removing DELETED ones.
-    """
     if df.empty:
         return pd.DataFrame(columns=CSV_COLS)
     active  = df[df["action"].isin(["CREATED", "UPDATED"])].copy()
@@ -143,12 +113,10 @@ def current_tickets(df: pd.DataFrame) -> pd.DataFrame:
     return latest[~latest["ticket_id"].isin(deleted)].reset_index(drop=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# RECURRING TASKS  — simple CRUD on recurring.csv
+# RECURRING TASKS
 # ─────────────────────────────────────────────────────────────────────────────
 REC_COLS = ["task_id","title","description","frequency","day_info",
             "assigned_to","platform","created_by","created_at","active"]
-# frequency: Daily | Weekly | Monthly
-# day_info: "Every day" | "Monday" | "1st of month" etc.
 
 def rec_load() -> tuple:
     r = requests.get(REC_API, headers=GH_HEADERS)
@@ -240,14 +208,17 @@ if "act_df" not in st.session_state:
 if "nav_page" not in st.session_state:
     st.session_state.nav_page = "Dashboard"
 
+# NEW: jump-to-ticket state
+if "jump_to_ticket" not in st.session_state:
+    st.session_state.jump_to_ticket = None
+
 # ── Unified Login Wall ────────────────────────────────────────────────────────
 GUEST_PIN = str(st.secrets.get("GUEST_PIN", ""))
 
 if "login_mode" not in st.session_state:
-    st.session_state.login_mode = None  # None | "admin" | "guest"
+    st.session_state.login_mode = None
 
 if GUEST_PIN and not st.session_state.app_unlocked:
-    # ── Branding header ───────────────────────────────────────────────────────
     st.markdown("""
     <style>
     .login-wrap{max-width:420px;margin:60px auto 0}
@@ -256,10 +227,6 @@ if GUEST_PIN and not st.session_state.app_unlocked:
     .login-brand{font-size:30px;font-weight:900;color:#D40511;letter-spacing:1px;margin-bottom:2px}
     .login-title{font-size:20px;font-weight:700;color:#1A1A1A;margin-bottom:4px}
     .login-sub{font-size:13px;color:#6B6B6B;margin-bottom:28px}
-    .mode-btn-row{display:flex;gap:12px;margin-bottom:8px}
-    .divider-label{text-align:center;font-size:12px;color:#9E9E9E;margin:18px 0 14px;
-                   border-bottom:1px solid #E0E0E0;line-height:0}
-    .divider-label span{background:#fff;padding:0 10px}
     </style>
     <div class="login-wrap">
       <div class="login-card">
@@ -273,7 +240,6 @@ if GUEST_PIN and not st.session_state.app_unlocked:
     with center:
         st.markdown("")
 
-        # ── Mode selector buttons ─────────────────────────────────────────────
         if st.session_state.login_mode is None:
             col_a, col_g = st.columns(2)
             with col_a:
@@ -285,7 +251,6 @@ if GUEST_PIN and not st.session_state.app_unlocked:
                     st.session_state.login_mode = "guest"
                     st.rerun()
 
-        # ── Admin login form ──────────────────────────────────────────────────
         elif st.session_state.login_mode == "admin":
             st.markdown("#### 🔐 Admin Login")
             with st.form("entry_admin_form"):
@@ -306,7 +271,6 @@ if GUEST_PIN and not st.session_state.app_unlocked:
                 else:
                     st.error("Incorrect PIN. Please try again.")
 
-        # ── Guest PIN form ────────────────────────────────────────────────────
         elif st.session_state.login_mode == "guest":
             st.markdown("#### 👤 Guest Access")
             st.caption("Enter the shared guest PIN to view the tracker.")
@@ -376,18 +340,16 @@ def progress_bar(pct, color=DHL_YELLOW):
         '<small style="color:#6B6B6B;font-size:12px">' + str(pct) + '% complete</small>'
     )
 
-
 # ─────────────────────────────────────────────────────────────────────────────
 # EMAIL NOTIFICATION
 # ─────────────────────────────────────────────────────────────────────────────
 def send_new_ticket_email(ticket: dict) -> None:
-    """Send email notification when a new ticket is submitted."""
     try:
         gmail_user     = st.secrets["GMAIL_USER"]
         gmail_password = st.secrets["GMAIL_APP_PASSWORD"]
         notify_email   = st.secrets["NOTIFY_EMAIL"]
     except KeyError:
-        return  # email not configured, skip silently
+        return
 
     subject = f"[Ops Excellence Tracker] New Ticket: {ticket['ticket_id']} — {ticket['title']}"
 
@@ -478,7 +440,6 @@ def build_excel(log_df: pd.DataFrame) -> bytes:
 
     wb = Workbook()
 
-    # ── Sheet 1: Full Audit Log ───────────────────────────────────────────────
     ws1 = wb.active
     ws1.title = "Audit Log"
     ws1.sheet_view.showGridLines = False
@@ -510,13 +471,12 @@ def build_excel(log_df: pd.DataFrame) -> bytes:
             cell.font   = Font(name="Arial", size=10, color=h(DHL_DARK))
             cell.fill   = PatternFill("solid", start_color=bg)
             cell.alignment = Alignment(vertical="center", wrap_text=(ci == 12))
-            if ci == 2:  # action column
+            if ci == 2:
                 ac = action_colors.get(str(val), h(DHL_GRAY))
                 cell.fill = PatternFill("solid", start_color=ac)
                 cell.font = Font(name="Arial", size=10, color="FFFFFF", bold=True)
                 cell.alignment = Alignment(horizontal="center", vertical="center")
 
-    # ── Sheet 2: Current Tickets ──────────────────────────────────────────────
     ws2 = wb.create_sheet("Current Tickets")
     ws2.sheet_view.showGridLines = False
 
@@ -567,7 +527,6 @@ def build_excel(log_df: pd.DataFrame) -> bytes:
                 cell.alignment = Alignment(horizontal="center", vertical="center")
                 cell.fill = PatternFill("solid", start_color=bg)
 
-    # ── Sheet 3: Summary ─────────────────────────────────────────────────────
     ws3 = wb.create_sheet("Summary")
     ws3.sheet_view.showGridLines = False
     for col, w in zip("ABCD", [22, 12, 14, 14]):
@@ -664,13 +623,20 @@ html,body,[class*="css"],.stApp{{font-family:'Roboto',sans-serif!important;backg
 .stTextInput>div>div>input,.stTextArea>div>div>textarea{{background:{DHL_WHITE}!important;color:{DHL_DARK}!important;border:1px solid {DHL_BORDER}!important;border-radius:5px!important}}
 .stSelectbox>div>div,.stMultiSelect>div>div{{background:{DHL_WHITE}!important;color:{DHL_DARK}!important}}
 .stSlider>div>div>div>div{{background:{DHL_YELLOW}!important}}
+.styled-ticket-table{{width:100%;border-collapse:collapse;font-size:13px}}
+.styled-ticket-table th{{background:{DHL_YELLOW};color:{DHL_DARK};font-weight:700;padding:9px 12px;text-align:left;border:1px solid {DHL_BORDER};white-space:nowrap}}
+.styled-ticket-table td{{padding:8px 12px;border:1px solid {DHL_BORDER};vertical-align:middle}}
+.styled-ticket-table tr:nth-child(odd) td{{background:#FFFFFF}}
+.styled-ticket-table tr:nth-child(even) td{{background:#F5F5F5}}
+.styled-ticket-table tr:hover td{{background:#FFF9E6!important}}
+.ticket-link-btn{{color:{DHL_RED};font-weight:700;font-size:12px;white-space:nowrap;font-family:'Roboto',sans-serif}}
 </style>
 """, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SIDEBAR
 # ─────────────────────────────────────────────────────────────────────────────
-user = st.session_state.logged_in_user  # None or username string
+user = st.session_state.logged_in_user
 
 with st.sidebar:
     st.markdown("""
@@ -679,12 +645,11 @@ with st.sidebar:
       <div style="font-size:12px;color:#aaa;margin-top:2px">Operation Excellence Tracker</div>
     </div>""", unsafe_allow_html=True)
 
-    # ── Login / user block ────────────────────────────────────────────────────
     st.markdown("---")
     if user:
-        st.markdown(f'<div class="user-chip" style="background:#FFCC00;color:#1A1A1A;'
-                    f'padding:5px 14px;border-radius:20px;font-size:13px;font-weight:700">'
-                    f'👤 {user}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="background:#FFCC00;color:#1A1A1A;padding:5px 14px;'
+                    f'border-radius:20px;font-size:13px;font-weight:700">👤 {user}</div>',
+                    unsafe_allow_html=True)
         st.markdown("")
         if st.button("Logout", use_container_width=True):
             st.session_state.logged_in_user  = None
@@ -693,7 +658,6 @@ with st.sidebar:
             st.session_state.login_mode      = None
             st.rerun()
     else:
-        # Guest mode — offer admin upgrade without leaving the app
         st.markdown('<div style="font-size:12px;color:#aaa;margin-bottom:6px">Browsing as Guest</div>',
                     unsafe_allow_html=True)
         if not st.session_state.get("show_login_form"):
@@ -720,7 +684,6 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # ── Navigation ────────────────────────────────────────────────────────────
     nav_options = ["Dashboard", "All Tickets", "Submit Request"]
     if user:
         nav_options += ["Recurring Tasks", "Update / Delete Ticket", "Activity Log"]
@@ -738,19 +701,18 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # ── Quick stats ───────────────────────────────────────────────────────────
     log_df  = st.session_state.log_df
     tickets = current_tickets(log_df)
     total   = len(tickets)
     done    = len(tickets[tickets["status"] == "Done"]) if not tickets.empty else 0
     blocked = len(tickets[tickets["status"] == "Blocked"]) if not tickets.empty else 0
-    # My Tasks count for logged-in user
+
     if user and not tickets.empty:
         my_tasks = tickets[
             (tickets.get("assigned_to", pd.Series(dtype=str)) == user) &
             (~tickets["status"].isin(["Done"]))
         ] if "assigned_to" in tickets.columns else pd.DataFrame()
-        my_count = len(my_tasks)
+        my_count   = len(my_tasks)
         my_blocked = len(my_tasks[my_tasks["status"] == "Blocked"]) if not my_tasks.empty else 0
         blocked_line = f'<div style="font-size:11px;color:#D40511;margin-top:2px;font-weight:700">{my_blocked} blocked</div>' if my_blocked else ""
         st.markdown(f"""
@@ -768,7 +730,6 @@ with st.sidebar:
                 st.session_state.nav_page = "Update / Delete Ticket"
                 st.rerun()
 
-    # Recurring tasks count
     rec_df_sb = st.session_state.rec_df
     if user and not rec_df_sb.empty:
         my_rec = rec_df_sb[(rec_df_sb["assigned_to"] == user) & (rec_df_sb["active"] == "Yes")]
@@ -794,7 +755,6 @@ with st.sidebar:
     </div>""", unsafe_allow_html=True)
     st.markdown("")
 
-    # ── Export + Refresh ─────────────────────────────────────────────────────
     if not log_df.empty:
         excel_data = build_excel(log_df)
         st.download_button(
@@ -812,14 +772,13 @@ with st.sidebar:
             except Exception as e:
                 st.error(str(e))
 
-# ── Page is always driven by session state, never by radio directly ──────────
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE ROUTING
+# ─────────────────────────────────────────────────────────────────────────────
 page    = st.session_state.nav_page
-
-# Refresh local references after sidebar
 log_df  = st.session_state.log_df
 tickets = current_tickets(log_df)
 
-# ── Plotly defaults ───────────────────────────────────────────────────────────
 CHART = dict(
     paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor=DHL_WHITE,
     font=dict(color=DHL_DARK, family="Roboto"),
@@ -827,9 +786,6 @@ CHART = dict(
     margin=dict(t=40, b=20, l=10, r=10),
 )
 
-# ─────────────────────────────────────────────────────────────────────────────
-# PAGE HEADER helper
-# ─────────────────────────────────────────────────────────────────────────────
 PAGE_META = {
     "Dashboard":              ("Dashboard Overview",        "Live summary of all Operation Excellence requests"),
     "All Tickets":            ("All Tickets",               "Browse and filter every submitted ticket"),
@@ -909,24 +865,19 @@ if page == "Dashboard":
             fig4.update_traces(textposition="outside", marker_line_width=0)
             st.plotly_chart(fig4, use_container_width=True)
 
-        # Activity timeline from audit log
         if not log_df.empty:
-            st.markdown('<div class="section-header">Activity Timeline</div>',
-                        unsafe_allow_html=True)
+            st.markdown('<div class="section-header">Activity Timeline</div>', unsafe_allow_html=True)
             tl = log_df.copy()
             tl["date"] = tl["timestamp"].str[:10]
             daily = tl.groupby(["date","action"]).size().reset_index(name="count")
             fig5 = px.bar(daily, x="date", y="count", color="action",
                           title="Daily Actions",
-                          color_discrete_map={"CREATED":"#2E7D32",
-                                              "UPDATED":"#0078D4",
-                                              "DELETED":"#D40511"})
+                          color_discrete_map={"CREATED":"#2E7D32","UPDATED":"#0078D4","DELETED":"#D40511"})
             fig5.update_layout(**CHART, xaxis=dict(gridcolor=DHL_BORDER),
                                yaxis=dict(gridcolor=DHL_BORDER))
             st.plotly_chart(fig5, use_container_width=True)
 
-        st.markdown('<div class="section-header">Recent Tickets</div>',
-                    unsafe_allow_html=True)
+        st.markdown('<div class="section-header">Recent Tickets</div>', unsafe_allow_html=True)
         recent = df.sort_values("timestamp", ascending=False).head(5)
         for _, t in recent.iterrows():
             pct = int(float(t.get("progress", 0) or 0))
@@ -938,23 +889,19 @@ if page == "Dashboard":
             )
             complexity_badge = badge("Complexity: " + str(t.get("complexity","")), "#555555") if t.get("complexity") else ""
             assigned_badge   = badge("Assigned: " + str(t.get("assigned_to","")), "#1A1A1A", DHL_YELLOW) if t.get("assigned_to") else ""
-            ticket_id_val    = t["ticket_id"]
-            requestor_val    = t.get("requestor","")
-            due_val          = t.get("due_date","—")
-            title_val        = t["title"]
-            plat_badge       = badge(t["platform"],  PLATFORM_COLORS.get(t["platform"],  DHL_GRAY))
-            stat_badge       = badge(t["status"],    STATUS_COLORS.get(t["status"],       DHL_GRAY))
-            prio_badge       = badge(t["priority"],  PRIORITY_COLORS.get(t["priority"],   DHL_GRAY))
             st.markdown(
                 '<div class="ticket-card">'
-                + f'<div class="ticket-id">{ticket_id_val} · {requestor_val} · Due {due_val}</div>'
-                + f'<div class="ticket-title">{title_val}</div>'
-                + '<div class="pills">' + plat_badge + stat_badge + prio_badge + complexity_badge + assigned_badge + tag_html + '</div>'
+                + f'<div class="ticket-id">{t["ticket_id"]} · {t.get("requestor","")} · Due {t.get("due_date","—")}</div>'
+                + f'<div class="ticket-title">{t["title"]}</div>'
+                + '<div class="pills">'
+                + badge(t["platform"], PLATFORM_COLORS.get(t["platform"], DHL_GRAY))
+                + badge(t["status"],   STATUS_COLORS.get(t["status"],    DHL_GRAY))
+                + badge(t["priority"], PRIORITY_COLORS.get(t["priority"], DHL_GRAY))
+                + complexity_badge + assigned_badge + tag_html + '</div>'
                 + progress_bar(pct, bc)
                 + '</div>',
                 unsafe_allow_html=True)
 
-        # ── Recurring Tasks on Dashboard ──────────────────────────────────
         rec_df_dash = st.session_state.rec_df
         active_rec  = rec_df_dash[rec_df_dash["active"] == "Yes"] if not rec_df_dash.empty else pd.DataFrame()
         if not active_rec.empty:
@@ -994,7 +941,7 @@ elif page == "All Tickets":
         with fc3: fr = st.multiselect("Priority", PRIORITY_ORDER, default=PRIORITY_ORDER)
         with fc4: fq = st.text_input("Search", placeholder="title / requestor...")
 
-        df = tickets
+        df = tickets.copy()
         df = df[df["platform"].isin(fp) & df["status"].isin(fs) & df["priority"].isin(fr)]
         if fq:
             mask = (df["title"].str.contains(fq, case=False, na=False) |
@@ -1016,11 +963,11 @@ elif page == "All Tickets":
             if sort_by == "Progress (high to low)": return -int(row["progress"]) if str(row["progress"]).isdigit() else 0
             return row.get("due_date","")
 
-        df = df.copy()
         df["_sk"] = df.apply(skey, axis=1)
         df = df.sort_values("_sk", ascending=(sort_by not in ["Newest first","Progress (high to low)"]))
         st.caption(f"Showing {len(df)} ticket(s)")
 
+        # ── CARDS VIEW ────────────────────────────────────────────────────────
         if view_mode == "Cards":
             for _, t in df.iterrows():
                 pct = int(float(t.get("progress", 0) or 0))
@@ -1034,33 +981,28 @@ elif page == "All Tickets":
                 desc_short = desc[:200] + ("..." if len(desc) > 200 else "")
                 complexity_badge = badge("Complexity: " + str(t.get("complexity","")), "#555555") if t.get("complexity") else ""
                 assigned_badge   = badge("Assigned: " + str(t.get("assigned_to","")), "#1A1A1A", DHL_YELLOW) if t.get("assigned_to") else ""
-                ticket_id_val = t["ticket_id"]
-                requestor_val = t.get("requestor","")
-                due_val       = t.get("due_date","—")
-                assigned_val  = t.get("assigned_to","Unassigned")
-                updated_val   = t.get("updated_by","")
-                title_val     = t["title"]
-                plat_badge    = badge(t["platform"],  PLATFORM_COLORS.get(t["platform"],  DHL_GRAY))
-                stat_badge    = badge(t["status"],    STATUS_COLORS.get(t["status"],       DHL_GRAY))
-                prio_badge    = badge(t["priority"],  PRIORITY_COLORS.get(t["priority"],   DHL_GRAY))
                 st.markdown(
                     '<div class="ticket-card">'
-                    + f'<div class="ticket-id">{ticket_id_val} · {requestor_val} · Due {due_val} · Assigned: {assigned_val} · Updated by {updated_val}</div>'
-                    + f'<div class="ticket-title">{title_val}</div>'
-                    + '<div class="pills">' + plat_badge + stat_badge + prio_badge + complexity_badge + assigned_badge + tag_html + '</div>'
+                    + f'<div class="ticket-id">{t["ticket_id"]} · {t.get("requestor","")} · Due {t.get("due_date","—")} · Assigned: {t.get("assigned_to","Unassigned")} · Updated by {t.get("updated_by","")}</div>'
+                    + f'<div class="ticket-title">{t["title"]}</div>'
+                    + '<div class="pills">'
+                    + badge(t["platform"], PLATFORM_COLORS.get(t["platform"], DHL_GRAY))
+                    + badge(t["status"],   STATUS_COLORS.get(t["status"],    DHL_GRAY))
+                    + badge(t["priority"], PRIORITY_COLORS.get(t["priority"], DHL_GRAY))
+                    + complexity_badge + assigned_badge + tag_html + '</div>'
                     + progress_bar(pct, bc)
                     + f'<p style="color:#6B6B6B;font-size:13px;margin-top:6px">{desc_short}</p>'
                     + '</div>',
                     unsafe_allow_html=True)
+
+        # ── TABLE VIEW ────────────────────────────────────────────────────────
         else:
-            # ── Column-level filters ──────────────────────────────────────────
             st.markdown("#### Column Filters")
             tf1, tf2, tf3, tf4, tf5 = st.columns(5)
             with tf1:
                 all_assigned = sorted([x for x in df["assigned_to"].dropna().unique() if x])
                 tf_assigned = st.multiselect("Assigned To", all_assigned, default=all_assigned, key="tf_assigned")
             with tf2:
-                all_complexity = [c for c in COMPLEXITY_ORDER if c in df["complexity"].values]
                 tf_complexity = st.multiselect("Complexity", COMPLEXITY_ORDER,
                                                default=[c for c in COMPLEXITY_ORDER if c in df["complexity"].values],
                                                key="tf_complexity")
@@ -1078,7 +1020,6 @@ elif page == "All Tickets":
                 all_updaters = sorted([x for x in df["updated_by"].dropna().unique() if x])
                 tf_updater = st.multiselect("Last Updated By", all_updaters, default=all_updaters, key="tf_updater")
 
-            # Apply column filters
             df_tbl = df.copy()
             df_tbl["progress"] = pd.to_numeric(df_tbl["progress"], errors="coerce").fillna(0).astype(int)
             if tf_assigned:
@@ -1099,49 +1040,99 @@ elif page == "All Tickets":
 
             st.caption(f"Showing {len(df_tbl)} ticket(s)")
 
-            # Build display table with all relevant columns
-            show = ["ticket_id","title","platform","priority","complexity",
-                    "status","progress","requestor","assigned_to",
-                    "due_date","tags","updated_by","timestamp","notes"]
-            df_display = df_tbl[[c for c in show if c in df_tbl.columns]].copy()
-            df_display["timestamp"] = df_display["timestamp"].apply(fmt_ts)
-            df_display["progress"]  = df_display["progress"].astype(str) + "%"
+            # ── Helper badge functions for HTML table ─────────────────────────
+            def status_cell(val):
+                c = STATUS_COLORS.get(val, "#9E9E9E")
+                return f'<span style="background:{c};color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;white-space:nowrap">{val}</span>'
 
-            # Colour-map status and priority columns using pandas Styler
-            def colour_status(val):
-                c = STATUS_COLORS.get(val, "")
-                return f"background-color:{c};color:#fff;font-weight:700;border-radius:4px;padding:2px 6px" if c else ""
-            def colour_priority(val):
-                c = PRIORITY_COLORS.get(val, "")
-                return f"background-color:{c};color:#fff;font-weight:700;border-radius:4px;padding:2px 6px" if c else ""
-            def colour_complexity(val):
-                c = COMPLEXITY_COLORS.get(val, "")
-                return f"background-color:{c};color:#fff;font-weight:700;border-radius:4px;padding:2px 6px" if c else ""
+            def priority_cell(val):
+                c = PRIORITY_COLORS.get(val, "#9E9E9E")
+                return f'<span style="background:{c};color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;white-space:nowrap">{val}</span>'
 
-            styled = (
-                df_display
-                .rename(columns={
-                    "ticket_id":   "Ticket ID",
-                    "title":       "Title",
-                    "platform":    "Platform",
-                    "priority":    "Priority",
-                    "complexity":  "Complexity",
-                    "status":      "Status",
-                    "progress":    "Progress",
-                    "requestor":   "Requestor",
-                    "assigned_to": "Assigned To",
-                    "due_date":    "Due Date",
-                    "tags":        "Tags",
-                    "updated_by":  "Last Updated By",
-                    "timestamp":   "Last Updated At",
-                    "notes":       "Latest Notes",
-                })
-                .style
-                .applymap(colour_status,     subset=["Status"])
-                .applymap(colour_priority,   subset=["Priority"])
-                .applymap(colour_complexity, subset=["Complexity"])
+            def complexity_cell(val):
+                if not val:
+                    return '<span style="color:#9E9E9E">—</span>'
+                c = COMPLEXITY_COLORS.get(val, "#9E9E9E")
+                return f'<span style="background:{c};color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;white-space:nowrap">{val}</span>'
+
+            def platform_cell(val):
+                c = PLATFORM_COLORS.get(val, DHL_GRAY)
+                return f'<span style="background:{c};color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;white-space:nowrap">{val}</span>'
+
+            def progress_cell(val):
+                pct = int(val) if str(val).replace('.','',1).isdigit() else 0
+                bar = (f'<div style="background:#E0E0E0;border-radius:3px;height:8px;width:70px;'
+                       f'display:inline-block;vertical-align:middle;margin-right:5px">'
+                       f'<div style="background:{DHL_YELLOW};width:{pct}%;height:100%;border-radius:3px"></div></div>')
+                return f'{bar}<span style="font-size:12px;color:{DHL_DARK}">{pct}%</span>'
+
+            # ── Build HTML table ──────────────────────────────────────────────
+            headers = ["Ticket ID", "Title", "Platform", "Priority", "Complexity",
+                       "Status", "Progress", "Requestor", "Assigned To",
+                       "Due Date", "Tags", "Last Updated By", "Last Updated At", "Latest Notes"]
+
+            header_html = "".join(f"<th>{h}</th>" for h in headers)
+
+            rows_html = ""
+            for _, row in df_tbl.iterrows():
+                tid        = str(row.get("ticket_id", ""))
+                title_disp = str(row.get("title", ""))
+                title_disp = title_disp[:55] + "…" if len(title_disp) > 55 else title_disp
+                notes_disp = str(row.get("notes", ""))
+                notes_disp = notes_disp[:70] + "…" if len(notes_disp) > 70 else notes_disp
+                ts_disp    = fmt_ts(row.get("timestamp", ""))
+                tags_disp  = str(row.get("tags", ""))
+
+                rows_html += (
+                    f"<tr>"
+                    f'<td style="white-space:nowrap"><span class="ticket-link-btn">{tid}</span></td>'
+                    f"<td>{title_disp}</td>"
+                    f"<td>{platform_cell(row.get('platform',''))}</td>"
+                    f"<td>{priority_cell(row.get('priority',''))}</td>"
+                    f"<td>{complexity_cell(row.get('complexity',''))}</td>"
+                    f"<td>{status_cell(row.get('status',''))}</td>"
+                    f"<td style='min-width:130px'>{progress_cell(row.get('progress',0))}</td>"
+                    f"<td style='white-space:nowrap'>{row.get('requestor','')}</td>"
+                    f"<td style='white-space:nowrap'>{row.get('assigned_to','—')}</td>"
+                    f"<td style='white-space:nowrap'>{row.get('due_date','—')}</td>"
+                    f"<td style='font-size:11px;color:{DHL_GRAY}'>{tags_disp}</td>"
+                    f"<td style='white-space:nowrap'>{row.get('updated_by','')}</td>"
+                    f"<td style='white-space:nowrap'>{ts_disp}</td>"
+                    f"<td style='font-size:12px;color:{DHL_GRAY}'>{notes_disp}</td>"
+                    f"</tr>"
+                )
+
+            st.markdown(
+                f'<div style="overflow-x:auto;border:1px solid {DHL_BORDER};border-radius:8px">'
+                f'<table class="styled-ticket-table">'
+                f'<thead><tr>{header_html}</tr></thead>'
+                f'<tbody>{rows_html}</tbody>'
+                f'</table></div>',
+                unsafe_allow_html=True
             )
-            st.dataframe(styled, use_container_width=True, hide_index=True)
+
+            # ── Jump buttons (admin only) — one per ticket ────────────────────
+            if user and not df_tbl.empty:
+                st.markdown("")
+                st.markdown(
+                    f'<div style="background:#FFF9E6;border:1px solid {DHL_YELLOW};border-radius:6px;'
+                    f'padding:8px 14px;font-size:13px;color:#7a6000;margin-bottom:8px">'
+                    f'🔗 Click a ticket button below to open it in the editor</div>',
+                    unsafe_allow_html=True
+                )
+                # Render buttons in rows of 8
+                tids = df_tbl["ticket_id"].tolist()
+                cols_per_row = 8
+                for row_start in range(0, len(tids), cols_per_row):
+                    chunk = tids[row_start:row_start + cols_per_row]
+                    btn_cols = st.columns(len(chunk))
+                    for i, tid in enumerate(chunk):
+                        with btn_cols[i]:
+                            if st.button(tid, key=f"jump_{tid}"):
+                                st.session_state.jump_to_ticket = tid
+                                st.session_state.nav_page = "Update / Delete Ticket"
+                                st.session_state.my_tasks_mode = False
+                                st.rerun()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PAGE: RECURRING TASKS
@@ -1150,7 +1141,6 @@ elif page == "Recurring Tasks":
     rec_df   = st.session_state.rec_df
     FREQ_COLORS = {"Daily": "#2E7D32", "Weekly": "#0078D4", "Monthly": "#6A0DAD"}
 
-    # ── Add new task (logged-in only) ─────────────────────────────────────────
     if user:
         with st.expander("+ Add New Recurring Task", expanded=False):
             rc1, rc2 = st.columns(2)
@@ -1198,7 +1188,6 @@ elif page == "Recurring Tasks":
         st.markdown('<div class="readonly-banner">Login to add or edit recurring tasks.</div>',
                     unsafe_allow_html=True)
 
-    # ── Filter + view ─────────────────────────────────────────────────────────
     if rec_df.empty:
         st.info("No recurring tasks yet. Login and add the first one above.")
     else:
@@ -1251,7 +1240,8 @@ elif page == "Recurring Tasks":
                             with st.spinner("Updating..."):
                                 try:
                                     df_cur, sha = rec_load()
-                                    df_cur.loc[df_cur["task_id"] == r["task_id"], "active"] =                                         "No" if r.get("active") == "Yes" else "Yes"
+                                    df_cur.loc[df_cur["task_id"] == r["task_id"], "active"] = \
+                                        "No" if r.get("active") == "Yes" else "Yes"
                                     rec_save(df_cur, sha, f"[TOGGLE] {r['task_id']} by {user}")
                                     st.rerun()
                                 except Exception as e:
@@ -1267,7 +1257,7 @@ elif page == "Recurring Tasks":
                                     st.error(str(e))
 
 # ─────────────────────────────────────────────────────────────────────────────
-# PAGE: SUBMIT REQUEST  (open to everyone)
+# PAGE: SUBMIT REQUEST
 # ─────────────────────────────────────────────────────────────────────────────
 elif page == "Submit Request":
     if not user:
@@ -1283,27 +1273,26 @@ elif page == "Submit Request":
             platform_val = st.selectbox("Platform *", ["Splunk","Power BI","Others"])
             priority_val = st.selectbox("Priority *", PRIORITY_ORDER)
         with c2:
-            # If logged in, pre-fill name but still allow editing
-            default_name = user if user else ""
+            default_name  = user if user else ""
             requestor_val = st.text_input("Your Name *", value=default_name,
                                           placeholder="Enter your name")
             requestor_email = st.text_input("Your Email (optional)", placeholder="e.g. you@example.com")
             due_val  = st.date_input("Target Due Date", value=date.today())
             tags_val = st.text_input("Tags (comma-separated)", placeholder="e.g. kpi, finance, Q2")
-        desc_val = st.text_area("Description / Requirements *",
-                                placeholder="Describe the request in detail...", height=150)
+        desc_val  = st.text_area("Description / Requirements *",
+                                 placeholder="Describe the request in detail...", height=150)
         notes_val = st.text_input("Notes (optional)", placeholder="Any additional notes for this submission...")
         submitted = st.form_submit_button("Submit Ticket")
 
     if submitted:
         missing = []
-        if not title_val:    missing.append("Ticket Title")
+        if not title_val:     missing.append("Ticket Title")
         if not requestor_val: missing.append("Your Name")
-        if not desc_val:     missing.append("Description / Requirements")
+        if not desc_val:      missing.append("Description / Requirements")
         if missing:
             st.error(f"Please fill in the following required fields: **{', '.join(missing)}**")
         else:
-            tid = "QA-" + str(uuid.uuid4())[:6].upper()
+            tid        = "QA-" + str(uuid.uuid4())[:6].upper()
             updated_by = user if user else f"Guest:{requestor_val}"
             email_note = f"[Email: {requestor_email.strip()}] " if requestor_email.strip() else ""
             row = {
@@ -1343,7 +1332,7 @@ elif page == "Submit Request":
                     st.error(f"GitHub sync failed: {e}")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# PAGE: UPDATE / DELETE  (logged-in only)
+# PAGE: UPDATE / DELETE TICKET
 # ─────────────────────────────────────────────────────────────────────────────
 elif page == "Update / Delete Ticket":
     if not user:
@@ -1356,7 +1345,7 @@ elif page == "Update / Delete Ticket":
             st.markdown(f"""
             <div style="background:#FFCC00;border-radius:6px;padding:8px 14px;
                         margin-bottom:12px;font-size:13px;font-weight:700;color:#1A1A1A">
-              Showing tickets assigned to you. 
+              Showing tickets assigned to you.
             </div>""", unsafe_allow_html=True)
             col_back, _ = st.columns([1,3])
             with col_back:
@@ -1365,10 +1354,9 @@ elif page == "Update / Delete Ticket":
                     st.session_state.nav_page = "Update / Delete Ticket"
                     st.rerun()
 
-        # Filter + sort before dropdown
+        # Filter by status
         uf1, uf2 = st.columns([1, 2])
         with uf1:
-            # Default: if my_tasks_mode, pre-select non-Done statuses
             default_statuses = [s for s in STATUS_ORDER if s != "Done"]
             filter_status = st.multiselect(
                 "Filter by Status", STATUS_ORDER,
@@ -1380,7 +1368,6 @@ elif page == "Update / Delete Ticket":
 
         filtered_tickets = tickets[tickets["status"].isin(filter_status)] if filter_status else tickets
 
-        # Apply My Tasks filter on top
         if st.session_state.get("my_tasks_mode") and "assigned_to" in filtered_tickets.columns:
             filtered_tickets = filtered_tickets[filtered_tickets["assigned_to"] == user]
 
@@ -1395,29 +1382,35 @@ elif page == "Update / Delete Ticket":
 
         options = {f"[{r['status']}] {r['ticket_id']} - {r['title']}": r['ticket_id']
                    for _, r in filtered_tickets.iterrows()}
-        sel_label = st.selectbox("Select Ticket", list(options.keys()))
+
+        # Determine default index — honour jump_to_ticket if set
+        default_idx = 0
+        jumped_id = st.session_state.get("jump_to_ticket")
+        if jumped_id:
+            vals = list(options.values())
+            if jumped_id in vals:
+                default_idx = vals.index(jumped_id)
+            st.session_state.jump_to_ticket = None  # clear after use
+
+        sel_label = st.selectbox("Select Ticket", list(options.keys()), index=default_idx)
         sel_id    = options[sel_label]
         t         = tickets[tickets["ticket_id"] == sel_id].iloc[0]
 
-        # Show current state
+        # Current state card
         pct = int(float(t.get("progress", 0) or 0))
         complexity_badge = badge("Complexity: " + str(t.get("complexity","")), "#555555") if t.get("complexity") else ""
         assigned_badge   = badge("Assigned: " + str(t.get("assigned_to","Unassigned")), "#1A1A1A", DHL_YELLOW) if t.get("assigned_to") else badge("Unassigned", "#9E9E9E")
-        ticket_id_val = t["ticket_id"]
-        requestor_val = t.get("requestor","")
-        due_val       = t.get("due_date","")
-        title_val     = t["title"]
-        desc_val      = t.get("description","")
-        plat_badge    = badge(t["platform"],  PLATFORM_COLORS.get(t["platform"],  DHL_GRAY))
-        stat_badge    = badge(t["status"],    STATUS_COLORS.get(t["status"],       DHL_GRAY))
-        prio_badge    = badge(t["priority"],  PRIORITY_COLORS.get(t["priority"],   DHL_GRAY))
         st.markdown(
             '<div class="ticket-card">'
-            + f'<div class="ticket-id">{ticket_id_val} · Requestor: {requestor_val} · Due: {due_val}</div>'
-            + f'<div class="ticket-title">{title_val}</div>'
-            + '<div class="pills">' + plat_badge + stat_badge + prio_badge + complexity_badge + assigned_badge + '</div>'
+            + f'<div class="ticket-id">{t["ticket_id"]} · Requestor: {t.get("requestor","")} · Due: {t.get("due_date","")}</div>'
+            + f'<div class="ticket-title">{t["title"]}</div>'
+            + '<div class="pills">'
+            + badge(t["platform"], PLATFORM_COLORS.get(t["platform"], DHL_GRAY))
+            + badge(t["status"],   STATUS_COLORS.get(t["status"],    DHL_GRAY))
+            + badge(t["priority"], PRIORITY_COLORS.get(t["priority"], DHL_GRAY))
+            + complexity_badge + assigned_badge + '</div>'
             + progress_bar(pct, STATUS_COLORS.get(t["status"], DHL_YELLOW))
-            + f'<p style="color:#6B6B6B;font-size:13px;margin-top:6px">{desc_val}</p>'
+            + f'<p style="color:#6B6B6B;font-size:13px;margin-top:6px">{t.get("description","")}</p>'
             + '</div>',
             unsafe_allow_html=True)
 
@@ -1426,14 +1419,12 @@ elif page == "Update / Delete Ticket":
         cur_status     = t["status"]     if t["status"]     in STATUS_ORDER     else STATUS_ORDER[0]
         cur_priority   = t["priority"]   if t["priority"]   in PRIORITY_ORDER   else PRIORITY_ORDER[0]
         cur_complexity = t.get("complexity","") if t.get("complexity","") in COMPLEXITY_ORDER else COMPLEXITY_ORDER[0]
-        with uc1: new_status     = st.selectbox("Status",     STATUS_ORDER,
-                                                 index=STATUS_ORDER.index(cur_status))
-        with uc2: new_priority   = st.selectbox("Priority",   PRIORITY_ORDER,
-                                                 index=PRIORITY_ORDER.index(cur_priority))
-        with uc3: new_progress   = st.slider("Progress %", 0, 100, pct, step=5)
+        with uc1: new_status   = st.selectbox("Status",   STATUS_ORDER,   index=STATUS_ORDER.index(cur_status))
+        with uc2: new_priority = st.selectbox("Priority", PRIORITY_ORDER, index=PRIORITY_ORDER.index(cur_priority))
+        with uc3: new_progress = st.slider("Progress %", 0, 100, pct, step=5)
 
         uc4,uc5 = st.columns(2)
-        user_list = list(USERS.keys())
+        user_list    = list(USERS.keys())
         cur_assigned = t.get("assigned_to","") if t.get("assigned_to","") in user_list else user_list[0]
         with uc4: new_complexity = st.selectbox("Complexity", COMPLEXITY_ORDER,
                                                  index=COMPLEXITY_ORDER.index(cur_complexity))
@@ -1472,13 +1463,12 @@ elif page == "Update / Delete Ticket":
                 with st.spinner("Saving to GitHub..."):
                     try:
                         gh_append(row)
-                        # Auto-log to activity tracker
                         act_append({
-                            "timestamp":   now8().isoformat(timespec="seconds"),
-                            "date":        now8().strftime("%Y-%m-%d"),
-                            "username":    user,
-                            "category":   "Review",
-                            "description": f"Updated {sel_id} [{t['title']}] → {new_status} {new_progress}% | {new_notes.strip()[:120]}",
+                            "timestamp":    now8().isoformat(timespec="seconds"),
+                            "date":         now8().strftime("%Y-%m-%d"),
+                            "username":     user,
+                            "category":    "Review",
+                            "description":  f"Updated {sel_id} [{t['title']}] → {new_status} {new_progress}% | {new_notes.strip()[:120]}",
                             "duration_min": str(time_taken),
                         })
                         st.success(f"Ticket {sel_id} updated and logged to CSV.")
@@ -1486,7 +1476,7 @@ elif page == "Update / Delete Ticket":
                     except Exception as e:
                         st.error(f"GitHub sync failed: {e}")
 
-        # History for this ticket
+        # Ticket history
         ticket_log = log_df[log_df["ticket_id"] == sel_id].sort_values("timestamp", ascending=False)
         if not ticket_log.empty:
             st.markdown("#### History for this ticket")
@@ -1512,7 +1502,7 @@ elif page == "Update / Delete Ticket":
                   {f'<div style="font-size:13px;color:{DHL_GRAY};margin-top:4px">{row["notes"]}</div>' if row.get("notes") else ""}
                 </div>""", unsafe_allow_html=True)
 
-        # Delete
+        # Delete zone
         st.markdown("---")
         with st.expander("Danger Zone"):
             st.warning("This logs a DELETED action. The ticket will be removed from the active view but the full history is preserved in the CSV.")
@@ -1540,13 +1530,12 @@ elif page == "Update / Delete Ticket":
                     with st.spinner("Logging deletion..."):
                         try:
                             gh_append(row)
-                            # Auto-log to activity tracker
                             act_append({
-                                "timestamp":   now8().isoformat(timespec="seconds"),
-                                "date":        now8().strftime("%Y-%m-%d"),
-                                "username":    user,
-                                "category":   "Admin",
-                                "description": f"Deleted {sel_id} [{t['title']}] | Reason: {del_note.strip()[:120]}",
+                                "timestamp":    now8().isoformat(timespec="seconds"),
+                                "date":         now8().strftime("%Y-%m-%d"),
+                                "username":     user,
+                                "category":    "Admin",
+                                "description":  f"Deleted {sel_id} [{t['title']}] | Reason: {del_note.strip()[:120]}",
                                 "duration_min": "5",
                             })
                             st.success("Ticket deleted from active view. History preserved in CSV.")
@@ -1555,7 +1544,7 @@ elif page == "Update / Delete Ticket":
                             st.error(f"GitHub sync failed: {e}")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# PAGE: ACTIVITY LOG  (admin only — GitHub-style heatmap + daily entries)
+# PAGE: ACTIVITY LOG
 # ─────────────────────────────────────────────────────────────────────────────
 elif page == "Activity Log":
     if not user:
@@ -1574,7 +1563,6 @@ elif page == "Activity Log":
 
     act_df = st.session_state.act_df
 
-    # ── Log new activity ──────────────────────────────────────────────────────
     with st.expander("➕ Log Today's Activity", expanded=True):
         lc1, lc2, lc3 = st.columns([2, 1, 1])
         with lc1:
@@ -1606,10 +1594,8 @@ elif page == "Activity Log":
 
     st.markdown("---")
 
-    # ── Build heatmap data ────────────────────────────────────────────────────
     import numpy as np
 
-    # Filter to selected user scope
     view_scope = st.radio("View", ["My Activity", "All Team"], horizontal=True)
     heatmap_df = act_df.copy() if not act_df.empty else pd.DataFrame(columns=ACT_COLS)
 
@@ -1621,15 +1607,13 @@ elif page == "Activity Log":
         heatmap_df = heatmap_df.dropna(subset=["date"])
         heatmap_df["duration_min"] = pd.to_numeric(heatmap_df["duration_min"], errors="coerce").fillna(0)
 
-        # ── GitHub-style contribution heatmap ─────────────────────────────────
         st.markdown('<div class="section-header">Contribution Heatmap</div>', unsafe_allow_html=True)
 
-        today = date.today()
-        # Show last 52 weeks (364 days) + pad to start on Sunday
+        today      = date.today()
         end_date   = today
         start_date = today - timedelta(days=364)
-
         date_range = pd.date_range(start=start_date, end=end_date, freq="D")
+
         daily_counts = heatmap_df.groupby("date")["duration_min"].sum().reset_index()
         daily_counts.columns = ["date", "total_min"]
         daily_counts["date"] = pd.to_datetime(daily_counts["date"])
@@ -1638,26 +1622,23 @@ elif page == "Activity Log":
         date_df = date_df.merge(daily_counts, on="date", how="left").fillna(0)
         date_df["total_min"] = date_df["total_min"].astype(int)
 
-        # Pad to start on Monday (weekday 0)
-        pad_start = date_df["date"].iloc[0].weekday()  # 0=Mon
+        pad_start = date_df["date"].iloc[0].weekday()
         padded = pd.concat([
             pd.DataFrame({"date": [None]*pad_start, "total_min": [None]*pad_start}),
             date_df
         ], ignore_index=True)
 
-        # Reshape into weeks × 7
         num_weeks = int(np.ceil(len(padded) / 7))
         while len(padded) < num_weeks * 7:
             padded = pd.concat([padded, pd.DataFrame({"date":[None],"total_min":[None]})], ignore_index=True)
 
-        grid = padded["total_min"].values.reshape(num_weeks, 7)
+        grid      = padded["total_min"].values.reshape(num_weeks, 7)
         date_grid = padded["date"].values.reshape(num_weeks, 7)
 
-        # Build colour levels (0=empty, 1-4 intensity)
         max_val = max(date_df["total_min"].max(), 1)
+
         def intensity_color(v):
-            if v is None or (isinstance(v, float) and np.isnan(v)):
-                return "#EEEEEE"
+            if v is None or (isinstance(v, float) and np.isnan(v)): return "#EEEEEE"
             if v == 0: return "#EEEEEE"
             ratio = v / max_val
             if ratio < 0.25:  return "#C6E48B"
@@ -1665,17 +1646,16 @@ elif page == "Activity Log":
             if ratio < 0.75:  return "#239A3B"
             return "#196127"
 
-        # Render heatmap as HTML table
-        days_label = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+        days_label  = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
         month_labels = []
-        last_month = None
+        last_month   = None
         for w in range(num_weeks):
             for d in range(7):
                 cell_date = date_grid[w, d]
                 if cell_date is not None and not (isinstance(cell_date, float) and np.isnan(cell_date)):
                     try:
                         dt = pd.Timestamp(cell_date)
-                        m = dt.strftime("%b")
+                        m  = dt.strftime("%b")
                         if m != last_month:
                             month_labels.append((w, m))
                             last_month = m
@@ -1695,9 +1675,9 @@ elif page == "Activity Log":
         for d in range(7):
             cells = ""
             for w in range(num_weeks):
-                val = grid[w, d]
-                col = intensity_color(val)
-                tip = ""
+                val       = grid[w, d]
+                col       = intensity_color(val)
+                tip       = ""
                 cell_date = date_grid[w, d]
                 if cell_date is not None and not (isinstance(cell_date, float) and np.isnan(cell_date)):
                     try:
@@ -1720,7 +1700,7 @@ elif page == "Activity Log":
         )
 
         total_days_logged = int((date_df["total_min"] > 0).sum())
-        total_mins = int(date_df["total_min"].sum())
+        total_mins        = int(date_df["total_min"].sum())
 
         st.markdown(f"""
         <div style="background:#fff;border:1px solid #E0E0E0;border-radius:10px;padding:20px 24px;margin-bottom:16px;overflow-x:auto">
@@ -1738,7 +1718,6 @@ elif page == "Activity Log":
         </div>
         """, unsafe_allow_html=True)
 
-        # ── Per-user summary cards (team view) ───────────────────────────────
         if view_scope == "All Team":
             st.markdown('<div class="section-header">Team Summary</div>', unsafe_allow_html=True)
             team_sum = (
@@ -1750,7 +1729,7 @@ elif page == "Activity Log":
             cols = st.columns(min(len(team_sum), 4))
             for i, (_, row) in enumerate(team_sum.iterrows()):
                 with cols[i % len(cols)]:
-                    hrs = int(row["total_min"]) // 60
+                    hrs  = int(row["total_min"]) // 60
                     mins = int(row["total_min"]) % 60
                     st.markdown(f"""
                     <div class="metric-card">
@@ -1759,7 +1738,6 @@ elif page == "Activity Log":
                       <div style="font-size:11px;color:#6B6B6B">{int(row['entries'])} entries logged</div>
                     </div>""", unsafe_allow_html=True)
 
-        # ── Category breakdown ────────────────────────────────────────────────
         st.markdown('<div class="section-header">Category Breakdown</div>', unsafe_allow_html=True)
         cat_sum = (
             heatmap_df.groupby("category")["duration_min"].sum()
@@ -1768,17 +1746,15 @@ elif page == "Activity Log":
         if not cat_sum.empty:
             fig_cat = px.bar(
                 cat_sum, x="category", y="duration_min",
-                color="category",
-                color_discrete_map=ACT_COLORS,
+                color="category", color_discrete_map=ACT_COLORS,
                 labels={"duration_min": "Total Minutes", "category": "Category"},
                 title="Time by Category",
             )
             fig_cat.update_layout(**CHART)
             st.plotly_chart(fig_cat, use_container_width=True)
 
-        # ── Recent entries table ──────────────────────────────────────────────
         st.markdown('<div class="section-header">Recent Entries</div>', unsafe_allow_html=True)
-        show_user = st.selectbox("Filter by user", ["All"] + sorted(act_df["username"].unique().tolist()), key="act_user_filter") if view_scope == "All Team" else user
+        show_user   = st.selectbox("Filter by user", ["All"] + sorted(act_df["username"].unique().tolist()), key="act_user_filter") if view_scope == "All Team" else user
         recent_acts = heatmap_df.copy()
         if show_user != "All" and view_scope == "All Team":
             recent_acts = recent_acts[recent_acts["username"] == show_user]
@@ -1786,7 +1762,7 @@ elif page == "Activity Log":
 
         for _, row in recent_acts.iterrows():
             cat_col = ACT_COLORS.get(row.get("category","Other"), "#6B6B6B")
-            dur = int(float(row.get("duration_min", 0) or 0))
+            dur     = int(float(row.get("duration_min", 0) or 0))
             hrs_str = f"{dur//60}h {dur%60}m" if dur >= 60 else f"{dur}m"
             st.markdown(f"""
             <div style="background:#fff;border:1px solid #E0E0E0;border-left:4px solid {cat_col};
