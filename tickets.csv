@@ -250,3 +250,11 @@ Kindly assist to check why this CN was routed to Kiattichai.",serol,,,,
 
 
 Kindly assist to check why this CN was routed to Kiattichai.",serol,,,,
+2026-04-01T00:48:38+08:00,UPDATED,QA-C20841,CNDN - CHUAN SIN SDN BHD - 12032615.52-5302955509-CHUAN SIN SDN BHD,Others,High,Done,100,Baizura,2026-03-31,cndn,"Hi Asrol,
+
+
+Kindly assist to check why this CN was routed to Kiattichai.",serol,"As per check, baizura wrongly upload the file in wrong folder thus directing the approval to go to kiattichai. Explanation has been done through email.
+
+""Hi Baizura/Vijaya,
+
+As per check, file was uploaded in folder “Above MYR 500,000”. Thus, it will follow hierarchy approval which include Kiattichai as third approval.""",Complex,serol,
