@@ -229,3 +229,8 @@ Once the merchant receives the auto-report, they can liaise directly with the co
 2026-04-01T00:33:59+08:00,UPDATED,QA-0038C5,Request: Daily Chanel Parcel List for Depot Monitoring,Splunk,Medium,Done,100,Saidah,18/03/2026,close monitoring,Add chanel in close monitoring,serol,tested and schedule the report in splunk,Medium,serol,
 2026-04-01T00:35:29+08:00,UPDATED,QA-0B65FA,OTP Feature Adjustment – VORWERK MALAYSIA ENTERPRISES SDN BHD - Sold-To: 9000000121,Others,High,Done,100,Syamil,9/03/2026,SI,special instruction for Vorwerk,serol,adillah will reply to email,Medium,Adillah,
 2026-04-01T00:36:07+08:00,UPDATED,QA-CF3E37,Pickup Daily KPI Report,Splunk,Medium,Done,100,Farid,6/03/2026,pickup,Remove Farid from auto email splunk,serol,Removed,Simple,serol,
+2026-04-01T00:38:17+08:00,CREATED,QA-8A9E41,Request for Review of Delivery Rate Due to Rising Operating Costs,Splunk,High,Backlog,0,Tina,2026-03-31,"delivery rate, KLG, kumar100_lmpmy","Please assist Tina to provide below data:
+
+Overall volume (encoded) for MYKLG1 from 1-21 March 2026.
+Shipment volume for OFD under courier ID kumar100_lmpmy from 1–21 March 2026.
+If OFD data is not available, kindly provide the daily delivered and delivery failed volumes from 1-21 March 2026.",serol,,,,
