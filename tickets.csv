@@ -458,3 +458,6 @@ Preventive actions:
 2026-04-01T00:58:25+08:00,UPDATED,QA-FC4D29,MY_EncodeDispatch_Daily report,Others,Medium,Done,100,,,,Sending a report generated from splunk via server,serol,Setup and schedule the report in splunk,Complex,serol,
 2026-04-01T00:59:51+08:00,CREATED,QA-F34504,Adding controllable and uncontrollable failure reason page in SCNC,Power BI,Critical,Backlog,0,serol,2026-03-31,"scnc, failure reason",add 1 page to show trend and analysis for failure reason,serol,,,,
 2026-04-01T01:01:02+08:00,UPDATED,QA-F34504,Adding controllable and uncontrollable failure reason page in SCNC,Power BI,Critical,In Progress,50,serol,2026-03-31,"scnc, failure reason",add 1 page to show trend and analysis for failure reason,serol,"based data has been setup in sharepoint, next to build the measure",Critical,serol,
+2026-04-01T01:02:40+08:00,UPDATED,QA-83FF9E,MY - Live Pickup Performance Today,Splunk,Medium,Done,100,Alyu,6/03/2026,"pickup, enquiry","The difference of the Base Time (filter: Job Creation, Job Acceptance, Job Start Date)",serol,"explain to alyu and adillah in email
+
+""It based on which one user pick : Job Creation, Job Acceptance, Job Start Date. It simply follow whatever appear on Apollo web version. Samples below was taken by filtering on 9 March 2026.""",Medium,serol,
