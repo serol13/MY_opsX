@@ -461,3 +461,11 @@ Preventive actions:
 2026-04-01T01:02:40+08:00,UPDATED,QA-83FF9E,MY - Live Pickup Performance Today,Splunk,Medium,Done,100,Alyu,6/03/2026,"pickup, enquiry","The difference of the Base Time (filter: Job Creation, Job Acceptance, Job Start Date)",serol,"explain to alyu and adillah in email
 
 ""It based on which one user pick : Job Creation, Job Acceptance, Job Start Date. It simply follow whatever appear on Apollo web version. Samples below was taken by filtering on 9 March 2026.""",Medium,serol,
+2026-04-01T01:03:51+08:00,UPDATED,QA-3AC6EE,MY - Delivery Today,Splunk,Low,Done,100,Alyu,6/03/2026,"dashboard, delivery, enhancement","The summary available for overall courier ID. Unable to identify the courier under which depot. Suggestion: Add filter for facility or add column of facility next to courier ID.
+Failure reason summarized by region. Need this by facility and courier as well.
+In the last column of data, there is column that indicate 10pm delivery. Can we change 10pm to 12pm (prenoon)?
+Please explore and suggest if failure reason summary should be enhance in this dashboard or create PBI for delivery which include failure reason analysis.",serol,"explain to alyu and adillah in email
+
+""Dashboard has been updated with depotcode columns.""
+
+for request on failure reason : ""Our current SCNC dashboard has the based data for failure reason. We will develop an analysis for failure reason in power BI under SCNC tab.""",Simple,serol,
