@@ -456,3 +456,4 @@ Preventive actions:
 2026-04-01T00:56:56+08:00,UPDATED,QA-018128,WEB ENQUIRY,Others,Medium,Done,100,,24/01/2025,,Request by saurabh to check on 3month record for recipient,serol,shared the update to saurabh on email,Medium,serol,
 2026-04-01T00:57:36+08:00,UPDATED,QA-F98DA8,Amendment In Backlog Dashboard,Others,Medium,Done,100,AlYu,10/04/2025,,Additional panel in Backlog Dashboard to show shipment pending at depot,serol,add the panel in backlog dashboard,Medium,serol,
 2026-04-01T00:58:25+08:00,UPDATED,QA-FC4D29,MY_EncodeDispatch_Daily report,Others,Medium,Done,100,,,,Sending a report generated from splunk via server,serol,Setup and schedule the report in splunk,Complex,serol,
+2026-04-01T00:59:51+08:00,CREATED,QA-F34504,Adding controllable and uncontrollable failure reason page in SCNC,Power BI,Critical,Backlog,0,serol,2026-03-31,"scnc, failure reason",add 1 page to show trend and analysis for failure reason,serol,,,,
