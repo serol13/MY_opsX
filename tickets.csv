@@ -277,3 +277,62 @@ As per check, file was uploaded in folder “Above MYR 500,000”. Thus, it will
 5247818428	AMWAY (MALAYSIA) SDN BHD	0005406835	AMWAY
 5247818428	AMWAY (MALAYSIA) SDN BHD	0005337988	AMWAY SHOP
 ",serol,added raudhya (9000001040) into the list as well. tested the query to ensure lookup can sustain the failed volume,Complex,serol,
+2026-04-01T00:53:37+08:00,UPDATED,QA-99E149,Data Loss in Splunk,Splunk,Critical,Done,100,,,,Data loss affecting both MY and TH,serol,"Update from Tina under subjectemail: Production Issues: Splunk 
+
+Hi all,
+
+ 
+
+This is the closure summary of series of action taken to recover data lost due to disk storage full in Splunk farm happened in last Nov 2025.
+
+ 
+
+Problem Statement:
+
+Splunk indexers (where data stored) are running out of disk space – issue started from beginning of Nov 2025 when Splunk team have observed very high data load from other business services. As result the indexers started to purge the oldest data bucket from each server to make space for new incoming data.
+
+ 
+
+Action taken to resolve storage issue in Splunk farm:
+
+Immediate action taken via 2 change requests (RFC2089523 and RFC2093129) to increase to disk space from 10TB to 12TB per server, total of 100TB of new disk added into Splunk farm infrastructure on 20th Nov and 1st Dec 2025.
+
+ 
+
+Action taken to recover data lost from 4 summary indexes below:
+
+ecs_single_parcel_permanent
+
+ecs_my_scnc
+
+ecs_th_scnc_edd
+
+ecs_th_scnc_sc_score
+
+ 
+
+1) 7 service ticket requests logged for data bucket restoration from 45 Splunk indexers (PRG and CBJ).
+
+2) The full backup used for data restoration dated on 17/18/19 of Oct 2025, this is the latest full backup copy prior the increase of disk used in Splunk farm. Buckets restored in 2 standalone test servers.
+
+3) Splunk indexes are rebuilt in test servers after data restoration tasks are completed by Shift/backup team.
+
+4) Data validation is conducted by DeC team.
+
+ 
+
+Result of data validation:
+
+1) Parcel volumes from Jan to May 2025 are reconciled closely.
+
+2) Data from June to Sept 2025 does not reconcile, as the counts of encoded parcels versus what is available in the EDD and SCNC indexes do not align for both countries.
+
+3) No further action/restoration can be done as the restoration has been completed and this represents the maximum data that could be recovered.
+
+ 
+
+Preventive actions:
+
+1) Implemented data volume based monitoring and alerting for sudden increase of data ingested per index in farm. Follow up action with service owner to rectify the issue/possible action to reduce the volume.
+
+2) Continuous improvement action via PRB0198118 to improve the indexing rate of Splunk",Medium,serol,
