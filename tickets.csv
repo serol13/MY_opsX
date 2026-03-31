@@ -214,3 +214,15 @@ It would be preferable for the SC instruction to come directly from Chanel to en
 -	The courier will then need to scan the shipment under self-collect so that it appears in the auto-report to the merchant.
 Once the merchant receives the auto-report, they can liaise directly with the consignee to advise whether self-collection is possible and confirm the request. The merchant should then update DHLeC CS via email or the dedicated WhatsApp group so that the SC request can be raised in ODD. This ensures that all parties (Chanel, the consignee, and DHLeC) are aware of the request.
 ",serol,Merchant update they dont want any email report,Critical,serol,
+2026-04-01T00:33:04+08:00,UPDATED,QA-332901,Amway Delivery Failed Depot (Daily),Splunk,Critical,In Progress,90,Adillah,18/03/2026,amway,"Based on email subject above, I would like to request list of Amway shipment that failed delivery on previous day to be sent to depot on daily basis. Below is additional details fyi:
+
+1.	This report will be use by us during daily Amway-Hypercare meeting at 10am (kickoff: Wednesday, 18th March 2026)
+2.	Delivery depot is expected to give justification on the failure (genuine or not genuine, complete/incomplete POD, action taken/plan to delivered the shipment ASAP). 
+3.	Suggestion: Depot to get the report, latest by 8.30am.
+4.	Data should consists of these details; parcelid, ccn, delivery address, depot facility, ofd date, delivery failed date, attempt count, primary and secondary failure reason, call log (if any), call duration (if any).
+5.	Recipients should be the depot SV/TL.
+6.	Soldtoacc Amway as per below:
+5247818428	AMWAY (MALAYSIA) SDN BHD	5247818428	AMWAY (MALAYSIA) SDN BHD
+5247818428	AMWAY (MALAYSIA) SDN BHD	0005406835	AMWAY
+5247818428	AMWAY (MALAYSIA) SDN BHD	0005337988	AMWAY SHOP
+",serol,"added uniqlo to report list and renaming the report to priority merchant, tested and published",Complex,serol,
