@@ -21,3 +21,4 @@ timestamp,date,username,category,description,duration_min
 2026-04-01T00:20:58+08:00,2026-04-01,serol,Review,Updated QA-B65AE8 [Self Collect Report for Chanel] → In Review 85% | already shared the sample report with sales/cs through email,240
 2026-04-01T00:30:55+08:00,2026-04-01,serol,Review,Updated QA-1D289E [Recalculate EDD for Amway Dashboard] → Done 80% | Publish and share the update to alyu and saurabh,240
 2026-04-01T00:31:46+08:00,2026-04-01,serol,Review,Updated QA-B65AE8 [Self Collect Report for Chanel] → Done 100% | Merchant update they dont want any email report,20
+2026-04-01T00:33:05+08:00,2026-04-01,serol,Review,"Updated QA-332901 [Amway Delivery Failed Depot (Daily)] → In Progress 90% | added uniqlo to report list and renaming the report to priority merchant, tested and published",120
