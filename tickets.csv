@@ -227,3 +227,4 @@ Once the merchant receives the auto-report, they can liaise directly with the co
 5247818428	AMWAY (MALAYSIA) SDN BHD	0005337988	AMWAY SHOP
 ",serol,"added uniqlo to report list and renaming the report to priority merchant, tested and published",Complex,serol,
 2026-04-01T00:33:59+08:00,UPDATED,QA-0038C5,Request: Daily Chanel Parcel List for Depot Monitoring,Splunk,Medium,Done,100,Saidah,18/03/2026,close monitoring,Add chanel in close monitoring,serol,tested and schedule the report in splunk,Medium,serol,
+2026-04-01T00:35:29+08:00,UPDATED,QA-0B65FA,OTP Feature Adjustment – VORWERK MALAYSIA ENTERPRISES SDN BHD - Sold-To: 9000000121,Others,High,Done,100,Syamil,9/03/2026,SI,special instruction for Vorwerk,serol,adillah will reply to email,Medium,Adillah,
