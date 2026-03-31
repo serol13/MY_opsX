@@ -265,3 +265,15 @@ Kindly assist to check why this CN was routed to Kiattichai.",serol,"As per chec
 ""Hi Baizura/Vijaya,
 
 As per check, file was uploaded in folder “Above MYR 500,000”. Thus, it will follow hierarchy approval which include Kiattichai as third approval.""",Complex,serol,
+2026-04-01T00:50:44+08:00,UPDATED,QA-332901,Amway Delivery Failed Depot (Daily),Splunk,Critical,In Progress,90,Adillah,18/03/2026,amway,"Based on email subject above, I would like to request list of Amway shipment that failed delivery on previous day to be sent to depot on daily basis. Below is additional details fyi:
+
+1.	This report will be use by us during daily Amway-Hypercare meeting at 10am (kickoff: Wednesday, 18th March 2026)
+2.	Delivery depot is expected to give justification on the failure (genuine or not genuine, complete/incomplete POD, action taken/plan to delivered the shipment ASAP). 
+3.	Suggestion: Depot to get the report, latest by 8.30am.
+4.	Data should consists of these details; parcelid, ccn, delivery address, depot facility, ofd date, delivery failed date, attempt count, primary and secondary failure reason, call log (if any), call duration (if any).
+5.	Recipients should be the depot SV/TL.
+6.	Soldtoacc Amway as per below:
+5247818428	AMWAY (MALAYSIA) SDN BHD	5247818428	AMWAY (MALAYSIA) SDN BHD
+5247818428	AMWAY (MALAYSIA) SDN BHD	0005406835	AMWAY
+5247818428	AMWAY (MALAYSIA) SDN BHD	0005337988	AMWAY SHOP
+",serol,added raudhya (9000001040) into the list as well. tested the query to ensure lookup can sustain the failed volume,Complex,serol,
