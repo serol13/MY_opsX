@@ -1318,13 +1318,23 @@ elif st.session_state.nav_page == "Submit Request":
                     "category": category
                 }
                 
+                with st.spinner("Saving to GitHub..."):
                 try:
-                    gh_append(new_ticket)
-                    send_new_ticket_email(new_ticket)
-                    st.success(f"Ticket {tid} created successfully! Due date: {calculated_due_date}")
-                    st.balloons()
+                    gh_append(row)
+                    send_new_ticket_email(row)
+                    st.success(f"Ticket **{tid}** submitted and logged to CSV.")
+                    st.markdown(f"""<div class="ticket-card">
+                      <div class="ticket-id">{tid}</div>
+                      <div class="ticket-title">{title_val}</div>
+                      <div class="pills">
+                        {badge(platform_val, PLATFORM_COLORS.get(platform_val, DHL_GRAY))}
+                        {badge('Backlog', STATUS_COLORS['Backlog'])}
+                        {badge(priority_val, PRIORITY_COLORS.get(priority_val, DHL_GRAY))}
+                      </div>
+                      <small style="color:{DHL_GRAY}">Logged by: {updated_by}</small>
+                    </div>""", unsafe_allow_html=True)
                 except Exception as e:
-                    st.error(f"Error submitting ticket: {e}")
+                    st.error(f"GitHub sync failed: {e}")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PAGE: UPDATE / DELETE TICKET
