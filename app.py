@@ -1274,37 +1274,61 @@ elif page == "Submit Request":
             'Login (top-left) to enable ticket updates and deletions.</div>',
             unsafe_allow_html=True)
 
+    PRIORITY_NEW = {
+        "R1 (Within 24 hours)": 1,
+        "R2 (Within 2 days)": 2,
+        "R3 (Within 5 days)": 5
+    }
+
     with st.form("submit_form", clear_on_submit=True):
-        c1,c2 = st.columns(2)
+        c1, c2 = st.columns(2)
+
         with c1:
-            title_val    = st.text_input("Ticket Title *", placeholder="e.g. Sales Dashboard KPI refresh")
-            platform_val = st.selectbox("Platform *", ["Splunk","Power BI","Others"])
-            priority_val = st.selectbox("Priority *", PRIORITY_ORDER)
+            title_val = st.text_input("Ticket Title *", placeholder="e.g. Sales Dashboard KPI refresh")
+            platform_val = st.selectbox("Platform *", ["Splunk", "Power BI", "Others"])
+            priority_val = st.selectbox("Priority *", list(PRIORITY_NEW.keys()))
+
         with c2:
-            default_name  = user if user else ""
-            requestor_val = st.text_input("Your Name *", value=default_name,
-                                          placeholder="Enter your name")
+            default_name = user if user else ""
+            requestor_val = st.text_input("Your Name *", value=default_name, placeholder="Enter your name")
             requestor_email = st.text_input("Your Email (optional)", placeholder="e.g. you@example.com")
-            due_val  = st.date_input("Target Due Date", value=date.today())
             tags_val = st.text_input("Tags (comma-separated)", placeholder="e.g. kpi, finance, Q2")
-        desc_val  = st.text_area("Description / Requirements *",
-                                 placeholder="Describe the request in detail...", height=150)
+
+        desc_val = st.text_area("Description / Requirements *",
+                                placeholder="Describe the request in detail...", height=150)
         notes_val = st.text_input("Notes (optional)", placeholder="Any additional notes for this submission...")
+
         submitted = st.form_submit_button("Submit Ticket")
 
     if submitted:
+        # Validate
         missing = []
-        if not title_val:     missing.append("Ticket Title")
+        if not title_val: missing.append("Ticket Title")
         if not requestor_val: missing.append("Your Name")
-        if not desc_val:      missing.append("Description / Requirements")
+        if not desc_val: missing.append("Description / Requirements")
+
         if missing:
             st.error(f"Please fill in the following required fields: **{', '.join(missing)}**")
         else:
-            tid        = "QA-" + str(uuid.uuid4())[:6].upper()
+            tid = "QA-" + str(uuid.uuid4())[:6].upper()
             updated_by = user if user else f"Guest:{requestor_val}"
+
+            # --- AUTO DUE DATE CALCULATION ---
+            from datetime import timedelta
+            now_ts = now8()
+
+            priority_days = PRIORITY_NEW[priority_val]
+            if priority_days == 1:    # R1
+                due_date = now_ts + timedelta(hours=24)
+            elif priority_days == 2:  # R2
+                due_date = now_ts + timedelta(days=2)
+            else:                     # R3
+                due_date = now_ts + timedelta(days=5)
+
             email_note = f"[Email: {requestor_email.strip()}] " if requestor_email.strip() else ""
+
             row = {
-                "timestamp":   now8().isoformat(timespec="seconds"),
+                "timestamp":   now_ts.isoformat(timespec="seconds"),
                 "action":      "CREATED",
                 "ticket_id":   tid,
                 "title":       title_val,
@@ -1313,7 +1337,7 @@ elif page == "Submit Request":
                 "status":      "Backlog",
                 "progress":    0,
                 "requestor":   requestor_val,
-                "due_date":    str(due_val),
+                "due_date":    due_date.strftime("%Y-%m-%d %H:%M:%S"),
                 "tags":        ", ".join([t.strip() for t in tags_val.split(",") if t.strip()]),
                 "description": desc_val,
                 "updated_by":  updated_by,
@@ -1321,12 +1345,14 @@ elif page == "Submit Request":
                 "complexity":  "",
                 "assigned_to": "",
             }
+
             with st.spinner("Saving to GitHub..."):
                 try:
                     gh_append(row)
                     send_new_ticket_email(row)
                     st.success(f"Ticket **{tid}** submitted and logged to CSV.")
-                    st.markdown(f"""<div class="ticket-card">
+                    st.markdown(f"""
+                    <div class="ticket-card">
                       <div class="ticket-id">{tid}</div>
                       <div class="ticket-title">{title_val}</div>
                       <div class="pills">
@@ -1335,7 +1361,8 @@ elif page == "Submit Request":
                         {badge(priority_val, PRIORITY_COLORS.get(priority_val, DHL_GRAY))}
                       </div>
                       <small style="color:{DHL_GRAY}">Logged by: {updated_by}</small>
-                    </div>""", unsafe_allow_html=True)
+                    </div>""", 
+                    unsafe_allow_html=True)
                 except Exception as e:
                     st.error(f"GitHub sync failed: {e}")
 
