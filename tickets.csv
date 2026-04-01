@@ -1,150 +1,150 @@
 timestamp,action,ticket_id,title,platform,priority,status,progress,requestor,due_date,tags,description,updated_by,notes,complexity,assigned_to,image,category
-2025-05-02T00:00:00,CREATED,QA-749DBC,Retrieve POD for 799999999999995,Others,R2,Done,100,,3/05/2025,POD Request,"- POD for 7999999999999995
+2025-05-02T00:00:00,CREATED,QA-749DBC,Retrieve POD for 799999999999995,Others,R2 (Within 2 days),Done,100,,3/05/2025,POD Request,"- POD for 7999999999999995
 - Delivered date: 2 February 2025
 - Requested by CS",serol,Update: - Done retrieve the POD | Remarks: Sample,,,,
-2025-01-03T00:00:00,CREATED,QA-7099A7,Sample reports for MY Reports will be migrated to 2244,Others,R2,Done,0,,,,Migrating established report from Splunk to Server 2244 to comply with email requirement,serol,,,,,
-2024-11-27T00:00:00,CREATED,QA-A1BBF9,MY/TH BRS Migration,Others,R2,Done,0,,,,KI group is aligning the strategy to ingest data and implement a data model for reporting in BRS.,serol,,,,,
-2024-01-10T00:00:00,CREATED,QA-389CA8,Splunk User Access Review: 15 Jan [Annual],Splunk,R2,Done,0,,15/01/2025,,"reviewing the access granted to the Splunk farm (on-prem) to ensure only the required, necessary people have the right level of access to Splunk.",serol,,,,,
-2025-01-10T00:00:00,CREATED,QA-F0B974,B2B_Customer flag in Splunk,Splunk,R2,Done,0,,14/01/2025,,the list of B2B flagged customers account codes available  -  Sumanth,serol,,,,,
-2025-01-02T00:00:00,CREATED,QA-2D2EA1,Data Request: Shipment Performance for BW WORLD MARKETING,Others,R2,Done,0,,,,,serol,Update: in retrieving the shipment data for delivered vs. delivery failed for the customer BW WORLD MARKETING (Sold to: 5279845665).,,,,
-2025-01-02T00:00:00,CREATED,QA-1D2775,DHLeC pending status - Delyva,Others,R2,Done,0,,22/01/2025,,Track pending shipment for Delyva,serol,,,,,
-2025-01-03T00:00:00,CREATED,QA-9A423B,Data Extraction for B2B Delivery,Others,R2,Done,100,,5/01/2025,Data Request,data extraction for successful delivered parcels with a Definite Delivery (DD) indicator on the label,serol,,,,,
-2025-01-03T00:00:00,CREATED,QA-792875,Al-Ikhsan Data for 3 months.,Others,R2,Done,100,,7/01/2025,Data Request,,serol,,,,,
-2025-01-07T00:00:00,CREATED,QA-CDE8B3,SUMMARY ODD DNR - DEC 2024,Others,R2,Done,100,,7/01/2025,Report Request,,serol,,,,,
-2024-11-14T00:00:00,CREATED,QA-7A6875,RS COMPONENTS || SAMPLE OF DAILY PERFORMANCE REPORT,Others,R2,Done,0,,,,Setup automated report for RS component,serol,,,,,
-2025-01-10T00:00:00,CREATED,QA-898FC6,PDE DELIVERY TIME - URBAN FOOD PRDOUCTS SDN BHD,Others,R2,Done,0,,15/01/2025,,Request for list of parcelid for Urban Food,serol,,,,,
-2025-01-13T00:00:00,CREATED,QA-6E0149,Inbound Report,Others,R2,Done,0,,13/01/2025,,Request by OD to have automated email for inbound summary,serol,,,,,
-2025-01-17T00:00:00,CREATED,QA-EB772F,ESR Motor May to Sept SCNC,Others,R2,Done,100,,17/01/2025,Data Request,Performance for ESR Motor,serol,,,,,
-2025-01-17T00:00:00,CREATED,QA-AB6AAB,Splunk Governance,Splunk,R2,Done,0,,20/01/2025,,Review PII Data,serol,,,,,
-2025-01-21T00:00:00,CREATED,QA-6FB30F,SCNC - Cutoff Refine,Others,R2,Done,0,,23/01/2025,,To review all the cutoff for first scan,serol,,,,,
-2025-01-21T00:00:00,CREATED,QA-3088C5,Maintenance For CNDN Flow In Power Automate,Others,R2,Done,0,,,,Reviewing Flow in power automate,serol,,,,,
-2025-01-23T00:00:00,CREATED,QA-2A5699,Request Detail of PC,Others,R2,Done,0,,,,List of workstation for Encoding station,serol,,,,,
-2025-01-23T00:00:00,CREATED,QA-018128,WEB ENQUIRY,Others,R2,Done,0,,24/01/2025,,Request by saurabh to check on 3month record for recipient,serol,,,,,
-2025-01-24T00:00:00,CREATED,QA-9939FB,Daily Pickup Timing Report for Transport Team,Others,R2,Done,0,,28/01/2025,,"Request by Zul to generate a daily report that focuses specifically on pickup timings for transport team, particularly for the milkrun merchants",serol,,,,,
-2025-01-24T00:00:00,CREATED,QA-5BE0AF,DAILY REPORT CEN 2,Others,R2,Done,0,,28/01/2025,,Request by Warren to have a full list of CEN2 parcel for backlog monitoring,serol,,,,,
-2025-01-24T00:00:00,CREATED,QA-F7C7B6,APR - SCNC Redefine First Scan Cut Off and Reingest Data,Others,R2,Done,0,,3/04/2025,,Apr-80,serol,,,,,
-2025-01-28T00:00:00,CREATED,QA-E64CFB,Samsung Pre orders S25: New model launching and planning,Others,R2,Done,0,,,,Setup a daily report to monitor pickup parcel for Samsung,serol,,,,,
-2025-01-31T00:00:00,CREATED,QA-A4F5D8,CS Undel Report: MY Use Case [Apollo],Others,R2,Done,0,,3/02/2025,,,serol,,,,,
-2025-02-05T00:00:00,CREATED,QA-527FFD,Self Collection More Than 2 Days,Others,R2,Done,0,,5/02/2025,,Review the report after Apollo update failure reason,serol,,,,,
-2026-03-06T14:21:10,CREATED,QA-A40682,PII data on BRS,Others,R2,Done,0,,,,Review PII Data to be exported to,serol,,,,,
-2025-02-13T00:00:00,CREATED,QA-59E013,Al-Ikhsan (Data requirement),Others,R2,Done,0,,10/03/2025,,Setup daily auto report for alikhsan,serol,,,,,
-2025-03-03T00:00:00,CREATED,QA-C6A6D8,Unreturned PPOD -  YEW CHIAN HAW (MALAYSIA) SDN BHD,Others,R2,Done,0,,,,Request by Careen to have PPOD list for the merchant,serol,,,,,
-2025-03-03T00:00:00,CREATED,QA-DB5017,Merchant: Oasis Swiss Sdn Bhd | Outbound Report Request,Others,R2,Done,0,,11/03/2025,,Setup Monthly auto report for the merchant -summarise version,serol,,,,,
-2025-03-04T00:00:00,CREATED,QA-2D48D3,Migration of Power Apps & Flows,Others,R2,Done,0,,,,Moving all the power automate flow to personal automation,serol,,,,,
-2025-03-04T00:00:00,CREATED,QA-F2A028,Splunk Dashboard for CS Monitoring,Splunk,R2,Done,0,,6/03/2025,,,serol,,,,,
-2025-03-07T00:00:00,CREATED,QA-540548,Data Transition from (MyOps) WhatsApp Group to SharePoint,Others,R2,Done,0,,,,,serol,,,,,
-2025-02-27T00:00:00,CREATED,QA-6743FC,Be international Daily Report,Others,R2,Done,0,,10/03/2025,,Setup Daily report for be international with aging logic,serol,,,,,
-2025-03-10T00:00:00,CREATED,QA-DEB2F1,Customer Feedback - Sephora,Others,R2,Done,0,,12/03/2025,,Review performance for sephora for the last 3 month,serol,,,,,
-2025-03-13T00:00:00,CREATED,QA-B14C7F,Data needed for activating minihub NR1,Others,R2,Done,0,,14/03/2025,,Analysis for shipment profile for northen for the last 3 month,serol,,,,,
-2025-03-13T00:00:00,CREATED,QA-BF7795,Review on storage limit on Server 2244,Others,R2,Done,0,,14/03/2025,,Cleanup reports and data files stored on server 2244 to save up space,serol,,,,,
-2025-03-14T00:00:00,CREATED,QA-58AFEA,Renaming Setel Express to,Others,R2,Done,0,,,,Renaming Setel Express to  Mesra Retail & Café Sdn Bhd on all automated report,serol,,,,,
-2025-05-14T00:00:00,CREATED,QA-F0DB32,Overload Hub Dashboard In Power BI,Power BI,R2,Done,0,AlYu,,,,serol,,,,,
-2025-05-15T00:00:00,CREATED,QA-2218E5,SCNC dashboard in Power BI,Power BI,R2,Done,0,AlYu,,,,serol,,,,,
-2025-05-16T00:00:00,CREATED,QA-8E8948,Splunk Sales Dashboard,Splunk,R2,Done,0,Sumanth,,,,serol,,,,,
-2025-07-21T00:00:00,CREATED,QA-49AE5C,Finance - Worklfow maintenance,Others,R2,Done,0,Naemah,,,Updating Workflow from Ethan to baizura,serol,,,,,
-2025-06-30T00:00:00,CREATED,QA-3A4040,TH - SC/NC (First Mile Failure) dashboard,Others,R2,Done,0,Alyu,,,To replicate dashboard In splunk for TH,serol,Remarks: queries were build independently,,,,
-2025-06-05T00:00:00,CREATED,QA-73082C,Power BI Training,Power BI,R2,Done,100,shannon,14/07/2025,New Initiative,To conduct the training for power BI,serol,,,,,
-2025-07-01T00:00:00,CREATED,QA-A567E9,Delyva Biweekly Report,Others,R2,Done,50,,,,To send summary delyva shipment on biweekly basis,serol,,,,,
-2025-07-15T00:00:00,CREATED,QA-B6C28E,SC Failure Deep Dive,Others,R2,Done,50,,,New Initiative,"To analyse and provide insight on failure, whether it’s a first mile/ mid mile/ last mile failure",serol,,,,,
-2025-05-21T00:00:00,CREATED,QA-76B985,Information Template with QR Code for Customer Inquiries,Others,R2,Done,100,,,,,serol,Remarks: Hanis to distribute to all depot,,,,
-2025-06-09T00:00:00,CREATED,QA-7C44BC,Auto charging of Rerouting Charges,Others,R2,Done,100,Vijaya,9/06/2025,Data Request,Parcel Compilation from Jan 25 - May 25,serol,,,,,
-2025-06-11T00:00:00,CREATED,QA-21DD7C,MYPSM1_Deposit Summary from March 2025,Others,R2,Done,100,Muhar,12/06/2025,Data Request,All list of deposit id for PSM,serol,,,,,
-2025-06-12T00:00:00,CREATED,QA-A121BC,Special Handling Request | EKIWI GLOBAL SDN BHD - Reports Deepdive,Others,R2,Done,100,Saurabh,13/06/2025,Data Request,To analyse EKIWI performance,serol,,,,,
-2025-06-17T00:00:00,CREATED,QA-C26A9E,Delyva 2.0 Project 2025,Others,R2,Done,100,Desiree,1/07/2025,New Process,To brief Depot on this new Delyva project,serol,,,,,
-2025-06-17T00:00:00,CREATED,QA-A0544F,"Request for Parcel Data Volume – Mac, April & May 2025 (Selected Postcodes)",Others,R2,Done,100,Iszaham,18/06/2025,Data Request,Parcel volume for postcode,serol,,,,,
-2025-06-24T00:00:00,CREATED,QA-C01A90,APR - Adding Geocode In POD,Others,R2,Done,100,AlYu,24/06/2025,New Initiative,to add geocode in POD,serol,Update: Still waiting allocation for this,,,,
-2025-07-04T00:00:00,CREATED,QA-E1265A,Valiram Monthly Report,Others,R2,Done,100,Kent,4/07/2025,Report Request,Report summary for Valiram,serol,,,,,
-2025-07-03T00:00:00,CREATED,QA-2A281E,BA/RD reports for SP Customer,Others,R2,Done,100,Taufik,7/07/2025,Report Request,To send BA/RD reports for SP customer using pickupaccount,serol,,,,,
-2025-07-17T00:00:00,CREATED,QA-C628F4,"Single Dashboard for Pickup, Encoded, Delivered daily",Others,R2,In Progress,50,AlYu,,Report Request,,serol,,,,,
-2025-05-08T00:00:00,CREATED,QA-F77DE2,SCNC Daily Summary,Others,R2,Done,100,Saurabh,8/05/2025,Report Request,To have summary on daily basis,serol,,,,,
-2025-07-15T00:00:00,CREATED,QA-14800F,Relabel Report Esysms,Others,R2,Backlog,0,Amin,15/07/2025,,,serol,,,,,
-2025-04-04T00:00:00,CREATED,QA-27C33E,QL Ansan Poultry: customized report,Others,R2,Done,100,Gomathy,7/04/2025,Report Request,New customized report,serol,,,,,
-2025-04-08T00:00:00,CREATED,QA-0AE3B3,Request for MPS list,Others,R2,Done,100,Amin,8/04/2025,Data Request,extract list of shipment (MPS only) for March 2025 that has been encoded from splunk.,serol,,,,,
-2025-04-07T00:00:00,CREATED,QA-94B8CB,Proposal for Amendment to MY - 30 Days Encoded Volume Dashboard,Others,R2,Done,100,AlYu,9/04/2025,Report Request,Amend dashboard,serol,,,,,
-2025-04-09T00:00:00,CREATED,QA-B37163,Migration MyOps to Sharepoint,Others,R2,Done,100,Adillah,9/04/2025,New Initiative,Using sharepoint instead of Local network for a more seamless operation,serol,,,,,
-2025-04-10T00:00:00,CREATED,QA-FC4D29,MY_EncodeDispatch_Daily report,Others,R2,Backlog,0,,,,Sending a report generated from splunk via server,serol,,,,,
-2025-03-28T00:00:00,CREATED,QA-F98DA8,Amendment In Backlog Dashboard,Others,R2,Backlog,0,AlYu,10/04/2025,,Additional panel in Backlog Dashboard to show shipment pending at depot,serol,,,,,
-2025-12-12T00:00:00,CREATED,QA-BE5F71,Total Volume MTD,Others,R2,Done,100,Saurabh,17/12/2025,Report Request,To have summary on daily basis and send to saurabh,serol,,,,,
-2025-11-20T00:00:00,CREATED,QA-99E149,Data Loss in Splunk,Splunk,R2,Backlog,0,,,,Data loss affecting both MY and TH,serol,,,,,
-2026-03-06T14:45:26,UPDATED,QA-018128,WEB ENQUIRY,Others,R2,In Progress,0,,24/01/2025,,Request by saurabh to check on 3month record for recipient,serol,reply email,Simple,serol,,
-2026-03-06T15:47:55,CREATED,QA-83FF9E,MY - Live Pickup Performance Today,Splunk,R2,Backlog,0,Alyu,6/03/2026,"pickup, enquiry","The difference of the Base Time (filter: Job Creation, Job Acceptance, Job Start Date)",Guest:Alyu,dashboard,,,,
-2026-03-06T15:49:39,CREATED,QA-3AC6EE,MY - Delivery Today,Splunk,R3,Backlog,0,Alyu,6/03/2026,"dashboard, delivery, enhancement","The summary available for overall courier ID. Unable to identify the courier under which depot. Suggestion: Add filter for facility or add column of facility next to courier ID.
+2025-01-03T00:00:00,CREATED,QA-7099A7,Sample reports for MY Reports will be migrated to 2244,Others,R2 (Within 2 days),Done,0,,,,Migrating established report from Splunk to Server 2244 to comply with email requirement,serol,,,,,
+2024-11-27T00:00:00,CREATED,QA-A1BBF9,MY/TH BRS Migration,Others,R2 (Within 2 days),Done,0,,,,KI group is aligning the strategy to ingest data and implement a data model for reporting in BRS.,serol,,,,,
+2024-01-10T00:00:00,CREATED,QA-389CA8,Splunk User Access Review: 15 Jan [Annual],Splunk,R2 (Within 2 days),Done,0,,15/01/2025,,"reviewing the access granted to the Splunk farm (on-prem) to ensure only the required, necessary people have the right level of access to Splunk.",serol,,,,,
+2025-01-10T00:00:00,CREATED,QA-F0B974,B2B_Customer flag in Splunk,Splunk,R2 (Within 2 days),Done,0,,14/01/2025,,the list of B2B flagged customers account codes available  -  Sumanth,serol,,,,,
+2025-01-02T00:00:00,CREATED,QA-2D2EA1,Data Request: Shipment Performance for BW WORLD MARKETING,Others,R2 (Within 2 days),Done,0,,,,,serol,Update: in retrieving the shipment data for delivered vs. delivery failed for the customer BW WORLD MARKETING (Sold to: 5279845665).,,,,
+2025-01-02T00:00:00,CREATED,QA-1D2775,DHLeC pending status - Delyva,Others,R2 (Within 2 days),Done,0,,22/01/2025,,Track pending shipment for Delyva,serol,,,,,
+2025-01-03T00:00:00,CREATED,QA-9A423B,Data Extraction for B2B Delivery,Others,R2 (Within 2 days),Done,100,,5/01/2025,Data Request,data extraction for successful delivered parcels with a Definite Delivery (DD) indicator on the label,serol,,,,,
+2025-01-03T00:00:00,CREATED,QA-792875,Al-Ikhsan Data for 3 months.,Others,R2 (Within 2 days),Done,100,,7/01/2025,Data Request,,serol,,,,,
+2025-01-07T00:00:00,CREATED,QA-CDE8B3,SUMMARY ODD DNR - DEC 2024,Others,R2 (Within 2 days),Done,100,,7/01/2025,Report Request,,serol,,,,,
+2024-11-14T00:00:00,CREATED,QA-7A6875,RS COMPONENTS || SAMPLE OF DAILY PERFORMANCE REPORT,Others,R2 (Within 2 days),Done,0,,,,Setup automated report for RS component,serol,,,,,
+2025-01-10T00:00:00,CREATED,QA-898FC6,PDE DELIVERY TIME - URBAN FOOD PRDOUCTS SDN BHD,Others,R2 (Within 2 days),Done,0,,15/01/2025,,Request for list of parcelid for Urban Food,serol,,,,,
+2025-01-13T00:00:00,CREATED,QA-6E0149,Inbound Report,Others,R2 (Within 2 days),Done,0,,13/01/2025,,Request by OD to have automated email for inbound summary,serol,,,,,
+2025-01-17T00:00:00,CREATED,QA-EB772F,ESR Motor May to Sept SCNC,Others,R2 (Within 2 days),Done,100,,17/01/2025,Data Request,Performance for ESR Motor,serol,,,,,
+2025-01-17T00:00:00,CREATED,QA-AB6AAB,Splunk Governance,Splunk,R2 (Within 2 days),Done,0,,20/01/2025,,Review PII Data,serol,,,,,
+2025-01-21T00:00:00,CREATED,QA-6FB30F,SCNC - Cutoff Refine,Others,R2 (Within 2 days),Done,0,,23/01/2025,,To review all the cutoff for first scan,serol,,,,,
+2025-01-21T00:00:00,CREATED,QA-3088C5,Maintenance For CNDN Flow In Power Automate,Others,R2 (Within 2 days),Done,0,,,,Reviewing Flow in power automate,serol,,,,,
+2025-01-23T00:00:00,CREATED,QA-2A5699,Request Detail of PC,Others,R2 (Within 2 days),Done,0,,,,List of workstation for Encoding station,serol,,,,,
+2025-01-23T00:00:00,CREATED,QA-018128,WEB ENQUIRY,Others,R2 (Within 2 days),Done,0,,24/01/2025,,Request by saurabh to check on 3month record for recipient,serol,,,,,
+2025-01-24T00:00:00,CREATED,QA-9939FB,Daily Pickup Timing Report for Transport Team,Others,R2 (Within 2 days),Done,0,,28/01/2025,,"Request by Zul to generate a daily report that focuses specifically on pickup timings for transport team, particularly for the milkrun merchants",serol,,,,,
+2025-01-24T00:00:00,CREATED,QA-5BE0AF,DAILY REPORT CEN 2,Others,R2 (Within 2 days),Done,0,,28/01/2025,,Request by Warren to have a full list of CEN2 parcel for backlog monitoring,serol,,,,,
+2025-01-24T00:00:00,CREATED,QA-F7C7B6,APR - SCNC Redefine First Scan Cut Off and Reingest Data,Others,R2 (Within 2 days),Done,0,,3/04/2025,,Apr-80,serol,,,,,
+2025-01-28T00:00:00,CREATED,QA-E64CFB,Samsung Pre orders S25: New model launching and planning,Others,R2 (Within 2 days),Done,0,,,,Setup a daily report to monitor pickup parcel for Samsung,serol,,,,,
+2025-01-31T00:00:00,CREATED,QA-A4F5D8,CS Undel Report: MY Use Case [Apollo],Others,R2 (Within 2 days),Done,0,,3/02/2025,,,serol,,,,,
+2025-02-05T00:00:00,CREATED,QA-527FFD,Self Collection More Than 2 Days,Others,R2 (Within 2 days),Done,0,,5/02/2025,,Review the report after Apollo update failure reason,serol,,,,,
+2026-03-06T14:21:10,CREATED,QA-A40682,PII data on BRS,Others,R2 (Within 2 days),Done,0,,,,Review PII Data to be exported to,serol,,,,,
+2025-02-13T00:00:00,CREATED,QA-59E013,Al-Ikhsan (Data requirement),Others,R2 (Within 2 days),Done,0,,10/03/2025,,Setup daily auto report for alikhsan,serol,,,,,
+2025-03-03T00:00:00,CREATED,QA-C6A6D8,Unreturned PPOD -  YEW CHIAN HAW (MALAYSIA) SDN BHD,Others,R2 (Within 2 days),Done,0,,,,Request by Careen to have PPOD list for the merchant,serol,,,,,
+2025-03-03T00:00:00,CREATED,QA-DB5017,Merchant: Oasis Swiss Sdn Bhd | Outbound Report Request,Others,R2 (Within 2 days),Done,0,,11/03/2025,,Setup Monthly auto report for the merchant -summarise version,serol,,,,,
+2025-03-04T00:00:00,CREATED,QA-2D48D3,Migration of Power Apps & Flows,Others,R2 (Within 2 days),Done,0,,,,Moving all the power automate flow to personal automation,serol,,,,,
+2025-03-04T00:00:00,CREATED,QA-F2A028,Splunk Dashboard for CS Monitoring,Splunk,R2 (Within 2 days),Done,0,,6/03/2025,,,serol,,,,,
+2025-03-07T00:00:00,CREATED,QA-540548,Data Transition from (MyOps) WhatsApp Group to SharePoint,Others,R2 (Within 2 days),Done,0,,,,,serol,,,,,
+2025-02-27T00:00:00,CREATED,QA-6743FC,Be international Daily Report,Others,R2 (Within 2 days),Done,0,,10/03/2025,,Setup Daily report for be international with aging logic,serol,,,,,
+2025-03-10T00:00:00,CREATED,QA-DEB2F1,Customer Feedback - Sephora,Others,R2 (Within 2 days),Done,0,,12/03/2025,,Review performance for sephora for the last 3 month,serol,,,,,
+2025-03-13T00:00:00,CREATED,QA-B14C7F,Data needed for activating minihub NR1,Others,R2 (Within 2 days),Done,0,,14/03/2025,,Analysis for shipment profile for northen for the last 3 month,serol,,,,,
+2025-03-13T00:00:00,CREATED,QA-BF7795,Review on storage limit on Server 2244,Others,R2 (Within 2 days),Done,0,,14/03/2025,,Cleanup reports and data files stored on server 2244 to save up space,serol,,,,,
+2025-03-14T00:00:00,CREATED,QA-58AFEA,Renaming Setel Express to,Others,R2 (Within 2 days),Done,0,,,,Renaming Setel Express to  Mesra Retail & Café Sdn Bhd on all automated report,serol,,,,,
+2025-05-14T00:00:00,CREATED,QA-F0DB32,Overload Hub Dashboard In Power BI,Power BI,R2 (Within 2 days),Done,0,AlYu,,,,serol,,,,,
+2025-05-15T00:00:00,CREATED,QA-2218E5,SCNC dashboard in Power BI,Power BI,R2 (Within 2 days),Done,0,AlYu,,,,serol,,,,,
+2025-05-16T00:00:00,CREATED,QA-8E8948,Splunk Sales Dashboard,Splunk,R2 (Within 2 days),Done,0,Sumanth,,,,serol,,,,,
+2025-07-21T00:00:00,CREATED,QA-49AE5C,Finance - Worklfow maintenance,Others,R2 (Within 2 days),Done,0,Naemah,,,Updating Workflow from Ethan to baizura,serol,,,,,
+2025-06-30T00:00:00,CREATED,QA-3A4040,TH - SC/NC (First Mile Failure) dashboard,Others,R2 (Within 2 days),Done,0,Alyu,,,To replicate dashboard In splunk for TH,serol,Remarks: queries were build independently,,,,
+2025-06-05T00:00:00,CREATED,QA-73082C,Power BI Training,Power BI,R2 (Within 2 days),Done,100,shannon,14/07/2025,New Initiative,To conduct the training for power BI,serol,,,,,
+2025-07-01T00:00:00,CREATED,QA-A567E9,Delyva Biweekly Report,Others,R2 (Within 2 days),Done,50,,,,To send summary delyva shipment on biweekly basis,serol,,,,,
+2025-07-15T00:00:00,CREATED,QA-B6C28E,SC Failure Deep Dive,Others,R2 (Within 2 days),Done,50,,,New Initiative,"To analyse and provide insight on failure, whether it’s a first mile/ mid mile/ last mile failure",serol,,,,,
+2025-05-21T00:00:00,CREATED,QA-76B985,Information Template with QR Code for Customer Inquiries,Others,R2 (Within 2 days),Done,100,,,,,serol,Remarks: Hanis to distribute to all depot,,,,
+2025-06-09T00:00:00,CREATED,QA-7C44BC,Auto charging of Rerouting Charges,Others,R2 (Within 2 days),Done,100,Vijaya,9/06/2025,Data Request,Parcel Compilation from Jan 25 - May 25,serol,,,,,
+2025-06-11T00:00:00,CREATED,QA-21DD7C,MYPSM1_Deposit Summary from March 2025,Others,R2 (Within 2 days),Done,100,Muhar,12/06/2025,Data Request,All list of deposit id for PSM,serol,,,,,
+2025-06-12T00:00:00,CREATED,QA-A121BC,Special Handling Request | EKIWI GLOBAL SDN BHD - Reports Deepdive,Others,R2 (Within 2 days),Done,100,Saurabh,13/06/2025,Data Request,To analyse EKIWI performance,serol,,,,,
+2025-06-17T00:00:00,CREATED,QA-C26A9E,Delyva 2.0 Project 2025,Others,R2 (Within 2 days),Done,100,Desiree,1/07/2025,New Process,To brief Depot on this new Delyva project,serol,,,,,
+2025-06-17T00:00:00,CREATED,QA-A0544F,"Request for Parcel Data Volume – Mac, April & May 2025 (Selected Postcodes)",Others,R2 (Within 2 days),Done,100,Iszaham,18/06/2025,Data Request,Parcel volume for postcode,serol,,,,,
+2025-06-24T00:00:00,CREATED,QA-C01A90,APR - Adding Geocode In POD,Others,R2 (Within 2 days),Done,100,AlYu,24/06/2025,New Initiative,to add geocode in POD,serol,Update: Still waiting allocation for this,,,,
+2025-07-04T00:00:00,CREATED,QA-E1265A,Valiram Monthly Report,Others,R2 (Within 2 days),Done,100,Kent,4/07/2025,Report Request,Report summary for Valiram,serol,,,,,
+2025-07-03T00:00:00,CREATED,QA-2A281E,BA/RD reports for SP Customer,Others,R2 (Within 2 days),Done,100,Taufik,7/07/2025,Report Request,To send BA/RD reports for SP customer using pickupaccount,serol,,,,,
+2025-07-17T00:00:00,CREATED,QA-C628F4,"Single Dashboard for Pickup, Encoded, Delivered daily",Others,R2 (Within 2 days),In Progress,50,AlYu,,Report Request,,serol,,,,,
+2025-05-08T00:00:00,CREATED,QA-F77DE2,SCNC Daily Summary,Others,R2 (Within 2 days),Done,100,Saurabh,8/05/2025,Report Request,To have summary on daily basis,serol,,,,,
+2025-07-15T00:00:00,CREATED,QA-14800F,Relabel Report Esysms,Others,R2 (Within 2 days),Backlog,0,Amin,15/07/2025,,,serol,,,,,
+2025-04-04T00:00:00,CREATED,QA-27C33E,QL Ansan Poultry: customized report,Others,R2 (Within 2 days),Done,100,Gomathy,7/04/2025,Report Request,New customized report,serol,,,,,
+2025-04-08T00:00:00,CREATED,QA-0AE3B3,Request for MPS list,Others,R2 (Within 2 days),Done,100,Amin,8/04/2025,Data Request,extract list of shipment (MPS only) for March 2025 that has been encoded from splunk.,serol,,,,,
+2025-04-07T00:00:00,CREATED,QA-94B8CB,Proposal for Amendment to MY - 30 Days Encoded Volume Dashboard,Others,R2 (Within 2 days),Done,100,AlYu,9/04/2025,Report Request,Amend dashboard,serol,,,,,
+2025-04-09T00:00:00,CREATED,QA-B37163,Migration MyOps to Sharepoint,Others,R2 (Within 2 days),Done,100,Adillah,9/04/2025,New Initiative,Using sharepoint instead of Local network for a more seamless operation,serol,,,,,
+2025-04-10T00:00:00,CREATED,QA-FC4D29,MY_EncodeDispatch_Daily report,Others,R2 (Within 2 days),Backlog,0,,,,Sending a report generated from splunk via server,serol,,,,,
+2025-03-28T00:00:00,CREATED,QA-F98DA8,Amendment In Backlog Dashboard,Others,R2 (Within 2 days),Backlog,0,AlYu,10/04/2025,,Additional panel in Backlog Dashboard to show shipment pending at depot,serol,,,,,
+2025-12-12T00:00:00,CREATED,QA-BE5F71,Total Volume MTD,Others,R2 (Within 2 days),Done,100,Saurabh,17/12/2025,Report Request,To have summary on daily basis and send to saurabh,serol,,,,,
+2025-11-20T00:00:00,CREATED,QA-99E149,Data Loss in Splunk,Splunk,R2 (Within 2 days),Backlog,0,,,,Data loss affecting both MY and TH,serol,,,,,
+2026-03-06T14:45:26,UPDATED,QA-018128,WEB ENQUIRY,Others,R2 (Within 2 days),In Progress,0,,24/01/2025,,Request by saurabh to check on 3month record for recipient,serol,reply email,Simple,serol,,
+2026-03-06T15:47:55,CREATED,QA-83FF9E,MY - Live Pickup Performance Today,Splunk,R2 (Within 2 days),Backlog,0,Alyu,6/03/2026,"pickup, enquiry","The difference of the Base Time (filter: Job Creation, Job Acceptance, Job Start Date)",Guest:Alyu,dashboard,,,,
+2026-03-06T15:49:39,CREATED,QA-3AC6EE,MY - Delivery Today,Splunk,R3 (Within 5 days),Backlog,0,Alyu,6/03/2026,"dashboard, delivery, enhancement","The summary available for overall courier ID. Unable to identify the courier under which depot. Suggestion: Add filter for facility or add column of facility next to courier ID.
 Failure reason summarized by region. Need this by facility and courier as well.
 In the last column of data, there is column that indicate 10pm delivery. Can we change 10pm to 12pm (prenoon)?
 Please explore and suggest if failure reason summary should be enhance in this dashboard or create PBI for delivery which include failure reason analysis.",Guest:Alyu,,,,,
-2026-03-06T15:50:20,CREATED,QA-B878FD,MY Hypercare Performance - Amway,Splunk,R2,Backlog,0,Alyu,6/03/2026,"amway, dashboard","Add summary by day/date
+2026-03-06T15:50:20,CREATED,QA-B878FD,MY Hypercare Performance - Amway,Splunk,R2 (Within 2 days),Backlog,0,Alyu,6/03/2026,"amway, dashboard","Add summary by day/date
 Add filter to view monthly data",Guest:Alyu,,,,,
-2026-03-06T15:51:12,CREATED,QA-8935AB,New Dashboard,Splunk,R2,Backlog,0,Alyu,6/03/2026,"dashboard, encoded","The objective is to view a summary of the overall status based on the selected encoded date.
+2026-03-06T15:51:12,CREATED,QA-8935AB,New Dashboard,Splunk,R2 (Within 2 days),Backlog,0,Alyu,6/03/2026,"dashboard, encoded","The objective is to view a summary of the overall status based on the selected encoded date.
 For example, when I filter the encoded date to 3rd February 2026, I should be able to see all shipments encoded on that date, along with a summary of their current overall status as of today.
 Please explore this requirement and share any limitations or challenges you may encounter in developing this dashboard.",Guest:Alyu,,,,,
-2026-03-06T15:52:30,CREATED,QA-414F8E,New added Postcode 47310,Splunk,R1,Backlog,0,Adillah,6/03/2026,"TT Matrix, SLA",Adding new postcode in Splunk ,Guest:Adillah,,,,,
-2026-03-06T15:54:18,CREATED,QA-1F1B81,Amway Failed Parcel Audit,Splunk,R1,Backlog,0,Adillah,6/03/2026,"amway, auto report","List of Amway shipment failed delivery.
+2026-03-06T15:52:30,CREATED,QA-414F8E,New added Postcode 47310,Splunk,R1 (Within 24 hours),Backlog,0,Adillah,6/03/2026,"TT Matrix, SLA",Adding new postcode in Splunk ,Guest:Adillah,,,,,
+2026-03-06T15:54:18,CREATED,QA-1F1B81,Amway Failed Parcel Audit,Splunk,R1 (Within 24 hours),Backlog,0,Adillah,6/03/2026,"amway, auto report","List of Amway shipment failed delivery.
 - Receive by Hypercare Team (group email) daily at 11pm
 - Consist of all shipment with failed status updated by courier from 6am - 10pm
 - Column needed: DHL ID, CCN, Facility, Primary Facility, Courier ID, Delivery Failed Ts, Primary Failure Reason, Secondary Failure Reason, Call log,  Latitude, Longitude, Attempt Count",Guest:Adillah,,,,,
-2026-03-06T15:55:08,CREATED,QA-CF3E37,Pickup Daily KPI Report,Splunk,R3,Backlog,0,Farid,6/03/2026,pickup,Remove Farid from auto email splunk,Guest:Farid,,,,,
-2026-03-06T15:56:47,CREATED,QA-A6F828,MY Volume Tracker - Destination,Power BI,R1,Backlog,0,Alyu,6/03/2026,volume tracker,"*email*
+2026-03-06T15:55:08,CREATED,QA-CF3E37,Pickup Daily KPI Report,Splunk,R3 (Within 5 days),Backlog,0,Farid,6/03/2026,pickup,Remove Farid from auto email splunk,Guest:Farid,,,,,
+2026-03-06T15:56:47,CREATED,QA-A6F828,MY Volume Tracker - Destination,Power BI,R1 (Within 24 hours),Backlog,0,Alyu,6/03/2026,volume tracker,"*email*
 
 Good Day.
 As per our yesterday discussion, both of us agreed to change:
 Average Volume By Week at Region to Daily Volume at Region
 Depot Volume By Week to Daily volume by Depot
  ",Guest:Alyu,,,,,
-2026-03-06T15:58:09,CREATED,QA-74BF1F,Address Discrepancy Between POSID and DHL Label - MYNEVLDF-OR-11548 / 7228021120572346 (MEMORY PLACE ENTERPRISE),Splunk,R3,Backlog,0,Hazim,6/03/2026,POS,Checking the discrepancy for POS label and DHL label,Guest:Hazim,,,,,
-2026-03-06T16:00:08,UPDATED,QA-2218E5,SCNC dashboard in Power BI,Power BI,R1,Done,100,AlYu,,,,serol,Already publish the app.,Critical,serol,,
-2026-03-07T01:17:29+08:00,UPDATED,QA-74BF1F,Address Discrepancy Between POSID and DHL Label - MYNEVLDF-OR-11548 / 7228021120572346 (MEMORY PLACE ENTERPRISE),Splunk,R3,Done,100,Hazim,6/03/2026,POS,Checking the discrepancy for POS label and DHL label,serol,Edit API data is not pushed to Splunk. Inform the user on the challenges that lead to different POS and DHL label,Simple,serol,,
-2026-03-07T01:17:45+08:00,UPDATED,QA-A6F828,MY Volume Tracker - Destination,Power BI,R1,Done,100,Alyu,6/03/2026,volume tracker,"*email*
+2026-03-06T15:58:09,CREATED,QA-74BF1F,Address Discrepancy Between POSID and DHL Label - MYNEVLDF-OR-11548 / 7228021120572346 (MEMORY PLACE ENTERPRISE),Splunk,R3 (Within 5 days),Backlog,0,Hazim,6/03/2026,POS,Checking the discrepancy for POS label and DHL label,Guest:Hazim,,,,,
+2026-03-06T16:00:08,UPDATED,QA-2218E5,SCNC dashboard in Power BI,Power BI,R1 (Within 24 hours),Done,100,AlYu,,,,serol,Already publish the app.,Critical,serol,,
+2026-03-07T01:17:29+08:00,UPDATED,QA-74BF1F,Address Discrepancy Between POSID and DHL Label - MYNEVLDF-OR-11548 / 7228021120572346 (MEMORY PLACE ENTERPRISE),Splunk,R3 (Within 5 days),Done,100,Hazim,6/03/2026,POS,Checking the discrepancy for POS label and DHL label,serol,Edit API data is not pushed to Splunk. Inform the user on the challenges that lead to different POS and DHL label,Simple,serol,,
+2026-03-07T01:17:45+08:00,UPDATED,QA-A6F828,MY Volume Tracker - Destination,Power BI,R1 (Within 24 hours),Done,100,Alyu,6/03/2026,volume tracker,"*email*
 
 Good Day.
 As per our yesterday discussion, both of us agreed to change:
 Average Volume By Week at Region to Daily Volume at Region
 Depot Volume By Week to Daily volume by Depot
  ",serol,Edit API data is not pushed to Splunk. Inform the user on the challenges that lead to different POS and DHL label,Simple,serol,,
-2026-03-07T01:25:12+08:00,UPDATED,QA-74BF1F,Address Discrepancy Between POSID and DHL Label - MYNEVLDF-OR-11548 / 7228021120572346 (MEMORY PLACE ENTERPRISE),Splunk,R3,Done,100,Hazim,6/03/2026,POS,Checking the discrepancy for POS label and DHL label,serol,EDIT API is not pushed to Splunk. Thus leading us to create wrong address for POS,Simple,serol,,
-2026-03-07T02:17:26+08:00,CREATED,QA-E50879,Missing Lost Report,Others,R3,Backlog,0,serol,6/03/2026,"lost, missing",Add opsx email in daily missing lost report - have to raise ticket for 2244 server,serol,,,,,
-2026-03-09T12:51:22+08:00,CREATED,QA-0B65FA,OTP Feature Adjustment – VORWERK MALAYSIA ENTERPRISES SDN BHD - Sold-To: 9000000121,Others,R1,Backlog,0,Syamil,9/03/2026,SI,special instruction for Vorwerk,Syamil,[Email: a.mat_zin@dhl.com] ,,,,
-2026-03-09T12:52:20+08:00,UPDATED,QA-0B65FA,OTP Feature Adjustment – VORWERK MALAYSIA ENTERPRISES SDN BHD - Sold-To: 9000000121,Others,R1,Backlog,100,Syamil,9/03/2026,SI,special instruction for Vorwerk,Syamil,Proposed to aliah to enable SI,Medium,Syamil,,
-2026-03-09T16:14:10+08:00,UPDATED,QA-414F8E,New added Postcode 47310,Splunk,R1,Done,100,Adillah,6/03/2026,"TT Matrix, SLA",Adding new postcode in Splunk ,Syamil,added postcode in Splunk,Simple,serol,,
-2026-03-09T16:15:02+08:00,UPDATED,QA-B878FD,MY Hypercare Performance - Amway,Splunk,R2,Done,100,Alyu,6/03/2026,"amway, dashboard","Add summary by day/date
+2026-03-07T01:25:12+08:00,UPDATED,QA-74BF1F,Address Discrepancy Between POSID and DHL Label - MYNEVLDF-OR-11548 / 7228021120572346 (MEMORY PLACE ENTERPRISE),Splunk,R3 (Within 5 days),Done,100,Hazim,6/03/2026,POS,Checking the discrepancy for POS label and DHL label,serol,EDIT API is not pushed to Splunk. Thus leading us to create wrong address for POS,Simple,serol,,
+2026-03-07T02:17:26+08:00,CREATED,QA-E50879,Missing Lost Report,Others,R3 (Within 5 days),Backlog,0,serol,6/03/2026,"lost, missing",Add opsx email in daily missing lost report - have to raise ticket for 2244 server,serol,,,,,
+2026-03-09T12:51:22+08:00,CREATED,QA-0B65FA,OTP Feature Adjustment – VORWERK MALAYSIA ENTERPRISES SDN BHD - Sold-To: 9000000121,Others,R1 (Within 24 hours),Backlog,0,Syamil,9/03/2026,SI,special instruction for Vorwerk,Syamil,[Email: a.mat_zin@dhl.com] ,,,,
+2026-03-09T12:52:20+08:00,UPDATED,QA-0B65FA,OTP Feature Adjustment – VORWERK MALAYSIA ENTERPRISES SDN BHD - Sold-To: 9000000121,Others,R1 (Within 24 hours),Backlog,100,Syamil,9/03/2026,SI,special instruction for Vorwerk,Syamil,Proposed to aliah to enable SI,Medium,Syamil,,
+2026-03-09T16:14:10+08:00,UPDATED,QA-414F8E,New added Postcode 47310,Splunk,R1 (Within 24 hours),Done,100,Adillah,6/03/2026,"TT Matrix, SLA",Adding new postcode in Splunk ,Syamil,added postcode in Splunk,Simple,serol,,
+2026-03-09T16:15:02+08:00,UPDATED,QA-B878FD,MY Hypercare Performance - Amway,Splunk,R2 (Within 2 days),Done,100,Alyu,6/03/2026,"amway, dashboard","Add summary by day/date
 Add filter to view monthly data",Syamil,Added summary by date,Medium,serol,,
-2026-03-09T16:18:22+08:00,UPDATED,QA-E50879,Missing Lost Report,Others,R2,In Progress,80,serol,6/03/2026,"lost, missing",Add opsx email in daily missing lost report - have to raise ticket for 2244 server,Syamil,INC68853752 has been raised. waiting for update from IT support,Simple,serol,,
-2026-03-12T10:18:30+08:00,CREATED,QA-8C3DF3,Request for POD by Aliah,Others,R2,Backlog,0,Syamil,12/03/2026,,"Request POD images for this shipment
+2026-03-09T16:18:22+08:00,UPDATED,QA-E50879,Missing Lost Report,Others,R2 (Within 2 days),In Progress,80,serol,6/03/2026,"lost, missing",Add opsx email in daily missing lost report - have to raise ticket for 2244 server,Syamil,INC68853752 has been raised. waiting for update from IT support,Simple,serol,,
+2026-03-12T10:18:30+08:00,CREATED,QA-8C3DF3,Request for POD by Aliah,Others,R2 (Within 2 days),Backlog,0,Syamil,12/03/2026,,"Request POD images for this shipment
 
 7225104413050785 – 30 Oct 2025
 7226104346336685 – 01 Nov 2025
 ",Syamil,[Email: muhammadsyamil.husmidi@dhl.com] ,,,,
-2026-03-12T10:19:07+08:00,UPDATED,QA-8C3DF3,Request for POD by Aliah,Others,R2,Backlog,100,Syamil,12/03/2026,,"Request POD images for this shipment
+2026-03-12T10:19:07+08:00,UPDATED,QA-8C3DF3,Request for POD by Aliah,Others,R2 (Within 2 days),Backlog,100,Syamil,12/03/2026,,"Request POD images for this shipment
 
 7225104413050785 – 30 Oct 2025
 7226104346336685 – 01 Nov 2025
 ",Syamil,Already sent to email,Simple,serol,,
-2026-03-12T10:19:51+08:00,UPDATED,QA-8C3DF3,Request for POD by Aliah,Others,R2,Done,100,Syamil,12/03/2026,,"Request POD images for this shipment
+2026-03-12T10:19:51+08:00,UPDATED,QA-8C3DF3,Request for POD by Aliah,Others,R2 (Within 2 days),Done,100,Syamil,12/03/2026,,"Request POD images for this shipment
 
 7225104413050785 – 30 Oct 2025
 7226104346336685 – 01 Nov 2025
 ",Syamil,Already sent to email,Simple,serol,,
-2026-03-12T10:44:23+08:00,CREATED,QA-19955A,Amway Dashboard,Splunk,R1,Backlog,0,serol,12/03/2026,amway,"add D+3 in summary panel 
+2026-03-12T10:44:23+08:00,CREATED,QA-19955A,Amway Dashboard,Splunk,R1 (Within 24 hours),Backlog,0,serol,12/03/2026,amway,"add D+3 in summary panel 
 Target set by Amway:
 - Delivered next day (NC) = 70%
 - ?Delivered within 3 days (NC) = 99%",serol,,,,,
-2026-03-12T10:45:28+08:00,CREATED,QA-7EE7E5,Volume Tracker Dashboard - Sales PIC volume,Power BI,R1,Backlog,0,serol,12/03/2026,"sales, volume",Add sales lookup to map sales pic to account,serol,,,,,
-2026-03-12T10:46:22+08:00,CREATED,QA-6C7A81,SCNC Failure Distribution,Splunk,R2,Backlog,0,Nazri,12/03/2026,scnc,Request failure distribution for Central,serol,,,,,
-2026-03-12T11:26:29+08:00,UPDATED,QA-6C7A81,SCNC Failure Distribution,Splunk,R1,Done,100,Nazri,12/03/2026,scnc,Request failure distribution for Central,serol,Share the files through ws,Complex,serol,,
-2026-03-12T11:27:35+08:00,UPDATED,QA-7EE7E5,Volume Tracker Dashboard - Sales PIC volume,Power BI,R1,In Progress,50,serol,12/03/2026,"sales, volume",Add sales lookup to map sales pic to account,serol,"Held a discussion with Gomathy & azihah. Azihah will update the files on daily basis, any movement for sales PIC will be on 15days cycle",Critical,serol,,
-2026-03-12T11:28:31+08:00,UPDATED,QA-19955A,Amway Dashboard,Splunk,R1,Done,100,serol,12/03/2026,amway,"add D+3 in summary panel 
+2026-03-12T10:45:28+08:00,CREATED,QA-7EE7E5,Volume Tracker Dashboard - Sales PIC volume,Power BI,R1 (Within 24 hours),Backlog,0,serol,12/03/2026,"sales, volume",Add sales lookup to map sales pic to account,serol,,,,,
+2026-03-12T10:46:22+08:00,CREATED,QA-6C7A81,SCNC Failure Distribution,Splunk,R2 (Within 2 days),Backlog,0,Nazri,12/03/2026,scnc,Request failure distribution for Central,serol,,,,,
+2026-03-12T11:26:29+08:00,UPDATED,QA-6C7A81,SCNC Failure Distribution,Splunk,R1 (Within 24 hours),Done,100,Nazri,12/03/2026,scnc,Request failure distribution for Central,serol,Share the files through ws,Complex,serol,,
+2026-03-12T11:27:35+08:00,UPDATED,QA-7EE7E5,Volume Tracker Dashboard - Sales PIC volume,Power BI,R1 (Within 24 hours),In Progress,50,serol,12/03/2026,"sales, volume",Add sales lookup to map sales pic to account,serol,"Held a discussion with Gomathy & azihah. Azihah will update the files on daily basis, any movement for sales PIC will be on 15days cycle",Critical,serol,,
+2026-03-12T11:28:31+08:00,UPDATED,QA-19955A,Amway Dashboard,Splunk,R1 (Within 24 hours),Done,100,serol,12/03/2026,amway,"add D+3 in summary panel 
 Target set by Amway:
 - Delivered next day (NC) = 70%
 - ?Delivered within 3 days (NC) = 99%",serol,added the view for total volume & percentage delivered in 3working days.,Complex,serol,,
-2026-03-12T11:29:45+08:00,UPDATED,QA-E50879,Missing Lost Report,Others,R2,Done,100,serol,6/03/2026,"lost, missing",Add opsx email in daily missing lost report - have to raise ticket for 2244 server,serol,Report updated with opsx email as recipient,Simple,serol,,
-2026-03-12T16:12:30+08:00,CREATED,QA-376404,Adding Samsung in Hypercare,Splunk,R1,Backlog,0,Adillah,12/03/2026,"samsung, hypercare",add samsung in hypercare lookup,serol,,,,,
-2026-03-12T16:13:31+08:00,UPDATED,QA-376404,Adding Samsung in Hypercare,Splunk,R1,Done,100,Adillah,12/03/2026,"samsung, hypercare",add samsung in hypercare lookup,serol,add SAMSUNG SDS MALAYSIA SDN BHD in hypercare,Simple,serol,,
-2026-03-17T10:11:09+08:00,CREATED,QA-BFF0D8,Project Wingtai Queries from Customer (SNT Global),Others,R2,Backlog,0,Syamil,17/03/2026,,Assist to check with on the billing weight for the below order,Syamil,[Email: muhammadsyamil.husmidi@dhl.com] ,,,,
-2026-03-17T10:12:12+08:00,UPDATED,QA-BFF0D8,Project Wingtai Queries from Customer (SNT Global),Others,R2,Done,100,Syamil,17/03/2026,,Assist to check with on the billing weight for the below order,Syamil,Assist to check with on the billing weight for the below order and attached excel files,Simple,Syamil,,
-2026-03-17T10:13:51+08:00,CREATED,QA-6AF447,Penalty Agent Labuan ,Others,R2,Backlog,0,Syamil,17/03/2026,,proceed penalty RM 100 for agent Labuan due to failed to follow instruction to delivery urgent parcel regarding shipment 7027036594719966,Syamil,[Email: muhammadsyamil.husmidi@dhl.com] ,,,,
-2026-03-17T10:14:16+08:00,UPDATED,QA-6AF447,Penalty Agent Labuan ,Others,R2,Done,0,Syamil,17/03/2026,,proceed penalty RM 100 for agent Labuan due to failed to follow instruction to delivery urgent parcel regarding shipment 7027036594719966,Syamil,proceed penalty RM 100 for agent Labuan,Simple,Syamil,,
-2026-03-17T10:15:35+08:00,UPDATED,QA-6AF447,Penalty Agent Labuan ,Others,R2,Done,100,Syamil,17/03/2026,,proceed penalty RM 100 for agent Labuan due to failed to follow instruction to delivery urgent parcel regarding shipment 7027036594719966,Syamil,proceed penalty RM 100 for agent Labuan,Simple,Syamil,,
-2026-03-18T10:02:35+08:00,CREATED,QA-0038C5,Request: Daily Chanel Parcel List for Depot Monitoring,Splunk,R2,Backlog,0,Saidah,18/03/2026,close monitoring,Add chanel in close monitoring,serol,,,,,
-2026-03-18T10:03:41+08:00,CREATED,QA-332901,Amway Delivery Failed Depot (Daily),Splunk,R1,Backlog,0,Adillah,18/03/2026,amway,"Based on email subject above, I would like to request list of Amway shipment that failed delivery on previous day to be sent to depot on daily basis. Below is additional details fyi:
+2026-03-12T11:29:45+08:00,UPDATED,QA-E50879,Missing Lost Report,Others,R2 (Within 2 days),Done,100,serol,6/03/2026,"lost, missing",Add opsx email in daily missing lost report - have to raise ticket for 2244 server,serol,Report updated with opsx email as recipient,Simple,serol,,
+2026-03-12T16:12:30+08:00,CREATED,QA-376404,Adding Samsung in Hypercare,Splunk,R1 (Within 24 hours),Backlog,0,Adillah,12/03/2026,"samsung, hypercare",add samsung in hypercare lookup,serol,,,,,
+2026-03-12T16:13:31+08:00,UPDATED,QA-376404,Adding Samsung in Hypercare,Splunk,R1 (Within 24 hours),Done,100,Adillah,12/03/2026,"samsung, hypercare",add samsung in hypercare lookup,serol,add SAMSUNG SDS MALAYSIA SDN BHD in hypercare,Simple,serol,,
+2026-03-17T10:11:09+08:00,CREATED,QA-BFF0D8,Project Wingtai Queries from Customer (SNT Global),Others,R2 (Within 2 days),Backlog,0,Syamil,17/03/2026,,Assist to check with on the billing weight for the below order,Syamil,[Email: muhammadsyamil.husmidi@dhl.com] ,,,,
+2026-03-17T10:12:12+08:00,UPDATED,QA-BFF0D8,Project Wingtai Queries from Customer (SNT Global),Others,R2 (Within 2 days),Done,100,Syamil,17/03/2026,,Assist to check with on the billing weight for the below order,Syamil,Assist to check with on the billing weight for the below order and attached excel files,Simple,Syamil,,
+2026-03-17T10:13:51+08:00,CREATED,QA-6AF447,Penalty Agent Labuan ,Others,R2 (Within 2 days),Backlog,0,Syamil,17/03/2026,,proceed penalty RM 100 for agent Labuan due to failed to follow instruction to delivery urgent parcel regarding shipment 7027036594719966,Syamil,[Email: muhammadsyamil.husmidi@dhl.com] ,,,,
+2026-03-17T10:14:16+08:00,UPDATED,QA-6AF447,Penalty Agent Labuan ,Others,R2 (Within 2 days),Done,0,Syamil,17/03/2026,,proceed penalty RM 100 for agent Labuan due to failed to follow instruction to delivery urgent parcel regarding shipment 7027036594719966,Syamil,proceed penalty RM 100 for agent Labuan,Simple,Syamil,,
+2026-03-17T10:15:35+08:00,UPDATED,QA-6AF447,Penalty Agent Labuan ,Others,R2 (Within 2 days),Done,100,Syamil,17/03/2026,,proceed penalty RM 100 for agent Labuan due to failed to follow instruction to delivery urgent parcel regarding shipment 7027036594719966,Syamil,proceed penalty RM 100 for agent Labuan,Simple,Syamil,,
+2026-03-18T10:02:35+08:00,CREATED,QA-0038C5,Request: Daily Chanel Parcel List for Depot Monitoring,Splunk,R2 (Within 2 days),Backlog,0,Saidah,18/03/2026,close monitoring,Add chanel in close monitoring,serol,,,,,
+2026-03-18T10:03:41+08:00,CREATED,QA-332901,Amway Delivery Failed Depot (Daily),Splunk,R1 (Within 24 hours),Backlog,0,Adillah,18/03/2026,amway,"Based on email subject above, I would like to request list of Amway shipment that failed delivery on previous day to be sent to depot on daily basis. Below is additional details fyi:
 
 1.	This report will be use by us during daily Amway-Hypercare meeting at 10am (kickoff: Wednesday, 18th March 2026)
 2.	Delivery depot is expected to give justification on the failure (genuine or not genuine, complete/incomplete POD, action taken/plan to delivered the shipment ASAP). 
@@ -156,7 +156,7 @@ Target set by Amway:
 5247818428	AMWAY (MALAYSIA) SDN BHD	0005406835	AMWAY
 5247818428	AMWAY (MALAYSIA) SDN BHD	0005337988	AMWAY SHOP
 ",serol,,,,,
-2026-03-18T10:04:56+08:00,UPDATED,QA-332901,Amway Delivery Failed Depot (Daily),Splunk,R1,In Progress,60,Adillah,18/03/2026,amway,"Based on email subject above, I would like to request list of Amway shipment that failed delivery on previous day to be sent to depot on daily basis. Below is additional details fyi:
+2026-03-18T10:04:56+08:00,UPDATED,QA-332901,Amway Delivery Failed Depot (Daily),Splunk,R1 (Within 24 hours),In Progress,60,Adillah,18/03/2026,amway,"Based on email subject above, I would like to request list of Amway shipment that failed delivery on previous day to be sent to depot on daily basis. Below is additional details fyi:
 
 1.	This report will be use by us during daily Amway-Hypercare meeting at 10am (kickoff: Wednesday, 18th March 2026)
 2.	Delivery depot is expected to give justification on the failure (genuine or not genuine, complete/incomplete POD, action taken/plan to delivered the shipment ASAP). 
@@ -168,7 +168,7 @@ Target set by Amway:
 5247818428	AMWAY (MALAYSIA) SDN BHD	0005406835	AMWAY
 5247818428	AMWAY (MALAYSIA) SDN BHD	0005337988	AMWAY SHOP
 ",serol,It has been scheduled to send the report to depot at 8.20AM.,Complex,serol,,
-2026-03-18T10:06:42+08:00,CREATED,QA-B65AE8,Self Collect Report for Chanel,Splunk,R1,Backlog,0,Adillah,18/03/2026,"chanel, self collect","Requesting for Special Instruction | CHANEL (KUALA LUMPUR) SDN BHD.
+2026-03-18T10:06:42+08:00,CREATED,QA-B65AE8,Self Collect Report for Chanel,Splunk,R1 (Within 24 hours),Backlog,0,Adillah,18/03/2026,"chanel, self collect","Requesting for Special Instruction | CHANEL (KUALA LUMPUR) SDN BHD.
 
 The SC auto-report should be set up similarly to the BA & RD reports, where the email is sent to the merchant (Chanel) and Copy (CC) to CS at mysupport@dhl.com.
 Upon receiving the report, the merchant (Chanel) can trigger the request to DHL CS by replying with the self-collection (SC) instruction.
@@ -178,19 +178,19 @@ It would be preferable for the SC instruction to come directly from Chanel to en
 -	The courier will then need to scan the shipment under self-collect so that it appears in the auto-report to the merchant.
 Once the merchant receives the auto-report, they can liaise directly with the consignee to advise whether self-collection is possible and confirm the request. The merchant should then update DHLeC CS via email or the dedicated WhatsApp group so that the SC request can be raised in ODD. This ensures that all parties (Chanel, the consignee, and DHLeC) are aware of the request.
 ",serol,,,,,
-2026-03-24T10:30:30+08:00,CREATED,QA-1D289E,Recalculate EDD for Amway Dashboard,Splunk,R1,Backlog,0,Saurabh,24/03/2026,,"In amway dashboard...for 1 day SC/ NC number hope we are not putting any pickup cutoff?
+2026-03-24T10:30:30+08:00,CREATED,QA-1D289E,Recalculate EDD for Amway Dashboard,Splunk,R1 (Within 24 hours),Backlog,0,Saurabh,24/03/2026,,"In amway dashboard...for 1 day SC/ NC number hope we are not putting any pickup cutoff?
 Which mean monday 10 pm pickup also look for tue delivery for 1 day NC ?
 
 Hi, that will distort the reporting. Cuz we are suppose to pick and deliver next day irrespective of cutoff. Possible to make cutoff as 23:59 in all Amway reporting",serol,,,,,
-2026-03-24T10:32:09+08:00,UPDATED,QA-1D289E,Recalculate EDD for Amway Dashboard,Splunk,R1,In Review,80,Saurabh,24/03/2026,,"In amway dashboard...for 1 day SC/ NC number hope we are not putting any pickup cutoff?
+2026-03-24T10:32:09+08:00,UPDATED,QA-1D289E,Recalculate EDD for Amway Dashboard,Splunk,R1 (Within 24 hours),In Review,80,Saurabh,24/03/2026,,"In amway dashboard...for 1 day SC/ NC number hope we are not putting any pickup cutoff?
 Which mean monday 10 pm pickup also look for tue delivery for 1 day NC ?
 
 Hi, that will distort the reporting. Cuz we are suppose to pick and deliver next day irrespective of cutoff. Possible to make cutoff as 23:59 in all Amway reporting",serol,extend the range to 120days and recalculate the EDD for startclockdate!=firstscanshow.,Critical,serol,,
-2026-04-01T00:13:10+08:00,CREATED,QA-5E2F04,Recalculate EDD for Uniqlo Dashboard,Splunk,R1,Backlog,0,Saurabh,31/03/2026,uniqlo,Recalculate EDD for uniqlo Dashboard same as amway,serol,,,,,
-2026-04-01T00:18:09+08:00,UPDATED,QA-5E2F04,Recalculate EDD for Uniqlo Dashboard,Splunk,R1,In Progress,80,Saurabh,31/03/2026,uniqlo,Recalculate EDD for uniqlo Dashboard same as amway,serol,"publish the dashboard and add the dropdown, pending target and benchmark",Critical,serol,,
-2026-04-01T00:18:59+08:00,CREATED,QA-09A31F,Add raudhya,Splunk,R1,Backlog,0,Adillah,31/03/2026,,Add raudhya into hypercare list and priority merchant,serol,,,,,
-2026-04-01T00:19:28+08:00,UPDATED,QA-09A31F,Add raudhya,Splunk,R1,Done,100,Adillah,31/03/2026,,Add raudhya into hypercare list and priority merchant,serol,Add raudhya into hypercare list and priority merchant,Medium,serol,,
-2026-04-01T00:20:57+08:00,UPDATED,QA-B65AE8,Self Collect Report for Chanel,Splunk,R1,In Review,85,Adillah,18/03/2026,"chanel, self collect","Requesting for Special Instruction | CHANEL (KUALA LUMPUR) SDN BHD.
+2026-04-01T00:13:10+08:00,CREATED,QA-5E2F04,Recalculate EDD for Uniqlo Dashboard,Splunk,R1 (Within 24 hours),Backlog,0,Saurabh,31/03/2026,uniqlo,Recalculate EDD for uniqlo Dashboard same as amway,serol,,,,,
+2026-04-01T00:18:09+08:00,UPDATED,QA-5E2F04,Recalculate EDD for Uniqlo Dashboard,Splunk,R1 (Within 24 hours),In Progress,80,Saurabh,31/03/2026,uniqlo,Recalculate EDD for uniqlo Dashboard same as amway,serol,"publish the dashboard and add the dropdown, pending target and benchmark",Critical,serol,,
+2026-04-01T00:18:59+08:00,CREATED,QA-09A31F,Add raudhya,Splunk,R1 (Within 24 hours),Backlog,0,Adillah,31/03/2026,,Add raudhya into hypercare list and priority merchant,serol,,,,,
+2026-04-01T00:19:28+08:00,UPDATED,QA-09A31F,Add raudhya,Splunk,R1 (Within 24 hours),Done,100,Adillah,31/03/2026,,Add raudhya into hypercare list and priority merchant,serol,Add raudhya into hypercare list and priority merchant,Medium,serol,,
+2026-04-01T00:20:57+08:00,UPDATED,QA-B65AE8,Self Collect Report for Chanel,Splunk,R1 (Within 24 hours),In Review,85,Adillah,18/03/2026,"chanel, self collect","Requesting for Special Instruction | CHANEL (KUALA LUMPUR) SDN BHD.
 
 The SC auto-report should be set up similarly to the BA & RD reports, where the email is sent to the merchant (Chanel) and Copy (CC) to CS at mysupport@dhl.com.
 Upon receiving the report, the merchant (Chanel) can trigger the request to DHL CS by replying with the self-collection (SC) instruction.
@@ -200,11 +200,11 @@ It would be preferable for the SC instruction to come directly from Chanel to en
 -	The courier will then need to scan the shipment under self-collect so that it appears in the auto-report to the merchant.
 Once the merchant receives the auto-report, they can liaise directly with the consignee to advise whether self-collection is possible and confirm the request. The merchant should then update DHLeC CS via email or the dedicated WhatsApp group so that the SC request can be raised in ODD. This ensures that all parties (Chanel, the consignee, and DHLeC) are aware of the request.
 ",serol,already shared the sample report with sales/cs through email,Critical,serol,,
-2026-04-01T00:30:54+08:00,UPDATED,QA-1D289E,Recalculate EDD for Amway Dashboard,Splunk,R1,Done,80,Saurabh,24/03/2026,,"In amway dashboard...for 1 day SC/ NC number hope we are not putting any pickup cutoff?
+2026-04-01T00:30:54+08:00,UPDATED,QA-1D289E,Recalculate EDD for Amway Dashboard,Splunk,R1 (Within 24 hours),Done,80,Saurabh,24/03/2026,,"In amway dashboard...for 1 day SC/ NC number hope we are not putting any pickup cutoff?
 Which mean monday 10 pm pickup also look for tue delivery for 1 day NC ?
 
 Hi, that will distort the reporting. Cuz we are suppose to pick and deliver next day irrespective of cutoff. Possible to make cutoff as 23:59 in all Amway reporting",serol,Publish and share the update to alyu and saurabh,Critical,serol,,
-2026-04-01T00:31:45+08:00,UPDATED,QA-B65AE8,Self Collect Report for Chanel,Splunk,R1,Done,100,Adillah,18/03/2026,"chanel, self collect","Requesting for Special Instruction | CHANEL (KUALA LUMPUR) SDN BHD.
+2026-04-01T00:31:45+08:00,UPDATED,QA-B65AE8,Self Collect Report for Chanel,Splunk,R1 (Within 24 hours),Done,100,Adillah,18/03/2026,"chanel, self collect","Requesting for Special Instruction | CHANEL (KUALA LUMPUR) SDN BHD.
 
 The SC auto-report should be set up similarly to the BA & RD reports, where the email is sent to the merchant (Chanel) and Copy (CC) to CS at mysupport@dhl.com.
 Upon receiving the report, the merchant (Chanel) can trigger the request to DHL CS by replying with the self-collection (SC) instruction.
@@ -214,7 +214,7 @@ It would be preferable for the SC instruction to come directly from Chanel to en
 -	The courier will then need to scan the shipment under self-collect so that it appears in the auto-report to the merchant.
 Once the merchant receives the auto-report, they can liaise directly with the consignee to advise whether self-collection is possible and confirm the request. The merchant should then update DHLeC CS via email or the dedicated WhatsApp group so that the SC request can be raised in ODD. This ensures that all parties (Chanel, the consignee, and DHLeC) are aware of the request.
 ",serol,Merchant update they dont want any email report,Critical,serol,,
-2026-04-01T00:33:04+08:00,UPDATED,QA-332901,Amway Delivery Failed Depot (Daily),Splunk,R1,In Progress,90,Adillah,18/03/2026,amway,"Based on email subject above, I would like to request list of Amway shipment that failed delivery on previous day to be sent to depot on daily basis. Below is additional details fyi:
+2026-04-01T00:33:04+08:00,UPDATED,QA-332901,Amway Delivery Failed Depot (Daily),Splunk,R1 (Within 24 hours),In Progress,90,Adillah,18/03/2026,amway,"Based on email subject above, I would like to request list of Amway shipment that failed delivery on previous day to be sent to depot on daily basis. Below is additional details fyi:
 
 1.	This report will be use by us during daily Amway-Hypercare meeting at 10am (kickoff: Wednesday, 18th March 2026)
 2.	Delivery depot is expected to give justification on the failure (genuine or not genuine, complete/incomplete POD, action taken/plan to delivered the shipment ASAP). 
@@ -226,31 +226,31 @@ Once the merchant receives the auto-report, they can liaise directly with the co
 5247818428	AMWAY (MALAYSIA) SDN BHD	0005406835	AMWAY
 5247818428	AMWAY (MALAYSIA) SDN BHD	0005337988	AMWAY SHOP
 ",serol,"added uniqlo to report list and renaming the report to priority merchant, tested and published",Complex,serol,,
-2026-04-01T00:33:59+08:00,UPDATED,QA-0038C5,Request: Daily Chanel Parcel List for Depot Monitoring,Splunk,R2,Done,100,Saidah,18/03/2026,close monitoring,Add chanel in close monitoring,serol,tested and schedule the report in splunk,Medium,serol,,
-2026-04-01T00:35:29+08:00,UPDATED,QA-0B65FA,OTP Feature Adjustment – VORWERK MALAYSIA ENTERPRISES SDN BHD - Sold-To: 9000000121,Others,R1,Done,100,Syamil,9/03/2026,SI,special instruction for Vorwerk,serol,adillah will reply to email,Medium,Adillah,,
-2026-04-01T00:36:07+08:00,UPDATED,QA-CF3E37,Pickup Daily KPI Report,Splunk,R2,Done,100,Farid,6/03/2026,pickup,Remove Farid from auto email splunk,serol,Removed,Simple,serol,,
-2026-04-01T00:38:17+08:00,CREATED,QA-8A9E41,Request for Review of Delivery Rate Due to Rising Operating Costs,Splunk,R1,Backlog,0,Tina,2026-03-31,"delivery rate, KLG, kumar100_lmpmy","Please assist Tina to provide below data:
+2026-04-01T00:33:59+08:00,UPDATED,QA-0038C5,Request: Daily Chanel Parcel List for Depot Monitoring,Splunk,R2 (Within 2 days),Done,100,Saidah,18/03/2026,close monitoring,Add chanel in close monitoring,serol,tested and schedule the report in splunk,Medium,serol,,
+2026-04-01T00:35:29+08:00,UPDATED,QA-0B65FA,OTP Feature Adjustment – VORWERK MALAYSIA ENTERPRISES SDN BHD - Sold-To: 9000000121,Others,R1 (Within 24 hours),Done,100,Syamil,9/03/2026,SI,special instruction for Vorwerk,serol,adillah will reply to email,Medium,Adillah,,
+2026-04-01T00:36:07+08:00,UPDATED,QA-CF3E37,Pickup Daily KPI Report,Splunk,R2 (Within 2 days),Done,100,Farid,6/03/2026,pickup,Remove Farid from auto email splunk,serol,Removed,Simple,serol,,
+2026-04-01T00:38:17+08:00,CREATED,QA-8A9E41,Request for Review of Delivery Rate Due to Rising Operating Costs,Splunk,R1 (Within 24 hours),Backlog,0,Tina,2026-03-31,"delivery rate, KLG, kumar100_lmpmy","Please assist Tina to provide below data:
 
 Overall volume (encoded) for MYKLG1 from 1-21 March 2026.
 Shipment volume for OFD under courier ID kumar100_lmpmy from 1–21 March 2026.
 If OFD data is not available, kindly provide the daily delivered and delivery failed volumes from 1-21 March 2026.",serol,,,,,
-2026-04-01T00:39:25+08:00,UPDATED,QA-8A9E41,Request for Review of Delivery Rate Due to Rising Operating Costs,Splunk,R1,Done,100,Tina,2026-03-31,"delivery rate, KLG, kumar100_lmpmy","Please assist Tina to provide below data:
+2026-04-01T00:39:25+08:00,UPDATED,QA-8A9E41,Request for Review of Delivery Rate Due to Rising Operating Costs,Splunk,R1 (Within 24 hours),Done,100,Tina,2026-03-31,"delivery rate, KLG, kumar100_lmpmy","Please assist Tina to provide below data:
 
 Overall volume (encoded) for MYKLG1 from 1-21 March 2026.
 Shipment volume for OFD under courier ID kumar100_lmpmy from 1–21 March 2026.
 If OFD data is not available, kindly provide the daily delivered and delivery failed volumes from 1-21 March 2026.",serol,Shared the file with tina on email,Medium,serol,,
-2026-04-01T00:40:25+08:00,CREATED,QA-DCA4CF,BOLTTECH Shipment Mar-31 (Tue) - 1 - KCH 7227038879022066,Splunk,R2,Backlog,0,Rasyiqah,2026-03-31,"bolttech, 7227038879022066",No PDR shipment was created for boltech,serol,,,,,
-2026-04-01T00:41:36+08:00,UPDATED,QA-DCA4CF,BOLTTECH Shipment Mar-31 (Tue) - 1 - KCH 7227038879022066,Splunk,R2,Done,90,Rasyiqah,2026-03-31,"bolttech, 7227038879022066",No PDR shipment was created for boltech,serol,"PDO shipment was created, seek advise from CS to assist on this matter through email",Simple,serol,,
-2026-04-01T00:43:07+08:00,CREATED,QA-510AF0,POD Shipment Delivered Report Umobile,Splunk,R2,Backlog,0,Daryl,2026-03-31,"POD, umobile",Adding recipient list for POD report Umobile,serol,,,,,
-2026-04-01T00:43:52+08:00,UPDATED,QA-510AF0,POD Shipment Delivered Report Umobile,Splunk,R2,Done,100,Daryl,2026-03-31,"POD, umobile",Adding recipient list for POD report Umobile,serol,Raised the ticket INC69137644 to it support.,Simple,serol,,
-2026-04-01T00:45:54+08:00,CREATED,QA-759832,CNDN - CHUAN SIN SDN BHD - 12032615.52-5302955509-CHUAN SIN SDN BHD ,Others,R1,Backlog,0,Baizura,2026-03-31,CNDN,"Hi Asrol,
+2026-04-01T00:40:25+08:00,CREATED,QA-DCA4CF,BOLTTECH Shipment Mar-31 (Tue) - 1 - KCH 7227038879022066,Splunk,R2 (Within 2 days),Backlog,0,Rasyiqah,2026-03-31,"bolttech, 7227038879022066",No PDR shipment was created for boltech,serol,,,,,
+2026-04-01T00:41:36+08:00,UPDATED,QA-DCA4CF,BOLTTECH Shipment Mar-31 (Tue) - 1 - KCH 7227038879022066,Splunk,R2 (Within 2 days),Done,90,Rasyiqah,2026-03-31,"bolttech, 7227038879022066",No PDR shipment was created for boltech,serol,"PDO shipment was created, seek advise from CS to assist on this matter through email",Simple,serol,,
+2026-04-01T00:43:07+08:00,CREATED,QA-510AF0,POD Shipment Delivered Report Umobile,Splunk,R2 (Within 2 days),Backlog,0,Daryl,2026-03-31,"POD, umobile",Adding recipient list for POD report Umobile,serol,,,,,
+2026-04-01T00:43:52+08:00,UPDATED,QA-510AF0,POD Shipment Delivered Report Umobile,Splunk,R2 (Within 2 days),Done,100,Daryl,2026-03-31,"POD, umobile",Adding recipient list for POD report Umobile,serol,Raised the ticket INC69137644 to it support.,Simple,serol,,
+2026-04-01T00:45:54+08:00,CREATED,QA-759832,CNDN - CHUAN SIN SDN BHD - 12032615.52-5302955509-CHUAN SIN SDN BHD ,Others,R1 (Within 24 hours),Backlog,0,Baizura,2026-03-31,CNDN,"Hi Asrol,
 
 Kindly assist to check why this CN was routed to Kiattichai.",serol,,,,,
-2026-04-01T00:47:13+08:00,CREATED,QA-C20841,CNDN - CHUAN SIN SDN BHD - 12032615.52-5302955509-CHUAN SIN SDN BHD,Others,R1,Backlog,0,Baizura,2026-03-31,cndn,"Hi Asrol,
+2026-04-01T00:47:13+08:00,CREATED,QA-C20841,CNDN - CHUAN SIN SDN BHD - 12032615.52-5302955509-CHUAN SIN SDN BHD,Others,R1 (Within 24 hours),Backlog,0,Baizura,2026-03-31,cndn,"Hi Asrol,
 
 
 Kindly assist to check why this CN was routed to Kiattichai.",serol,,,,,
-2026-04-01T00:48:38+08:00,UPDATED,QA-C20841,CNDN - CHUAN SIN SDN BHD - 12032615.52-5302955509-CHUAN SIN SDN BHD,Others,R1,Done,100,Baizura,2026-03-31,cndn,"Hi Asrol,
+2026-04-01T00:48:38+08:00,UPDATED,QA-C20841,CNDN - CHUAN SIN SDN BHD - 12032615.52-5302955509-CHUAN SIN SDN BHD,Others,R1 (Within 24 hours),Done,100,Baizura,2026-03-31,cndn,"Hi Asrol,
 
 
 Kindly assist to check why this CN was routed to Kiattichai.",serol,"As per check, baizura wrongly upload the file in wrong folder thus directing the approval to go to kiattichai. Explanation has been done through email.
@@ -258,14 +258,14 @@ Kindly assist to check why this CN was routed to Kiattichai.",serol,"As per chec
 ""Hi Baizura/Vijaya,
 
 As per check, file was uploaded in folder “Above MYR 500,000”. Thus, it will follow hierarchy approval which include Kiattichai as third approval.""",Complex,serol,,
-2026-04-01T00:48:53+08:00,UPDATED,QA-759832,CNDN - CHUAN SIN SDN BHD - 12032615.52-5302955509-CHUAN SIN SDN BHD ,Others,R1,Done,100,Baizura,2026-03-31,CNDN,"Hi Asrol,
+2026-04-01T00:48:53+08:00,UPDATED,QA-759832,CNDN - CHUAN SIN SDN BHD - 12032615.52-5302955509-CHUAN SIN SDN BHD ,Others,R1 (Within 24 hours),Done,100,Baizura,2026-03-31,CNDN,"Hi Asrol,
 
 Kindly assist to check why this CN was routed to Kiattichai.",serol,"As per check, baizura wrongly upload the file in wrong folder thus directing the approval to go to kiattichai. Explanation has been done through email.
 
 ""Hi Baizura/Vijaya,
 
 As per check, file was uploaded in folder “Above MYR 500,000”. Thus, it will follow hierarchy approval which include Kiattichai as third approval.""",Complex,serol,,
-2026-04-01T00:50:44+08:00,UPDATED,QA-332901,Amway Delivery Failed Depot (Daily),Splunk,R1,In Progress,90,Adillah,18/03/2026,amway,"Based on email subject above, I would like to request list of Amway shipment that failed delivery on previous day to be sent to depot on daily basis. Below is additional details fyi:
+2026-04-01T00:50:44+08:00,UPDATED,QA-332901,Amway Delivery Failed Depot (Daily),Splunk,R1 (Within 24 hours),In Progress,90,Adillah,18/03/2026,amway,"Based on email subject above, I would like to request list of Amway shipment that failed delivery on previous day to be sent to depot on daily basis. Below is additional details fyi:
 
 1.	This report will be use by us during daily Amway-Hypercare meeting at 10am (kickoff: Wednesday, 18th March 2026)
 2.	Delivery depot is expected to give justification on the failure (genuine or not genuine, complete/incomplete POD, action taken/plan to delivered the shipment ASAP). 
@@ -277,7 +277,7 @@ As per check, file was uploaded in folder “Above MYR 500,000”. Thus, it will
 5247818428	AMWAY (MALAYSIA) SDN BHD	0005406835	AMWAY
 5247818428	AMWAY (MALAYSIA) SDN BHD	0005337988	AMWAY SHOP
 ",serol,added raudhya (9000001040) into the list as well. tested the query to ensure lookup can sustain the failed volume,Complex,serol,,
-2026-04-01T00:53:37+08:00,UPDATED,QA-99E149,Data Loss in Splunk,Splunk,R1,Done,100,,,,Data loss affecting both MY and TH,serol,"Update from Tina under subjectemail: Production Issues: Splunk 
+2026-04-01T00:53:37+08:00,UPDATED,QA-99E149,Data Loss in Splunk,Splunk,R1 (Within 24 hours),Done,100,,,,Data loss affecting both MY and TH,serol,"Update from Tina under subjectemail: Production Issues: Splunk 
 
 Hi all,
 
@@ -336,7 +336,7 @@ Preventive actions:
 1) Implemented data volume based monitoring and alerting for sudden increase of data ingested per index in farm. Follow up action with service owner to rectify the issue/possible action to reduce the volume.
 
 2) Continuous improvement action via PRB0198118 to improve the indexing rate of Splunk",Medium,serol,,
-2026-04-01T00:54:32+08:00,UPDATED,QA-14800F,Relabel Report Esysms,Others,R1,Done,100,Amin,15/07/2025,,,serol,"Setup and tested the query in splunk
+2026-04-01T00:54:32+08:00,UPDATED,QA-14800F,Relabel Report Esysms,Others,R1 (Within 24 hours),Done,100,Amin,15/07/2025,,,serol,"Setup and tested the query in splunk
 
  
 
@@ -393,7 +393,7 @@ Preventive actions:
 1) Implemented data volume based monitoring and alerting for sudden increase of data ingested per index in farm. Follow up action with service owner to rectify the issue/possible action to reduce the volume.
 
 2) Continuous improvement action via PRB0198118 to improve the indexing rate of Splunk",Complex,serol,,
-2026-04-01T00:56:10+08:00,UPDATED,QA-1F1B81,Amway Failed Parcel Audit,Splunk,R1,Done,100,Adillah,6/03/2026,"amway, auto report","List of Amway shipment failed delivery.
+2026-04-01T00:56:10+08:00,UPDATED,QA-1F1B81,Amway Failed Parcel Audit,Splunk,R1 (Within 24 hours),Done,100,Adillah,6/03/2026,"amway, auto report","List of Amway shipment failed delivery.
 - Receive by Hypercare Team (group email) daily at 11pm
 - Consist of all shipment with failed status updated by courier from 6am - 10pm
 - Column needed: DHL ID, CCN, Facility, Primary Facility, Courier ID, Delivery Failed Ts, Primary Failure Reason, Secondary Failure Reason, Call log,  Latitude, Longitude, Attempt Count",serol,"Tested and setup the report in splunk 
@@ -453,15 +453,15 @@ Preventive actions:
 1) Implemented data volume based monitoring and alerting for sudden increase of data ingested per index in farm. Follow up action with service owner to rectify the issue/possible action to reduce the volume.
 
 2) Continuous improvement action via PRB0198118 to improve the indexing rate of Splunk",Critical,serol,,
-2025-02-01T00:56:56+08:00,UPDATED,QA-018128,WEB ENQUIRY,Others,R2,Done,100,,24/01/2025,,Request by saurabh to check on 3month record for recipient,serol,shared the update to saurabh on email,Medium,serol,,
-2026-02-01T00:57:36+08:00,UPDATED,QA-F98DA8,Amendment In Backlog Dashboard,Others,R2,Done,100,AlYu,10/04/2025,,Additional panel in Backlog Dashboard to show shipment pending at depot,serol,add the panel in backlog dashboard,Medium,serol,,
-2026-02-01T00:58:25+08:00,UPDATED,QA-FC4D29,MY_EncodeDispatch_Daily report,Others,R2,Done,100,,,,Sending a report generated from splunk via server,serol,Setup and schedule the report in splunk,Complex,serol,,
-2026-03-01T00:59:51+08:00,CREATED,QA-F34504,Adding controllable and uncontrollable failure reason page in SCNC,Power BI,R1,Backlog,0,serol,2026-03-31,"scnc, failure reason",add 1 page to show trend and analysis for failure reason,serol,,,,,
-2026-04-01T01:01:02+08:00,UPDATED,QA-F34504,Adding controllable and uncontrollable failure reason page in SCNC,Power BI,R1,In Progress,50,serol,2026-03-31,"scnc, failure reason",add 1 page to show trend and analysis for failure reason,serol,"based data has been setup in sharepoint, next to build the measure",Critical,serol,,
-2026-04-01T01:02:40+08:00,UPDATED,QA-83FF9E,MY - Live Pickup Performance Today,Splunk,R2,Done,100,Alyu,6/03/2026,"pickup, enquiry","The difference of the Base Time (filter: Job Creation, Job Acceptance, Job Start Date)",serol,"explain to alyu and adillah in email
+2025-02-01T00:56:56+08:00,UPDATED,QA-018128,WEB ENQUIRY,Others,R2 (Within 2 days),Done,100,,24/01/2025,,Request by saurabh to check on 3month record for recipient,serol,shared the update to saurabh on email,Medium,serol,,
+2026-02-01T00:57:36+08:00,UPDATED,QA-F98DA8,Amendment In Backlog Dashboard,Others,R2 (Within 2 days),Done,100,AlYu,10/04/2025,,Additional panel in Backlog Dashboard to show shipment pending at depot,serol,add the panel in backlog dashboard,Medium,serol,,
+2026-02-01T00:58:25+08:00,UPDATED,QA-FC4D29,MY_EncodeDispatch_Daily report,Others,R2 (Within 2 days),Done,100,,,,Sending a report generated from splunk via server,serol,Setup and schedule the report in splunk,Complex,serol,,
+2026-03-01T00:59:51+08:00,CREATED,QA-F34504,Adding controllable and uncontrollable failure reason page in SCNC,Power BI,R1 (Within 24 hours),Backlog,0,serol,2026-03-31,"scnc, failure reason",add 1 page to show trend and analysis for failure reason,serol,,,,,
+2026-04-01T01:01:02+08:00,UPDATED,QA-F34504,Adding controllable and uncontrollable failure reason page in SCNC,Power BI,R1 (Within 24 hours),In Progress,50,serol,2026-03-31,"scnc, failure reason",add 1 page to show trend and analysis for failure reason,serol,"based data has been setup in sharepoint, next to build the measure",Critical,serol,,
+2026-04-01T01:02:40+08:00,UPDATED,QA-83FF9E,MY - Live Pickup Performance Today,Splunk,R2 (Within 2 days),Done,100,Alyu,6/03/2026,"pickup, enquiry","The difference of the Base Time (filter: Job Creation, Job Acceptance, Job Start Date)",serol,"explain to alyu and adillah in email
 
 ""It based on which one user pick : Job Creation, Job Acceptance, Job Start Date. It simply follow whatever appear on Apollo web version. Samples below was taken by filtering on 9 March 2026.""",Medium,serol,,
-2026-04-01T01:03:51+08:00,UPDATED,QA-3AC6EE,MY - Delivery Today,Splunk,R3,Done,100,Alyu,6/03/2026,"dashboard, delivery, enhancement","The summary available for overall courier ID. Unable to identify the courier under which depot. Suggestion: Add filter for facility or add column of facility next to courier ID.
+2026-04-01T01:03:51+08:00,UPDATED,QA-3AC6EE,MY - Delivery Today,Splunk,R3 (Within 5 days),Done,100,Alyu,6/03/2026,"dashboard, delivery, enhancement","The summary available for overall courier ID. Unable to identify the courier under which depot. Suggestion: Add filter for facility or add column of facility next to courier ID.
 Failure reason summarized by region. Need this by facility and courier as well.
 In the last column of data, there is column that indicate 10pm delivery. Can we change 10pm to 12pm (prenoon)?
 Please explore and suggest if failure reason summary should be enhance in this dashboard or create PBI for delivery which include failure reason analysis.",serol,"explain to alyu and adillah in email
@@ -469,7 +469,7 @@ Please explore and suggest if failure reason summary should be enhance in this d
 ""Dashboard has been updated with depotcode columns.""
 
 for request on failure reason : ""Our current SCNC dashboard has the based data for failure reason. We will develop an analysis for failure reason in power BI under SCNC tab.""",Simple,serol,,
-2026-04-01T01:04:51+08:00,UPDATED,QA-8935AB,New Dashboard,Splunk,R1,In Progress,50,Alyu,6/03/2026,"dashboard, encoded","The objective is to view a summary of the overall status based on the selected encoded date.
+2026-04-01T01:04:51+08:00,UPDATED,QA-8935AB,New Dashboard,Splunk,R1 (Within 24 hours),In Progress,50,Alyu,6/03/2026,"dashboard, encoded","The objective is to view a summary of the overall status based on the selected encoded date.
 For example, when I filter the encoded date to 3rd February 2026, I should be able to see all shipments encoded on that date, along with a summary of their current overall status as of today.
 Please explore this requirement and share any limitations or challenges you may encounter in developing this dashboard.",serol,"explain to alyu and adillah in email
 
@@ -502,6 +502,6 @@ My Recommendation
                                                               i.      Given these constraints, we recommend raising this request through APR and routing it to IT Support. Unlike our current Splunk setup, IT has direct database access where parcel records can be queried relationally and efficiently — making it far more suitable for this type of summary dashboard.
 
                                                              ii.      With proper database access, IT would be able to build a scalable, performant solution that can handle our data volume without the limitations we face on Splunk. Any development done at that level will also be easier to maintain and extend as our operations grow.""",Critical,serol,,
-2026-04-01T01:22:18+08:00,UPDATED,QA-C628F4,"Single Dashboard for Pickup, Encoded, Delivered daily",Others,R2,Done,100,AlYu,,Report Request,,serol,closed this ticket and continue with ticket: QA-8935AB,Simple,serol,,
-2026-04-01T01:35:44+08:00,UPDATED,QA-018128,WEB ENQUIRY,Others,R2,Done,100,,24/01/2025,,Request by saurabh to check on 3month record for recipient,serol,shared to saurabh,Simple,serol,,
-2026-04-01T13:27:38+08:00,CREATED,QA-A4782F,Daily performance for sinyakmutia_lmpmy,Splunk,R1 (Within 24 hours),Backlog,0,Adillah,2026-04-02 13:27:38,"sinyakmutia_lmpmy, SHA",Daily performance for sinyakmutia_lmpmy,serol,,,,,
+2026-04-01T01:22:18+08:00,UPDATED,QA-C628F4,"Single Dashboard for Pickup, Encoded, Delivered daily",Others,R2 (Within 2 days),Done,100,AlYu,,Report Request,,serol,closed this ticket and continue with ticket: QA-8935AB,Simple,serol,,
+2026-04-01T01:35:44+08:00,UPDATED,QA-018128,WEB ENQUIRY,Others,R2 (Within 2 days),Done,100,,24/01/2025,,Request by saurabh to check on 3month record for recipient,serol,shared to saurabh,Simple,serol,,
+2026-04-01T13:27:38+08:00,CREATED,QA-A4782F,Daily performance for sinyakmutia_lmpmy,Splunk,R1 (Within 24 hours) (Within 24 hours),Backlog,0,Adillah,2026-04-02 13:27:38,"sinyakmutia_lmpmy, SHA",Daily performance for sinyakmutia_lmpmy,serol,,,,,
