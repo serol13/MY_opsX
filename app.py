@@ -325,13 +325,25 @@ PRIORITY_COLORS = {
     "High":     DHL_RED,
     "Critical": "#6A0DAD",
 }
-PRIORITY_ORDER   = ["Low", "Medium", "High", "Critical"]
+PRIORITY_ORDER = [
+    "R1 (Within 24 hours)",
+    "R2 (Within 2 days)",
+    "R3 (Within 5 days)"
+]
+
+PRIORITY_COLORS = {
+    "R1 (Within 24 hours)": "#D32F2F",   # Red
+    "R2 (Within 2 days)":    "#F57C00",  # Orange
+    "R3 (Within 5 days)":    "#1976D2",  # Blue
+}
+
 COMPLEXITY_ORDER = ["Simple", "Medium", "Complex", "Critical"]
+
 COMPLEXITY_COLORS = {
-    "Simple":   "#2E7D32",
-    "Medium":   "#0078D4",
-    "Complex":  "#FF8C00",
-    "Critical": "#6A0DAD",
+    "Simple":   "#2E7D32",  # Green
+    "Medium":   "#0078D4",  # Blue
+    "Complex":  "#FF8C00",  # Orange
+    "Critical": "#6A0DAD",  # Purple
 }
 STATUS_ORDER   = ["Backlog", "In Progress", "In Review", "Blocked", "Done"]
 
