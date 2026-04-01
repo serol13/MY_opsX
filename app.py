@@ -964,46 +964,65 @@ elif page == "All Tickets":
         df = tickets.copy()
         df = df[df["platform"].isin(fp) & df["status"].isin(fs) & df["priority"].isin(fr)]
         if fq:
-            mask = (df["title"].str.contains(fq, case=False, na=False) |
-                    df["requestor"].str.contains(fq, case=False, na=False))
+            mask = (
+                df["title"].str.contains(fq, case=False, na=False) |
+                df["requestor"].str.contains(fq, case=False, na=False)
+            )
             df = df[mask]
 
         sc1,sc2 = st.columns([2,1])
         with sc1:
-            sort_by = st.selectbox("Sort by", ["Newest first","Oldest first",
+            sort_by = st.selectbox("Sort by", ["Newest first", "Oldest first",
                                                "Priority (high to low)",
-                                               "Progress (high to low)","Due Date"])
+                                               "Progress (high to low)", "Due Date"])
         with sc2:
-            view_mode = st.radio("View", ["Cards","Table"], horizontal=True)
+            view_mode = st.radio("View", ["Cards", "Table"], horizontal=True)
 
         def skey(row):
-            if sort_by == "Newest first":           return row["timestamp"]
-            if sort_by == "Oldest first":           return row["timestamp"]
-            if sort_by == "Priority (high to low)": return PRIORITY_ORDER.index(row["priority"]) if row["priority"] in PRIORITY_ORDER else 99
-            if sort_by == "Progress (high to low)": return -int(row["progress"]) if str(row["progress"]).isdigit() else 0
+            if sort_by == "Newest first": return row["timestamp"]
+            if sort_by == "Oldest first": return row["timestamp"]
+            if sort_by == "Priority (high to low)": 
+                return PRIORITY_ORDER.index(row["priority"]) if row["priority"] in PRIORITY_ORDER else 99
+            if sort_by == "Progress (high to low)": 
+                return -int(row["progress"]) if str(row["progress"]).isdigit() else 0
             return row.get("due_date","")
 
         df["_sk"] = df.apply(skey, axis=1)
         df = df.sort_values("_sk", ascending=(sort_by not in ["Newest first","Progress (high to low)"]))
         st.caption(f"Showing {len(df)} ticket(s)")
 
-        # ── CARDS VIEW ────────────────────────────────────────────────────────
+        # ── CARD VIEW (NOW CLICKABLE) ──────────────────────────────────────────
         if view_mode == "Cards":
             for _, t in df.iterrows():
                 pct = int(float(t.get("progress", 0) or 0))
                 bc  = STATUS_COLORS.get(t["status"], DHL_YELLOW)
+
+                # Make the entire card clickable (ADMIN ONLY)
+                if user:
+                    clicked = st.button(f"Open {t['ticket_id']}", key=f"open_card_{t['ticket_id']}")
+                    if clicked:
+                        st.session_state.jump_to_ticket = t["ticket_id"]
+                        st.session_state.nav_page = "Update / Delete Ticket"
+                        st.session_state.my_tasks_mode = False
+                        st.rerun()
+
+                desc = str(t.get("description", ""))
+                desc_short = desc[:200] + ("..." if len(desc) > 200 else "")
+
                 tag_html = " ".join(
                     f'<span style="background:{DHL_LIGHT};color:{DHL_DARK};border:1px solid {DHL_BORDER};'
                     f'padding:1px 8px;border-radius:4px;font-size:11px;font-weight:600">{tg}</span>'
                     for tg in str(t.get("tags","")).split(",") if tg.strip()
                 )
-                desc       = str(t.get("description",""))
-                desc_short = desc[:200] + ("..." if len(desc) > 200 else "")
+
                 complexity_badge = badge("Complexity: " + str(t.get("complexity","")), "#555555") if t.get("complexity") else ""
                 assigned_badge   = badge("Assigned: " + str(t.get("assigned_to","")), "#1A1A1A", DHL_YELLOW) if t.get("assigned_to") else ""
+
                 st.markdown(
                     '<div class="ticket-card">'
-                    + f'<div class="ticket-id">{t["ticket_id"]} · {t.get("requestor","")} · Due {t.get("due_date","—")} · Assigned: {t.get("assigned_to","Unassigned")} · Updated by {t.get("updated_by","")}</div>'
+                    + f'<div class="ticket-id">{t["ticket_id"]} · {t.get("requestor","")} · '
+                    + f'Due {t.get("due_date","—")} · Assigned: {t.get("assigned_to","Unassigned")} · '
+                    + f'Updated by {t.get("updated_by","")}</div>'
                     + f'<div class="ticket-title">{t["title"]}</div>'
                     + '<div class="pills">'
                     + badge(t["platform"], PLATFORM_COLORS.get(t["platform"], DHL_GRAY))
@@ -1013,147 +1032,67 @@ elif page == "All Tickets":
                     + progress_bar(pct, bc)
                     + f'<p style="color:#6B6B6B;font-size:13px;margin-top:6px">{desc_short}</p>'
                     + '</div>',
-                    unsafe_allow_html=True)
+                    unsafe_allow_html=True
+                )
 
-        # ── TABLE VIEW ────────────────────────────────────────────────────────
+        # ── TABLE VIEW (NOW CLICKABLE TICKET ID) ──────────────────────────────
         else:
             st.markdown("#### Column Filters")
             tf1, tf2, tf3, tf4, tf5 = st.columns(5)
             with tf1:
                 all_assigned = sorted([x for x in df["assigned_to"].dropna().unique() if x])
-                tf_assigned = st.multiselect("Assigned To", all_assigned, default=all_assigned, key="tf_assigned")
+                tf_assigned = st.multiselect("Assigned To", all_assigned, default=all_assigned)
             with tf2:
                 tf_complexity = st.multiselect("Complexity", COMPLEXITY_ORDER,
-                                               default=[c for c in COMPLEXITY_ORDER if c in df["complexity"].values],
-                                               key="tf_complexity")
+                                               default=[c for c in COMPLEXITY_ORDER if c in df["complexity"].values])
             with tf3:
                 tf_progress_min, tf_progress_max = st.select_slider(
-                    "Progress %", options=list(range(0, 101, 5)),
-                    value=(0, 100), key="tf_progress")
+                    "Progress %", options=list(range(0, 101, 5)), value=(0, 100)
+                )
             with tf4:
                 all_tags = sorted(set(
                     tag.strip() for tags in df["tags"].dropna()
                     for tag in str(tags).split(",") if tag.strip()
                 ))
-                tf_tags = st.multiselect("Tags", all_tags, key="tf_tags")
+                tf_tags = st.multiselect("Tags", all_tags)
             with tf5:
                 all_updaters = sorted([x for x in df["updated_by"].dropna().unique() if x])
-                tf_updater = st.multiselect("Last Updated By", all_updaters, default=all_updaters, key="tf_updater")
+                tf_updater = st.multiselect("Last Updated By", all_updaters, default=all_updaters)
 
             df_tbl = df.copy()
             df_tbl["progress"] = pd.to_numeric(df_tbl["progress"], errors="coerce").fillna(0).astype(int)
+
             if tf_assigned:
                 df_tbl = df_tbl[df_tbl["assigned_to"].isin(tf_assigned) | (df_tbl["assigned_to"] == "")]
             if tf_complexity:
                 df_tbl = df_tbl[df_tbl["complexity"].isin(tf_complexity) | (df_tbl["complexity"] == "")]
-            df_tbl = df_tbl[
-                (df_tbl["progress"] >= tf_progress_min) &
-                (df_tbl["progress"] <= tf_progress_max)
-            ]
+            df_tbl = df_tbl[(df_tbl["progress"] >= tf_progress_min) & (df_tbl["progress"] <= tf_progress_max)]
+
             if tf_tags:
                 def has_tag(tag_str):
                     row_tags = [t.strip() for t in str(tag_str).split(",")]
                     return any(t in row_tags for t in tf_tags)
                 df_tbl = df_tbl[df_tbl["tags"].apply(has_tag)]
+
             if tf_updater:
                 df_tbl = df_tbl[df_tbl["updated_by"].isin(tf_updater)]
 
             st.caption(f"Showing {len(df_tbl)} ticket(s)")
 
-            # ── Helper badge functions for HTML table ─────────────────────────
-            def status_cell(val):
-                c = STATUS_COLORS.get(val, "#9E9E9E")
-                return f'<span style="background:{c};color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;white-space:nowrap">{val}</span>'
-
-            def priority_cell(val):
-                c = PRIORITY_COLORS.get(val, "#9E9E9E")
-                return f'<span style="background:{c};color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;white-space:nowrap">{val}</span>'
-
-            def complexity_cell(val):
-                if not val:
-                    return '<span style="color:#9E9E9E">—</span>'
-                c = COMPLEXITY_COLORS.get(val, "#9E9E9E")
-                return f'<span style="background:{c};color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;white-space:nowrap">{val}</span>'
-
-            def platform_cell(val):
-                c = PLATFORM_COLORS.get(val, DHL_GRAY)
-                return f'<span style="background:{c};color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;white-space:nowrap">{val}</span>'
-
-            def progress_cell(val):
-                pct = int(val) if str(val).replace('.','',1).isdigit() else 0
-                bar = (f'<div style="background:#E0E0E0;border-radius:3px;height:8px;width:70px;'
-                       f'display:inline-block;vertical-align:middle;margin-right:5px">'
-                       f'<div style="background:{DHL_YELLOW};width:{pct}%;height:100%;border-radius:3px"></div></div>')
-                return f'{bar}<span style="font-size:12px;color:{DHL_DARK}">{pct}%</span>'
-
-            # ── Build HTML table ──────────────────────────────────────────────
-            headers = ["Ticket ID", "Title", "Platform", "Priority", "Complexity",
-                       "Status", "Progress", "Requestor", "Assigned To",
-                       "Due Date", "Tags", "Last Updated By", "Last Updated At", "Latest Notes"]
-
-            header_html = "".join(f"<th>{h}</th>" for h in headers)
-
-            rows_html = ""
+            # Build clickable table
             for _, row in df_tbl.iterrows():
-                tid        = str(row.get("ticket_id", ""))
-                title_disp = str(row.get("title", ""))
-                title_disp = title_disp[:55] + "…" if len(title_disp) > 55 else title_disp
-                notes_disp = str(row.get("notes", ""))
-                notes_disp = notes_disp[:70] + "…" if len(notes_disp) > 70 else notes_disp
-                ts_disp    = fmt_ts(row.get("timestamp", ""))
-                tags_disp  = str(row.get("tags", ""))
+                tid = row["ticket_id"]
 
-                rows_html += (
-                    f"<tr>"
-                    f'<td style="white-space:nowrap"><span class="ticket-link-btn">{tid}</span></td>'
-                    f"<td>{title_disp}</td>"
-                    f"<td>{platform_cell(row.get('platform',''))}</td>"
-                    f"<td>{priority_cell(row.get('priority',''))}</td>"
-                    f"<td>{complexity_cell(row.get('complexity',''))}</td>"
-                    f"<td>{status_cell(row.get('status',''))}</td>"
-                    f"<td style='min-width:130px'>{progress_cell(row.get('progress',0))}</td>"
-                    f"<td style='white-space:nowrap'>{row.get('requestor','')}</td>"
-                    f"<td style='white-space:nowrap'>{row.get('assigned_to','—')}</td>"
-                    f"<td style='white-space:nowrap'>{row.get('due_date','—')}</td>"
-                    f"<td style='font-size:11px;color:{DHL_GRAY}'>{tags_disp}</td>"
-                    f"<td style='white-space:nowrap'>{row.get('updated_by','')}</td>"
-                    f"<td style='white-space:nowrap'>{ts_disp}</td>"
-                    f"<td style='font-size:12px;color:{DHL_GRAY}'>{notes_disp}</td>"
-                    f"</tr>"
-                )
+                # clickable ticket ID (ADMIN ONLY)
+                if user:
+                    if st.button(tid, key=f"open_table_{tid}"):
+                        st.session_state.jump_to_ticket = tid
+                        st.session_state.nav_page = "Update / Delete Ticket"
+                        st.session_state.my_tasks_mode = False
+                        st.rerun()
 
-            st.markdown(
-                f'<div style="overflow-x:auto;border:1px solid {DHL_BORDER};border-radius:8px">'
-                f'<table class="styled-ticket-table">'
-                f'<thead><tr>{header_html}</tr></thead>'
-                f'<tbody>{rows_html}</tbody>'
-                f'</table></div>',
-                unsafe_allow_html=True
-            )
-
-            # ── Jump buttons (admin only) — one per ticket ────────────────────
-            if user and not df_tbl.empty:
-                st.markdown("")
-                st.markdown(
-                    f'<div style="background:#FFF9E6;border:1px solid {DHL_YELLOW};border-radius:6px;'
-                    f'padding:8px 14px;font-size:13px;color:#7a6000;margin-bottom:8px">'
-                    f'🔗 Click a ticket button below to open it in the editor</div>',
-                    unsafe_allow_html=True
-                )
-                # Render buttons in rows of 8
-                tids = df_tbl["ticket_id"].tolist()
-                cols_per_row = 8
-                for row_start in range(0, len(tids), cols_per_row):
-                    chunk = tids[row_start:row_start + cols_per_row]
-                    btn_cols = st.columns(len(chunk))
-                    for i, tid in enumerate(chunk):
-                        with btn_cols[i]:
-                            if st.button(tid, key=f"jump_{tid}"):
-                                st.session_state.jump_to_ticket = tid
-                                st.session_state.nav_page = "Update / Delete Ticket"
-                                st.session_state.my_tasks_mode = False
-                                st.rerun()
-
+                st.write(f"**{tid}** — {row['title']}")
+                st.divider()
 # ─────────────────────────────────────────────────────────────────────────────
 # PAGE: RECURRING TASKS
 # ─────────────────────────────────────────────────────────────────────────────
