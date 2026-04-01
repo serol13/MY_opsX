@@ -61,11 +61,19 @@ USERS: dict = dict(st.secrets.get("users", {}))
 # ─────────────────────────────────────────────────────────────────────────────
 # CSV SCHEMA
 # ─────────────────────────────────────────────────────────────────────────────
+# Updated CSV_COLS to include category
 CSV_COLS = [
     "timestamp", "action", "ticket_id", "title", "platform", "priority",
     "status", "progress", "requestor", "due_date", "tags", "description",
-    "updated_by", "notes", "complexity", "assigned_to", "image",
+    "updated_by", "notes", "complexity", "assigned_to", "image", "category"
 ]
+
+# Response time mapping in days/hours
+RESPONSE_CATEGORIES = {
+    "R1 (Within 24 hours)": timedelta(hours=24),
+    "R2 (Within 2 days)": timedelta(days=2),
+    "R3 (Within 5 days)": timedelta(days=5)
+}
 
 # ─────────────────────────────────────────────────────────────────────────────
 # GITHUB HELPERS
@@ -1259,77 +1267,64 @@ elif page == "Recurring Tasks":
 # ─────────────────────────────────────────────────────────────────────────────
 # PAGE: SUBMIT REQUEST
 # ─────────────────────────────────────────────────────────────────────────────
-elif page == "Submit Request":
-    if not user:
-        st.markdown(
-            '<div class="readonly-banner">You are submitting as a guest. '
-            'Login (top-left) to enable ticket updates and deletions.</div>',
-            unsafe_allow_html=True)
+elif st.session_state.nav_page == "Submit Request":
+    st.markdown('<div class="dhl-topbar"><h1>Submit New Ticket</h1><span>Create a new QA or excellence request</span></div>', unsafe_allow_html=True)
+    
+    with st.form("new_ticket_form", clear_on_submit=True):
+        col1, col2 = st.columns(2)
+        with col1:
+            title = st.text_input("Ticket Title*", placeholder="Brief title of the request")
+            platform = st.selectbox("Platform*", ["Splunk", "Power BI", "Others"])
+            # NEW: Category selection
+            category = st.selectbox("Response Category*", list(RESPONSE_CATEGORIES.keys()))
+        with col2:
+            priority = st.selectbox("Priority*", PRIORITY_ORDER, index=1)
+            requestor = st.text_input("Requestor Name*", placeholder="Who is requesting this?")
+            tags = st.text_input("Tags", placeholder="e.g. Finance, Dashboard, API")
 
-    with st.form("submit_form", clear_on_submit=True):
-        c1,c2 = st.columns(2)
-        with c1:
-            title_val    = st.text_input("Ticket Title *", placeholder="e.g. Sales Dashboard KPI refresh")
-            platform_val = st.selectbox("Platform *", ["Splunk","Power BI","Others"])
-            priority_val = st.selectbox("Priority *", PRIORITY_ORDER)
-        with c2:
-            default_name  = user if user else ""
-            requestor_val = st.text_input("Your Name *", value=default_name,
-                                          placeholder="Enter your name")
-            requestor_email = st.text_input("Your Email (optional)", placeholder="e.g. you@example.com")
-            due_val  = st.date_input("Target Due Date", value=date.today())
-            tags_val = st.text_input("Tags (comma-separated)", placeholder="e.g. kpi, finance, Q2")
-        desc_val  = st.text_area("Description / Requirements *",
-                                 placeholder="Describe the request in detail...", height=150)
-        notes_val = st.text_input("Notes (optional)", placeholder="Any additional notes for this submission...")
-        submitted = st.form_submit_button("Submit Ticket")
+        description = st.text_area("Description*", placeholder="Provide details about the request...")
+        notes = st.text_area("Additional Notes", placeholder="Any other info...")
 
-    if submitted:
-        missing = []
-        if not title_val:     missing.append("Ticket Title")
-        if not requestor_val: missing.append("Your Name")
-        if not desc_val:      missing.append("Description / Requirements")
-        if missing:
-            st.error(f"Please fill in the following required fields: **{', '.join(missing)}**")
-        else:
-            tid        = "QA-" + str(uuid.uuid4())[:6].upper()
-            updated_by = user if user else f"Guest:{requestor_val}"
-            email_note = f"[Email: {requestor_email.strip()}] " if requestor_email.strip() else ""
-            row = {
-                "timestamp":   now8().isoformat(timespec="seconds"),
-                "action":      "CREATED",
-                "ticket_id":   tid,
-                "title":       title_val,
-                "platform":    platform_val,
-                "priority":    priority_val,
-                "status":      "Backlog",
-                "progress":    0,
-                "requestor":   requestor_val,
-                "due_date":    str(due_val),
-                "tags":        ", ".join([t.strip() for t in tags_val.split(",") if t.strip()]),
-                "description": desc_val,
-                "updated_by":  updated_by,
-                "notes":       email_note + notes_val,
-                "complexity":  "",
-                "assigned_to": "",
-            }
-            with st.spinner("Saving to GitHub..."):
+        submitted = st.form_submit_button("🚀 Submit Ticket", use_container_width=True)
+
+        if submitted:
+            if not title or not requestor or not description:
+                st.error("Please fill in all required fields (*)")
+            else:
+                # Get current time and calculate due date based on category
+                sub_time = now8()
+                due_delta = RESPONSE_CATEGORIES[category]
+                calculated_due_date = (sub_time + due_delta).strftime("%Y-%m-%d %H:%M")
+                
+                tid = f"TICK-{uuid.uuid4().hex[:6].upper()}"
+                new_ticket = {
+                    "timestamp": sub_time.isoformat(),
+                    "action": "CREATED",
+                    "ticket_id": tid,
+                    "title": title,
+                    "platform": platform,
+                    "priority": priority,
+                    "status": "Backlog",
+                    "progress": "0",
+                    "requestor": requestor,
+                    "due_date": calculated_due_date, # Automated calculation
+                    "tags": tags,
+                    "description": description,
+                    "updated_by": user if user else "Guest",
+                    "notes": notes,
+                    "complexity": "Medium",
+                    "assigned_to": "",
+                    "image": "",
+                    "category": category
+                }
+                
                 try:
-                    gh_append(row)
-                    send_new_ticket_email(row)
-                    st.success(f"Ticket **{tid}** submitted and logged to CSV.")
-                    st.markdown(f"""<div class="ticket-card">
-                      <div class="ticket-id">{tid}</div>
-                      <div class="ticket-title">{title_val}</div>
-                      <div class="pills">
-                        {badge(platform_val, PLATFORM_COLORS.get(platform_val, DHL_GRAY))}
-                        {badge('Backlog', STATUS_COLORS['Backlog'])}
-                        {badge(priority_val, PRIORITY_COLORS.get(priority_val, DHL_GRAY))}
-                      </div>
-                      <small style="color:{DHL_GRAY}">Logged by: {updated_by}</small>
-                    </div>""", unsafe_allow_html=True)
+                    gh_append(new_ticket)
+                    send_new_ticket_email(new_ticket)
+                    st.success(f"Ticket {tid} created successfully! Due date: {calculated_due_date}")
+                    st.balloons()
                 except Exception as e:
-                    st.error(f"GitHub sync failed: {e}")
+                    st.error(f"Error submitting ticket: {e}")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PAGE: UPDATE / DELETE TICKET
