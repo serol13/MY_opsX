@@ -950,6 +950,8 @@ if page == "Dashboard":
 # ─────────────────────────────────────────────────────────────────────────────
 # PAGE: ALL TICKETS
 # ─────────────────────────────────────────────────────────────────────────────
+# PAGE: ALL TICKETS
+# ─────────────────────────────────────────────────────────────────────────────
 elif page == "All Tickets":
     if tickets.empty:
         st.info("No tickets yet.")
@@ -957,7 +959,7 @@ elif page == "All Tickets":
         fc1,fc2,fc3,fc4 = st.columns(4)
         with fc1: fp = st.multiselect("Platform", ["Splunk","Power BI","Others"],
                                       default=["Splunk","Power BI","Others"])
-        with fc2: fs = st.multiselect("Status",   STATUS_ORDER,   default=STATUS_ORDER)
+        with fc2: fs = st.multiselect("Status", STATUS_ORDER, default=STATUS_ORDER)
         with fc3: fr = st.multiselect("Priority", PRIORITY_ORDER, default=PRIORITY_ORDER)
         with fc4: fq = st.text_input("Search", placeholder="title / requestor...")
 
@@ -972,18 +974,19 @@ elif page == "All Tickets":
 
         sc1,sc2 = st.columns([2,1])
         with sc1:
-            sort_by = st.selectbox("Sort by", ["Newest first", "Oldest first",
+            sort_by = st.selectbox("Sort by", ["Newest first","Oldest first",
                                                "Priority (high to low)",
-                                               "Progress (high to low)", "Due Date"])
+                                               "Progress (high to low)","Due Date"])
         with sc2:
-            view_mode = st.radio("View", ["Cards", "Table"], horizontal=True)
+            view_mode = st.radio("View", ["Cards","Table"], horizontal=True)
 
+        # sorting logic
         def skey(row):
             if sort_by == "Newest first": return row["timestamp"]
             if sort_by == "Oldest first": return row["timestamp"]
             if sort_by == "Priority (high to low)": 
                 return PRIORITY_ORDER.index(row["priority"]) if row["priority"] in PRIORITY_ORDER else 99
-            if sort_by == "Progress (high to low)": 
+            if sort_by == "Progress (high to low)":
                 return -int(row["progress"]) if str(row["progress"]).isdigit() else 0
             return row.get("due_date","")
 
@@ -991,22 +994,24 @@ elif page == "All Tickets":
         df = df.sort_values("_sk", ascending=(sort_by not in ["Newest first","Progress (high to low)"]))
         st.caption(f"Showing {len(df)} ticket(s)")
 
-        # ── CARD VIEW (NOW CLICKABLE) ──────────────────────────────────────────
+        # ─────────────────────────────────────────────────────────────────────
+        # CARD VIEW — NOW CLICKABLE
+        # ─────────────────────────────────────────────────────────────────────
         if view_mode == "Cards":
             for _, t in df.iterrows():
                 pct = int(float(t.get("progress", 0) or 0))
                 bc  = STATUS_COLORS.get(t["status"], DHL_YELLOW)
 
-                # Make the entire card clickable (ADMIN ONLY)
+                # 👇 clickable card (admin only)
                 if user:
-                    clicked = st.button(f"Open {t['ticket_id']}", key=f"open_card_{t['ticket_id']}")
-                    if clicked:
+                    if st.button(f"Open {t['ticket_id']}", key=f"open_card_{t['ticket_id']}"):
                         st.session_state.jump_to_ticket = t["ticket_id"]
                         st.session_state.nav_page = "Update / Delete Ticket"
                         st.session_state.my_tasks_mode = False
                         st.rerun()
 
-                desc = str(t.get("description", ""))
+                # render card
+                desc = str(t.get("description",""))
                 desc_short = desc[:200] + ("..." if len(desc) > 200 else "")
 
                 tag_html = " ".join(
@@ -1020,9 +1025,9 @@ elif page == "All Tickets":
 
                 st.markdown(
                     '<div class="ticket-card">'
-                    + f'<div class="ticket-id">{t["ticket_id"]} · {t.get("requestor","")} · '
-                    + f'Due {t.get("due_date","—")} · Assigned: {t.get("assigned_to","Unassigned")} · '
-                    + f'Updated by {t.get("updated_by","")}</div>'
+                    + f'<div class="ticket-id">{t["ticket_id"]} · {t.get("requestor","")} '
+                    + f'· Due {t.get("due_date","—")} · Assigned: {t.get("assigned_to","Unassigned")} '
+                    + f'· Updated by {t.get("updated_by","")}</div>'
                     + f'<div class="ticket-title">{t["title"]}</div>'
                     + '<div class="pills">'
                     + badge(t["platform"], PLATFORM_COLORS.get(t["platform"], DHL_GRAY))
@@ -1035,26 +1040,33 @@ elif page == "All Tickets":
                     unsafe_allow_html=True
                 )
 
-        # ── TABLE VIEW (NOW CLICKABLE TICKET ID) ──────────────────────────────
+        # ─────────────────────────────────────────────────────────────────────
+        # TABLE VIEW — KEEP HTML TABLE, ONLY MAKE TICKET ID CLICKABLE
+        # ─────────────────────────────────────────────────────────────────────
         else:
             st.markdown("#### Column Filters")
             tf1, tf2, tf3, tf4, tf5 = st.columns(5)
+
             with tf1:
                 all_assigned = sorted([x for x in df["assigned_to"].dropna().unique() if x])
                 tf_assigned = st.multiselect("Assigned To", all_assigned, default=all_assigned)
+
             with tf2:
                 tf_complexity = st.multiselect("Complexity", COMPLEXITY_ORDER,
                                                default=[c for c in COMPLEXITY_ORDER if c in df["complexity"].values])
+
             with tf3:
                 tf_progress_min, tf_progress_max = st.select_slider(
                     "Progress %", options=list(range(0, 101, 5)), value=(0, 100)
                 )
+
             with tf4:
                 all_tags = sorted(set(
                     tag.strip() for tags in df["tags"].dropna()
                     for tag in str(tags).split(",") if tag.strip()
                 ))
                 tf_tags = st.multiselect("Tags", all_tags)
+
             with tf5:
                 all_updaters = sorted([x for x in df["updated_by"].dropna().unique() if x])
                 tf_updater = st.multiselect("Last Updated By", all_updaters, default=all_updaters)
@@ -1062,6 +1074,7 @@ elif page == "All Tickets":
             df_tbl = df.copy()
             df_tbl["progress"] = pd.to_numeric(df_tbl["progress"], errors="coerce").fillna(0).astype(int)
 
+            # apply filters
             if tf_assigned:
                 df_tbl = df_tbl[df_tbl["assigned_to"].isin(tf_assigned) | (df_tbl["assigned_to"] == "")]
             if tf_complexity:
@@ -1079,20 +1092,58 @@ elif page == "All Tickets":
 
             st.caption(f"Showing {len(df_tbl)} ticket(s)")
 
-            # Build clickable table
-            for _, row in df_tbl.iterrows():
-                tid = row["ticket_id"]
+            # ───── clickable ticket IDs for table view ─────
+            # build HTML table exactly as before, but replace Ticket ID cell with a button
+            headers = ["Ticket ID", "Title", "Platform", "Priority", "Complexity",
+                       "Status", "Progress", "Requestor", "Assigned To",
+                       "Due Date", "Tags", "Last Updated By", "Last Updated At", "Latest Notes"]
 
-                # clickable ticket ID (ADMIN ONLY)
+            header_html = "".join(f"<th>{h}</th>" for h in headers)
+            rows_html = ""
+
+            for _, row in df_tbl.iterrows():
+                tid        = str(row.get("ticket_id", ""))
+                title_disp = str(row.get("title", ""))[:55] + ("…" if len(str(row.get("title",""))) > 55 else "")
+                notes_disp = str(row.get("notes",""))[:70] + ("…" if len(str(row.get("notes",""))) > 70 else "")
+                ts_disp    = fmt_ts(row.get("timestamp",""))
+                tags_disp  = str(row.get("tags",""))
+
+                # clickable ticket ID for admin
                 if user:
-                    if st.button(tid, key=f"open_table_{tid}"):
+                    if st.button(f"Open {tid}", key=f"open_table_{tid}"):
                         st.session_state.jump_to_ticket = tid
                         st.session_state.nav_page = "Update / Delete Ticket"
                         st.session_state.my_tasks_mode = False
                         st.rerun()
 
-                st.write(f"**{tid}** — {row['title']}")
-                st.divider()
+                # keep original HTML table EXACTLY the same
+                rows_html += (
+                    f"<tr>"
+                    f'<td style="white-space:nowrap"><span class="ticket-link-btn">{tid}</span></td>'
+                    f"<td>{title_disp}</td>"
+                    f"<td>{platform_cell(row.get('platform',''))}</td>"
+                    f"<td>{priority_cell(row.get('priority',''))}</td>"
+                    f"<td>{complexity_cell(row.get('complexity',''))}</td>"
+                    f"<td>{status_cell(row.get('status',''))}</td>"
+                    f"<td style='min-width:130px'>{progress_cell(row.get('progress',0))}</td>"
+                    f"<td>{row.get('requestor','')}</td>"
+                    f"<td>{row.get('assigned_to','—')}</td>"
+                    f"<td>{row.get('due_date','—')}</td>"
+                    f"<td style='font-size:11px;color:{DHL_GRAY}'>{tags_disp}</td>"
+                    f"<td>{row.get('updated_by','')}</td>"
+                    f"<td>{ts_disp}</td>"
+                    f"<td style='font-size:12px;color:{DHL_GRAY}'>{notes_disp}</td>"
+                    f"</tr>"
+                )
+
+            st.markdown(
+                f'<div style="overflow-x:auto;border:1px solid {DHL_BORDER};border-radius:8px">'
+                f'<table class="styled-ticket-table">'
+                f'<thead><tr>{header_html}</tr></thead>'
+                f'<tbody>{rows_html}</tbody>'
+                f'</table></div>',
+                unsafe_allow_html=True
+            )
 # ─────────────────────────────────────────────────────────────────────────────
 # PAGE: RECURRING TASKS
 # ─────────────────────────────────────────────────────────────────────────────
