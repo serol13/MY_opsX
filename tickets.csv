@@ -1,4 +1,4 @@
-timestamp,action,ticket_id,title,platform,priority,status,progress,requestor,due_date,tags,description,updated_by,notes,complexity,assigned_to,image,sla_category
+timestamp,action,ticket_id,title,platform,priority,status,progress,requestor,due_date,tags,description,updated_by,notes,complexity,assigned_to,image,category
 2025-05-02T00:00:00,CREATED,QA-749DBC,Retrieve POD for 799999999999995,Others,Medium,Done,100,,3/05/2025,POD Request,"- POD for 7999999999999995
 - Delivered date: 2 February 2025
 - Requested by CS",serol,Update: - Done retrieve the POD | Remarks: Sample,,,,
@@ -504,3 +504,4 @@ My Recommendation
                                                              ii.      With proper database access, IT would be able to build a scalable, performant solution that can handle our data volume without the limitations we face on Splunk. Any development done at that level will also be easier to maintain and extend as our operations grow.""",Critical,serol,,
 2026-04-01T01:22:18+08:00,UPDATED,QA-C628F4,"Single Dashboard for Pickup, Encoded, Delivered daily",Others,Medium,Done,100,AlYu,,Report Request,,serol,closed this ticket and continue with ticket: QA-8935AB,Simple,serol,,
 2026-04-01T01:35:44+08:00,UPDATED,QA-018128,WEB ENQUIRY,Others,Medium,Done,100,,24/01/2025,,Request by saurabh to check on 3month record for recipient,serol,shared to saurabh,Simple,serol,,
+2026-04-01T13:27:38+08:00,CREATED,QA-A4782F,Daily performance for sinyakmutia_lmpmy,Splunk,R1 (Within 24 hours),Backlog,0,Adillah,2026-04-02 13:27:38,"sinyakmutia_lmpmy, SHA",Daily performance for sinyakmutia_lmpmy,serol,,,,,
