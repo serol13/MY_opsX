@@ -506,3 +506,7 @@ My Recommendation
 2026-04-01T01:35:44+08:00,UPDATED,QA-018128,WEB ENQUIRY,Others,R2 (Within 2 days),Done,100,,24/01/2025,,Request by saurabh to check on 3month record for recipient,serol,shared to saurabh,Simple,serol,,
 2026-04-01T13:27:38+08:00,CREATED,QA-A4782F,Daily performance for sinyakmutia_lmpmy,Splunk,R1 (Within 24 hours),Backlog,0,Adillah,2026-04-02 13:27:38,"sinyakmutia_lmpmy, SHA",Daily performance for sinyakmutia_lmpmy,serol,,,,,
 2026-04-01T14:11:07+08:00,UPDATED,QA-A4782F,Daily performance for sinyakmutia_lmpmy,Splunk,R1 (Within 24 hours),Done,100,Adillah,2026-04-02 13:27:38,"sinyakmutia_lmpmy, SHA",Daily performance for sinyakmutia_lmpmy,serol,Shared the csv to adillah via teams,Medium,serol,,
+2026-04-02T16:50:19+08:00,UPDATED,QA-F34504,Adding controllable and uncontrollable failure reason page in SCNC,Power BI,R3 (Within 5 days),In Progress,90,serol,2026-03-31,"scnc, failure reason",add 1 page to show trend and analysis for failure reason,serol,"Add 2 new page 
+1. failure reason trend
+2. courier performance
+3. fix RLS for depot",Critical,serol,,
