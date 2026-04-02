@@ -67,3 +67,7 @@ for request on failure reaso",200
 2026-04-01T01:22:19+08:00,2026-04-01,serol,Review,"Updated QA-C628F4 [Single Dashboard for Pickup, Encoded, Delivered daily] → Done 100% | closed this ticket and continue with ticket: QA-8935AB",30
 2026-04-01T01:35:48+08:00,2026-04-01,serol,Review,Updated QA-018128 [WEB ENQUIRY] → Done 100% | shared to saurabh,15
 2026-04-01T14:11:08+08:00,2026-04-01,serol,Review,Updated QA-A4782F [Daily performance for sinyakmutia_lmpmy] → Done 100% | Shared the csv to adillah via teams,50
+2026-04-02T16:50:20+08:00,2026-04-02,serol,Review,"Updated QA-F34504 [Adding controllable and uncontrollable failure reason page in SCNC] → In Progress 90% | Add 2 new page 
+1. failure reason trend
+2. courier performance
+3. fix RLS for depot",480
