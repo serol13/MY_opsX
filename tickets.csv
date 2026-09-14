@@ -641,3 +641,6 @@ Agreed time limit = must delivered within measurement hour
 
 We start count from the receiving time at HUB. 
 ",serol,Added the dashboard in splunk,Critical,serol,,
+2026-09-14T10:58:12+08:00,CREATED,QA-43770D,MS Purview Access Approval Needed: APAC DDG DB's,Others,R1 (Within 24 hours),Backlog,0,serol,2026-09-15 10:58:12,purview,"MY: request raised for SP-DLS-ECSGBL-PROD-QL-READ-MY-APAC-DDG-001
+TH: request raised for SP-DLS-ECSGBL-PROD-QL-READ-TH-APAC-DDG-001
+",serol,[Email: ramsha] ,,,,
