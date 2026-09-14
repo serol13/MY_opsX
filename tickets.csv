@@ -793,3 +793,11 @@ This addition would assist us in conducting a more thorough analysis and in iden
 ",serol,deploy the dashboard to powerbi,Critical,serol,,
 2026-09-14T11:44:08+08:00,UPDATED,QA-D37A9A,Temu SLA Penalty List - 5339 Items,Splunk,R1 (Within 24 hours),Done,100,serol,2026-09-15 11:03:38,temu,Please compare with our Temu dashboard ,serol,shared to charlene,Medium,serol,,
 2026-09-14T11:44:34+08:00,UPDATED,QA-18F27F,3Month record for B2B & B2C,Splunk,R2 (Within 2 days),Done,100,serol,2026-09-16 11:02:19,,Additional info as per request postal code & quantity for KV area added for B2B. ,serol,shared,Medium,serol,,
+2026-09-14T11:45:10+08:00,UPDATED,QA-2FEA3D,Milkrun Coverage,Splunk,R2 (Within 2 days),Done,100,serol,2026-09-16 11:01:14,,"Please provide list of delivery (fail and success) and pickup job (success) by milkrun courier for the last 30 days. Attached herewith, milkrun courier list for your further analysis.
+You may refer below table for expected columns needed for this data.
+
+Courier ID	Delivery Date	Postcode	Success Delivery	Fail Delivery	Success Pickup
+ 	 	 	 	 	 
+ 	 	 	 	 	 
+ 	 	 	 	 	 
+",serol,shared,Medium,serol,,
