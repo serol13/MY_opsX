@@ -711,3 +711,10 @@ Alyu -
 b) MAC – issue on few days. Any far away postcode that is causing this – then provide list. Or any other reasons you discover
 c) BYN / BWH – 72 Hrs SLA, Depot Split. No excuse for not hitting. They got 2 days to delivery, assuming hub connects same night (which should be the case, these are small parcels)
 d) LGK – suggest close this location for TEMU. Cost is higher than Revenue here",Complex,serol,,
+2026-09-14T11:26:53+08:00,CREATED,QA-952C65,[APR-3168] Shipment Visibility Dashboard - Jira,Others,R3 (Within 5 days),Backlog,0,serol,2026-09-19 11:26:53,BRS,"2.	@Asrol will help share the following details post which I will organize country-specific requirement gathering session to capture the scope.
+-	Mock up of the dashboard
+-	Source (like Mirror, Apollo, POS)
+-	Tables and Data fields required from each source
+-	KPIs to be included in the dashboard
+-	KPI calculation method
+",serol,[Email: Ramsha] 14/8/26,,,,
