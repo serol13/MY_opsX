@@ -635,3 +635,9 @@ We start count from the receiving time at HUB.
 ",serol,[Email: Alyu] 16/6/26,,,,
 2026-09-14T10:54:27+08:00,CREATED,QA-7DB325,Pickup No Movement Today,Splunk,R2 (Within 2 days),Backlog,0,serol,2026-09-16 10:54:27,,Add generic email for report,serol,[Email: Adillah] 23/6/26,,,,
 2026-09-14T10:55:03+08:00,UPDATED,QA-7DB325,Pickup No Movement Today,Splunk,R2 (Within 2 days),Done,100,serol,2026-09-16 10:54:27,,Add generic email for report,serol,added,Simple,serol,,
+2026-09-14T10:55:42+08:00,UPDATED,QA-12C7CC,Hypercare Splunk Dashboard - Temu,Splunk,R3 (Within 5 days),Done,100,serol,2026-09-19 10:50:43,"hypercare, Temu","Refer to above subject, please do assist build the dashboard based on below SLA:
+
+Agreed time limit = must delivered within measurement hour 
+
+We start count from the receiving time at HUB. 
+",serol,Added the dashboard in splunk,Critical,serol,,
