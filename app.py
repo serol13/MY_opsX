@@ -1301,10 +1301,17 @@ elif page == "Submit Request":
             priority_val = st.selectbox("Priority *", list(PRIORITY_NEW.keys()))
 
         with c2:
-            default_name = user if user else ""
-            requestor_val = st.text_input("Your Name *", value=default_name, placeholder="Enter your name")
-            requestor_email = st.text_input("Your Email (optional)", placeholder="e.g. you@example.com")
-            tags_val = st.text_input("Tags (comma-separated)", placeholder="e.g. kpi, finance, Q2")
+    default_name = user if user else ""
+    requestor_val = st.text_input("Your Name *", value=default_name, placeholder="Enter your name")
+    requestor_email = st.text_input("Your Email (optional)", placeholder="e.g. you@example.com")
+    tags_val = st.text_input("Tags (comma-separated)", placeholder="e.g. kpi, finance, Q2")
+
+# NEW — backdate option
+backdate_val = st.date_input(
+    "Request Date (backdate if needed)",
+    value=now8().date(),
+    max_value=now8().date()
+)
 
         desc_val = st.text_area("Description / Requirements *",
                                 placeholder="Describe the request in detail...", height=150)
@@ -1327,7 +1334,8 @@ elif page == "Submit Request":
 
             # --- AUTO DUE DATE CALCULATION ---
             from datetime import timedelta
-            now_ts = now8()
+            # Combine the chosen date with current time-of-day (or use midday if you prefer a fixed time)
+now_ts = datetime.combine(backdate_val, now8().time(), tzinfo=TZ_GMT8)
 
             priority_days = PRIORITY_NEW[priority_val]
             if priority_days == 1:    # R1
