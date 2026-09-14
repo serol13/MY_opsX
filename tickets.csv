@@ -550,3 +550,6 @@ Courier Non-Compliance Case
 Non-Compliance at Depot
 Lost Shipment
 Problematic PPOD",serol,Lookup file for this requirement has been setup,Critical,serol,,
+2026-09-14T10:06:16+08:00,UPDATED,QA-8935AB,New Dashboard,Splunk,R1 (Within 24 hours),Done,100,Alyu,6/03/2026,"dashboard, encoded","The objective is to view a summary of the overall status based on the selected encoded date.
+For example, when I filter the encoded date to 3rd February 2026, I should be able to see all shipments encoded on that date, along with a summary of their current overall status as of today.
+Please explore this requirement and share any limitations or challenges you may encounter in developing this dashboard.",serol,APR has been raised for this dashboard.,Critical,serol,,
