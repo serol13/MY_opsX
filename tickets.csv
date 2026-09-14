@@ -730,3 +730,9 @@ Understand that we do not have the indicator for courier type. Therefore, please
 2026-09-14T11:33:36+08:00,CREATED,QA-4EEDBB,"NC Performance for SH, DD and PDE Shipment by Depot",Splunk,R3 (Within 5 days),Backlog,0,serol,2026-09-19 11:33:36,kpi,"NC Performance for SH, DD and PDE Shipment by Depot
 Only include shipment with SLA Type SH & DD and shipment with product code PDE and the summary to be share by depot level
 ",serol,[Email: Adillah] 8/9/26,,,,
+2026-09-14T11:34:16+08:00,CREATED,QA-723317,Splunk Access Request,Splunk,R1 (Within 24 hours),Backlog,0,serol,2026-09-15 11:34:16,,"Seeking your assistance to grant access to the following user for Splunk. Her details are as per below: 
+
+Name: Thilagah Ravi
+Email: thilagah.ravi@dhl.com
+Username: thilravi
+",serol,[Email: Sebastian] 2/9/26,,,,
