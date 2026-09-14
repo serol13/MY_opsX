@@ -538,3 +538,9 @@ ID: 7228017282899106",Simple,Syamil,,
 -	Next to make this visible and accessible to all the users.",Complex,serol,,
 2026-09-14T10:01:52+08:00,UPDATED,QA-4C713E,Deactivate SHOPEE_PICKUP_Weekly_REPORT(5256152462),Others,R1 (Within 24 hours),Done,100,serol,2026-05-19 15:29:02,Shopee,Stop SHOPEE_PICKUP_Weekly_REPORT(5256152462),serol,Close by IT support,Simple,serol,,
 2026-09-14T10:02:44+08:00,UPDATED,QA-F34504,Adding controllable and uncontrollable failure reason page in SCNC,Power BI,R3 (Within 5 days),In Progress,90,serol,2026-03-31,"scnc, failure reason",add 1 page to show trend and analysis for failure reason,serol,Pending recorrection on data,Critical,serol,,
+2026-09-14T10:04:26+08:00,CREATED,QA-1E8AC4,Depot KPI and Depot Award for 2026,Others,R3 (Within 5 days),Backlog,0,serol,2026-09-19 10:04:26,"KPI, Depot","Missed Inbound Scan
+100% Inventory Scan
+Courier Non-Compliance Case
+Non-Compliance at Depot
+Lost Shipment
+Problematic PPOD",serol,[Email: Adillah] ,,,,
