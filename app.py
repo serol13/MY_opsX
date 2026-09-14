@@ -1292,7 +1292,7 @@ elif page == "Submit Request":
         "R3 (Within 5 days)": 5
     }
 
-        with st.form("submit_form", clear_on_submit=True):
+    with st.form("submit_form", clear_on_submit=True):
         c1, c2 = st.columns(2)
 
         with c1:
@@ -1316,6 +1316,7 @@ elif page == "Submit Request":
         notes_val = st.text_input("Notes (optional)", placeholder="Any additional notes for this submission...")
 
         submitted = st.form_submit_button("Submit Ticket")
+
     if submitted:
         # Validate
         missing = []
@@ -1329,7 +1330,7 @@ elif page == "Submit Request":
             tid = "QA-" + str(uuid.uuid4())[:6].upper()
             updated_by = user if user else f"Guest:{requestor_val}"
 
-                        # --- AUTO DUE DATE CALCULATION ---
+            # --- AUTO DUE DATE CALCULATION ---
             from datetime import timedelta
             now_ts = datetime.combine(backdate_val, now8().time(), tzinfo=TZ_GMT8)
 
