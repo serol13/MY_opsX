@@ -745,3 +745,7 @@ Username: thilravi
 2026-09-14T11:35:22+08:00,UPDATED,QA-4EEDBB,"NC Performance for SH, DD and PDE Shipment by Depot",Splunk,R3 (Within 5 days),Done,100,serol,2026-09-19 11:33:36,kpi,"NC Performance for SH, DD and PDE Shipment by Depot
 Only include shipment with SLA Type SH & DD and shipment with product code PDE and the summary to be share by depot level
 ",serol,"Shared to Adillah in teams, setup daily report in splunk",Simple,serol,,
+2026-09-14T11:35:41+08:00,UPDATED,QA-1151B2,Delivery Rate for FTE Courier,Splunk,R2 (Within 2 days),Done,100,serol,2026-09-16 11:32:56,kpi,"1.	Delivery Rate for FTE Courier
+Formula: (Delivered Shipment/ Total OFD) x 100
+Understand that we do not have the indicator for courier type. Therefore, please share performance for all couriers instead and share with all depot SV.
+",serol,"Shared to Adillah in teams, setup daily report in splunk",Medium,serol,,
