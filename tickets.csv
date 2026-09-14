@@ -685,3 +685,12 @@ I would like to request access data power BI dashboard for EC region for close m
 ",serol,[Email: Irfan] 5/8/26,,,,
 2026-09-14T11:18:57+08:00,CREATED,QA-E69933,Temu SLA Penalty List - 5339 Items - June 2026,Splunk,R3 (Within 5 days),Backlog,0,serol,2026-09-19 11:18:57,temu,Appeal for temu,serol,[Email: charlene] 6/8/26,,,,
 2026-09-14T11:19:23+08:00,CREATED,QA-85B417,Temu SLA Penalty List - July 2026 (5902 Items),Splunk,R3 (Within 5 days),Backlog,0,serol,2026-09-19 11:19:23,temu,Appeal temu,serol,[Email: charlene] 6/8/26,,,,
+2026-09-14T11:20:52+08:00,CREATED,QA-E08E0A,Temu - breakup of failure,Splunk,R1 (Within 24 hours),Backlog,0,serol,2026-09-15 11:20:52,temu,"Current Temu performance looks like this
+They are insisting on penalty if SLA <95% ontime
+
+I see there are 2 major bottlenecks – 1) they consider Sunday as a working day and 2) they measure in hrs against the standard they have given from the time of handover
+
+Can you help to break down their Jun-July data for failures by destination and day of week (drop off day basis) – so as to see if there is any additional measures we can take to improve.
+
+If we ask them for increasing volume then we are also open to penalty risk – hence important to understand that first
+",serol,[Email: Saurabh] 10/8/26,,,,
