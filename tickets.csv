@@ -654,3 +654,4 @@ Courier ID	Delivery Date	Postcode	Success Delivery	Fail Delivery	Success Pickup
  	 	 	 	 	 
 ",serol,[Email: Adillah] 6/7/2026,,,,
 2026-09-14T11:02:19+08:00,CREATED,QA-18F27F,3Month record for B2B & B2C,Splunk,R2 (Within 2 days),Backlog,0,serol,2026-09-16 11:02:19,,Additional info as per request postal code & quantity for KV area added for B2B. ,serol,[Email: Adillah] 8/7/26,,,,
+2026-09-14T11:03:38+08:00,CREATED,QA-D37A9A,Temu SLA Penalty List - 5339 Items,Splunk,R1 (Within 24 hours),Backlog,0,serol,2026-09-15 11:03:38,temu,Please compare with our Temu dashboard ,serol,[Email: adillah] 9/7/26,,,,
