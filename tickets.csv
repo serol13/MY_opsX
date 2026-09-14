@@ -694,3 +694,20 @@ Can you help to break down their Jun-July data for failures by destination and d
 
 If we ask them for increasing volume then we are also open to penalty risk – hence important to understand that first
 ",serol,[Email: Saurabh] 10/8/26,,,,
+2026-09-14T11:22:50+08:00,UPDATED,QA-E08E0A,Temu - breakup of failure,Splunk,R1 (Within 24 hours),Done,100,serol,2026-09-15 11:20:52,temu,"Current Temu performance looks like this
+They are insisting on penalty if SLA <95% ontime
+
+I see there are 2 major bottlenecks – 1) they consider Sunday as a working day and 2) they measure in hrs against the standard they have given from the time of handover
+
+Can you help to break down their Jun-July data for failures by destination and day of week (drop off day basis) – so as to see if there is any additional measures we can take to improve.
+
+If we ask them for increasing volume then we are also open to penalty risk – hence important to understand that first
+",serol,"Hi Asrol
+
+Insightful data – helps in decision making. This is good view
+
+Alyu - 
+                a) KTG – looks like an issue. 72 Hrs also can not meet consistently. Understand what is needed. This could be reflection for other customers also
+b) MAC – issue on few days. Any far away postcode that is causing this – then provide list. Or any other reasons you discover
+c) BYN / BWH – 72 Hrs SLA, Depot Split. No excuse for not hitting. They got 2 days to delivery, assuming hub connects same night (which should be the case, these are small parcels)
+d) LGK – suggest close this location for TEMU. Cost is higher than Revenue here",Complex,serol,,
