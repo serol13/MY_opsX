@@ -802,3 +802,6 @@ Courier ID	Delivery Date	Postcode	Success Delivery	Fail Delivery	Success Pickup
  	 	 	 	 	 
 ",serol,shared,Medium,serol,,
 2026-09-14T11:45:46+08:00,UPDATED,QA-060279,Request to Remove Email from BA & RD Report Lookup,Splunk,R3 (Within 5 days),Done,100,serol,2026-09-19 10:59:28,"Sales, bard",I would like to seek your assistance in removing my email address (chaihoon.koid@dhl.com) from the BA & RD report lookup for all the merchants listed below.,serol,update lookup to remove careen,Simple,serol,,
+2026-09-14T11:46:06+08:00,UPDATED,QA-43770D,MS Purview Access Approval Needed: APAC DDG DB's,Others,R1 (Within 24 hours),Done,100,serol,2026-09-15 10:58:12,purview,"MY: request raised for SP-DLS-ECSGBL-PROD-QL-READ-MY-APAC-DDG-001
+TH: request raised for SP-DLS-ECSGBL-PROD-QL-READ-TH-APAC-DDG-001
+",serol,granted,Simple,serol,,
