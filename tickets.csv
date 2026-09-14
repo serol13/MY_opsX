@@ -774,3 +774,8 @@ I would like to request access data power BI dashboard for EC region for close m
 EH, SH team, MD, Sumanth, Security Team, Lawrence CS (pls add in anyone that I might miss out). 
 ",serol,"setup the daily report in splunk, for 24h and 48h",Complex,serol,,
 2026-09-14T11:40:36+08:00,UPDATED,QA-FE5AC0,Update Recipient List for Daily Delivered Report,Splunk,R1 (Within 24 hours),Done,100,serol,2026-09-15 11:13:42,umobile,Please assist to update below email for umobile.,serol,updated,Complex,serol,,
+2026-09-14T11:41:38+08:00,UPDATED,QA-17EF27,Request for TEMU (Radiance) Return Reminder Report,Splunk,R3 (Within 5 days),In Review,100,serol,2026-09-19 11:11:53,temu,"As spoken, please put this on priority as depot will need to have visibility on the return date for Temu. The logic should be as follows:
+1.	Temu shipment should be return on Day 8 (considering Day 0 = receiving day).
+2.	Date calculation is based on calendar days (no exclusion for PH/ offday).
+3.	The report should be shared daily to the delivery team every 10am.
+",serol,"report was setup together with pending return to hub, and deploy via 2244. review will take time",Complex,serol,,
