@@ -534,3 +534,5 @@ ID: 7228017282899106",Simple,Syamil,,
 2026-09-14T09:57:34+08:00,CREATED,QA-4BFBD7,MPS Complete & Incomplete Rate,Splunk,R3 (Within 5 days),Backlog,0,serol,2026-09-19 09:57:34,MPS,To have visibility on MPS discrepancy,serol,[Email: alyu] ,,,,
 2026-09-14T10:00:08+08:00,UPDATED,QA-4BFBD7,MPS Complete & Incomplete Rate,Splunk,R3 (Within 5 days),Backlog,100,serol,2026-09-19 09:57:34,MPS,To have visibility on MPS discrepancy,serol,"-	We have started writing the rate for incomplete MPS to summary index. This is available under “index=""ecs_my_half_yearly_summary"" event_type = ""MY mps discrepancy 3.0""”
 -	Next to make this visible and accessible to all the users.",Complex,serol,,
+2026-09-14T10:00:23+08:00,UPDATED,QA-4BFBD7,MPS Complete & Incomplete Rate,Splunk,R3 (Within 5 days),Done,100,serol,2026-09-19 09:57:34,MPS,To have visibility on MPS discrepancy,serol,"-	We have started writing the rate for incomplete MPS to summary index. This is available under “index=""ecs_my_half_yearly_summary"" event_type = ""MY mps discrepancy 3.0""”
+-	Next to make this visible and accessible to all the users.",Complex,serol,,
