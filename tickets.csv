@@ -754,3 +754,10 @@ Understand that we do not have the indicator for courier type. Therefore, please
 All ID already scan captured at error column please exclude this ID from Missed Inbound record from MUA
 Kindly refer the attachment for ID not inbound
 ",serol,Updated in tracker,Simple,serol,,
+2026-09-14T11:37:46+08:00,UPDATED,QA-952C65,[APR-3168] Shipment Visibility Dashboard - Jira,Others,R3 (Within 5 days),In Progress,100,serol,2026-09-19 11:26:53,BRS,"2.	@Asrol will help share the following details post which I will organize country-specific requirement gathering session to capture the scope.
+-	Mock up of the dashboard
+-	Source (like Mirror, Apollo, POS)
+-	Tables and Data fields required from each source
+-	KPIs to be included in the dashboard
+-	KPI calculation method
+",serol,Shared mockup dashboard to ramsha,Complex,serol,,
