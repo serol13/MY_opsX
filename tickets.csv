@@ -667,3 +667,8 @@ Courier ID	Delivery Date	Postcode	Success Delivery	Fail Delivery	Success Pickup
 This addition would assist us in conducting a more thorough analysis and in identifying whether the pickup was performed by the courier or MR driver. Additionally, it would help us narrow down patterns of items that remain stationary after being scanned at pickup, based on the courier ID.  
 ",serol,[Email: Zul] 15/7/26,,,,
 2026-09-14T11:10:07+08:00,CREATED,QA-93BA6C,Depot Award Q2 2026,Others,R3 (Within 5 days),Backlog,0,serol,2026-09-19 11:10:07,kpi,"Appreciate if you can share the winner listing for Depot Award Q2 2026. Kindy share before/by 20th July 2026, Monday, 10am latest for my further actions.",serol,[Email: Alice] 17/7/26,,,,
+2026-09-14T11:11:53+08:00,CREATED,QA-17EF27,Request for TEMU (Radiance) Return Reminder Report,Splunk,R3 (Within 5 days),Backlog,0,serol,2026-09-19 11:11:53,temu,"As spoken, please put this on priority as depot will need to have visibility on the return date for Temu. The logic should be as follows:
+1.	Temu shipment should be return on Day 8 (considering Day 0 = receiving day).
+2.	Date calculation is based on calendar days (no exclusion for PH/ offday).
+3.	The report should be shared daily to the delivery team every 10am.
+",serol,[Email: adillah] 21/7/26,,,,
