@@ -783,3 +783,11 @@ EH, SH team, MD, Sumanth, Security Team, Lawrence CS (pls add in anyone that I m
 2026-09-14T11:42:46+08:00,UPDATED,QA-4E72BC,Pickup No Movement Today,Splunk,R2 (Within 2 days),Done,100,serol,2026-09-16 11:08:24,pickup,"We would appreciate it if you could include the courier ID in this report.  
 This addition would assist us in conducting a more thorough analysis and in identifying whether the pickup was performed by the courier or MR driver. Additionally, it would help us narrow down patterns of items that remain stationary after being scanned at pickup, based on the courier ID.  
 ",serol,updated,Complex,serol,,
+2026-09-14T11:43:38+08:00,UPDATED,QA-CC7534,EMY KPI Board,Splunk,R3 (Within 5 days),Done,100,serol,2026-09-19 11:07:41,emy,"1.	At this stage, the dashboard will show performance from first scan until shipment inbound at delivery depot in EMY.
+2.	Only included origin from WMY as origin from EMY will have different process and cut-off. Origin from EMY will be included on the next stage.
+3.	Base data will be from inbound scan. Shipments with inbound scan will be included in the report.
+-	EMY recorded as the highest Region with almost 100% inbound scan in Q2, 2026.
+-	We will only measure shipments that arrived at EMY depot.
+4.	Add logic for holiday exclusion for dispatch (offday on Sunday) and inbound (follow Depot offday and PH).
+5.	Below is expected performance to be available in the dashboard:
+",serol,deploy the dashboard to powerbi,Critical,serol,,
