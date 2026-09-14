@@ -87,3 +87,4 @@ ID: 7228017282899106",30
 2026-09-14T10:10:05+08:00,2026-09-14,serol,Review,Updated QA-A67A15 [Request for Pickup and Delivery Data - 9000000015 (SRA LOGISTIK SDN BHD)] → Done 100% | Shared the data with requestor,160
 2026-09-14T10:13:24+08:00,2026-09-14,serol,Review,Updated QA-3616D7 [PROD > Apollo | Amend logic for report : Pickup Failure Report] → Done 0% | Discussing with Theo and apply necessary change to server 2244.,180
 2026-09-14T10:17:36+08:00,2026-09-14,serol,Review,Updated QA-9E5AC7 [Volume Trend - Changes & New tab] → Done 100% | Apply changes and deploy to prod on 26/5/26,30
+2026-09-14T10:27:20+08:00,2026-09-14,serol,Review,Updated QA-3ACA14 [Operations KPI (Delivery): 15 Days Delivered/Return Day] → Done 100% | Query has been prepared and data has been shared,240
