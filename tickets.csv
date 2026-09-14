@@ -801,3 +801,4 @@ Courier ID	Delivery Date	Postcode	Success Delivery	Fail Delivery	Success Pickup
  	 	 	 	 	 
  	 	 	 	 	 
 ",serol,shared,Medium,serol,,
+2026-09-14T11:45:46+08:00,UPDATED,QA-060279,Request to Remove Email from BA & RD Report Lookup,Splunk,R3 (Within 5 days),Done,100,serol,2026-09-19 10:59:28,"Sales, bard",I would like to seek your assistance in removing my email address (chaihoon.koid@dhl.com) from the BA & RD report lookup for all the merchants listed below.,serol,update lookup to remove careen,Simple,serol,,
