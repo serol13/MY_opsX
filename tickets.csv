@@ -742,3 +742,6 @@ Name: Thilagah Ravi
 Email: thilagah.ravi@dhl.com
 Username: thilravi
 ",serol,granted,Simple,serol,,
+2026-09-14T11:35:22+08:00,UPDATED,QA-4EEDBB,"NC Performance for SH, DD and PDE Shipment by Depot",Splunk,R3 (Within 5 days),Done,100,serol,2026-09-19 11:33:36,kpi,"NC Performance for SH, DD and PDE Shipment by Depot
+Only include shipment with SLA Type SH & DD and shipment with product code PDE and the summary to be share by depot level
+",serol,"Shared to Adillah in teams, setup daily report in splunk",Simple,serol,,
