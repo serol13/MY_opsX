@@ -826,3 +826,4 @@ Kindly assist to share the data at your earliest convenience.
 1.	Timeline for this changes
 2.	Issues/concern related to this changes
 ",serol,update the query,Complex,serol,,
+2026-09-14T11:49:43+08:00,UPDATED,QA-19B623,Apollo | Success log not available in Splunk,Splunk,R2 (Within 2 days),Done,100,serol,2026-09-16 10:20:29,apollo,Apollo | Success log not available in Splunk - lead to discrepancy in reporting,serol,raised the ticket and do the checking,Medium,serol,,
