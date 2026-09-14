@@ -666,3 +666,4 @@ Courier ID	Delivery Date	Postcode	Success Delivery	Fail Delivery	Success Pickup
 2026-09-14T11:08:24+08:00,CREATED,QA-4E72BC,Pickup No Movement Today,Splunk,R2 (Within 2 days),Backlog,0,serol,2026-09-16 11:08:24,pickup,"We would appreciate it if you could include the courier ID in this report.  
 This addition would assist us in conducting a more thorough analysis and in identifying whether the pickup was performed by the courier or MR driver. Additionally, it would help us narrow down patterns of items that remain stationary after being scanned at pickup, based on the courier ID.  
 ",serol,[Email: Zul] 15/7/26,,,,
+2026-09-14T11:10:07+08:00,CREATED,QA-93BA6C,Depot Award Q2 2026,Others,R3 (Within 5 days),Backlog,0,serol,2026-09-19 11:10:07,kpi,"Appreciate if you can share the winner listing for Depot Award Q2 2026. Kindy share before/by 20th July 2026, Monday, 10am latest for my further actions.",serol,[Email: Alice] 17/7/26,,,,
