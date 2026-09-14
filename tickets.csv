@@ -818,3 +818,7 @@ In view of this, I would like to request your assistance in providing the total 
 This information will be used as a reference for manpower planning for both depots.
 Kindly assist to share the data at your earliest convenience.
 ",serol,shared,Complex,serol,,
+2026-09-14T11:48:44+08:00,UPDATED,QA-E2B70D,Pickup No Movement Today - Discrepancy Check,Splunk,R1 (Within 24 hours),In Progress,100,serol,2026-09-15 10:33:25,pickup,"Below IDs listed in this report. But as per check, the shipment has been updated as Abandoned in our system.
+7128057477969686
+7128057478889386
+",serol,adding abandon as exclusion,Complex,serol,,
