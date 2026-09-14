@@ -822,3 +822,7 @@ Kindly assist to share the data at your earliest convenience.
 7128057477969686
 7128057478889386
 ",serol,adding abandon as exclusion,Complex,serol,,
+2026-09-14T11:49:06+08:00,UPDATED,QA-61908A,Extend BA RD Report to All Failure Reason,Splunk,R3 (Within 5 days),Done,100,serol,2026-09-19 10:28:19,bard,"As spoken, Management request to extend BA RD report to all failure reason. Please share:
+1.	Timeline for this changes
+2.	Issues/concern related to this changes
+",serol,update the query,Complex,serol,,
