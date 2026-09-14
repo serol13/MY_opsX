@@ -655,3 +655,11 @@ Courier ID	Delivery Date	Postcode	Success Delivery	Fail Delivery	Success Pickup
 ",serol,[Email: Adillah] 6/7/2026,,,,
 2026-09-14T11:02:19+08:00,CREATED,QA-18F27F,3Month record for B2B & B2C,Splunk,R2 (Within 2 days),Backlog,0,serol,2026-09-16 11:02:19,,Additional info as per request postal code & quantity for KV area added for B2B. ,serol,[Email: Adillah] 8/7/26,,,,
 2026-09-14T11:03:38+08:00,CREATED,QA-D37A9A,Temu SLA Penalty List - 5339 Items,Splunk,R1 (Within 24 hours),Backlog,0,serol,2026-09-15 11:03:38,temu,Please compare with our Temu dashboard ,serol,[Email: adillah] 9/7/26,,,,
+2026-09-14T11:07:41+08:00,CREATED,QA-CC7534,EMY KPI Board,Splunk,R3 (Within 5 days),Backlog,0,serol,2026-09-19 11:07:41,emy,"1.	At this stage, the dashboard will show performance from first scan until shipment inbound at delivery depot in EMY.
+2.	Only included origin from WMY as origin from EMY will have different process and cut-off. Origin from EMY will be included on the next stage.
+3.	Base data will be from inbound scan. Shipments with inbound scan will be included in the report.
+-	EMY recorded as the highest Region with almost 100% inbound scan in Q2, 2026.
+-	We will only measure shipments that arrived at EMY depot.
+4.	Add logic for holiday exclusion for dispatch (offday on Sunday) and inbound (follow Depot offday and PH).
+5.	Below is expected performance to be available in the dashboard:
+",serol,[Email: Adillah] 15/7,,,,
