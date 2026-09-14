@@ -1354,7 +1354,7 @@ elif page == "Submit Request":
                 "status":      "Backlog",
                 "progress":    0,
                 "requestor":   requestor_val,
-                "due_date":    due_date.strftime("%Y-%m-%d %H:%M:%S"),
+                "due_date":    due_date.strftime("%Y-%m-%d"),
                 "tags":        ", ".join([t.strip() for t in tags_val.split(",") if t.strip()]),
                 "description": desc_val,
                 "updated_by":  updated_by,
