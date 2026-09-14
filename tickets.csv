@@ -633,3 +633,4 @@ Agreed time limit = must delivered within measurement hour
 
 We start count from the receiving time at HUB. 
 ",serol,[Email: Alyu] 16/6/26,,,,
+2026-09-14T10:54:27+08:00,CREATED,QA-7DB325,Pickup No Movement Today,Splunk,R2 (Within 2 days),Backlog,0,serol,2026-09-16 10:54:27,,Add generic email for report,serol,[Email: Adillah] 23/6/26,,,,
