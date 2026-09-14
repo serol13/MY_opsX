@@ -580,3 +580,4 @@ The customer was onboarded in March 2025; however, the actual start date of ship
 
 ",serol,Discussing with Theo and apply necessary change to server 2244.,Complex,serol,,
 2026-09-14T10:16:00+08:00,CREATED,QA-9E5AC7,Volume Trend - Changes & New tab,Splunk,R3 (Within 5 days),Backlog,0,serol,2026-09-19 10:16:00,Sales,Adding new tab in PBI Sales report,serol,[Email: Sumanth] ,,,,
+2026-09-14T10:17:35+08:00,UPDATED,QA-9E5AC7,Volume Trend - Changes & New tab,Splunk,R3 (Within 5 days),Done,100,serol,2026-09-19 10:16:00,Sales,Adding new tab in PBI Sales report,serol,Apply changes and deploy to prod on 26/5/26,Critical,serol,,
