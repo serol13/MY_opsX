@@ -81,3 +81,4 @@ ID: 7228017282899106",30
 2026-09-14T10:00:10+08:00,2026-09-14,serol,Review,"Updated QA-4BFBD7 [MPS Complete & Incomplete Rate] → Backlog 100% | -	We have started writing the rate for incomplete MPS to summary index. This is available under “index=""ecs_my_half_year",240
 2026-09-14T10:00:24+08:00,2026-09-14,serol,Review,"Updated QA-4BFBD7 [MPS Complete & Incomplete Rate] → Done 100% | -	We have started writing the rate for incomplete MPS to summary index. This is available under “index=""ecs_my_half_year",240
 2026-09-14T10:01:53+08:00,2026-09-14,serol,Review,Updated QA-4C713E [Deactivate SHOPEE_PICKUP_Weekly_REPORT(5256152462)] → Done 100% | Close by IT support,30
+2026-09-14T10:02:45+08:00,2026-09-14,serol,Review,Updated QA-F34504 [Adding controllable and uncontrollable failure reason page in SCNC] → In Progress 90% | Pending recorrection on data,180
