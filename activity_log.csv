@@ -121,3 +121,4 @@ Alyu -
 2026-09-14T11:48:46+08:00,2026-09-14,serol,Review,Updated QA-E2B70D [Pickup No Movement Today - Discrepancy Check] → In Progress 100% | adding abandon as exclusion,260
 2026-09-14T11:49:08+08:00,2026-09-14,serol,Review,Updated QA-61908A [Extend BA RD Report to All Failure Reason] → Done 100% | update the query,260
 2026-09-14T11:49:45+08:00,2026-09-14,serol,Review,Updated QA-19B623 [Apollo | Success log not available in Splunk] → Done 100% | raised the ticket and do the checking,50
+2026-09-14T11:50:32+08:00,2026-09-14,serol,Review,Updated QA-E2B70D [Pickup No Movement Today - Discrepancy Check] → Done 100% | abandon excluded,30
