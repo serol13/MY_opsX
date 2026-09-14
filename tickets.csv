@@ -582,3 +582,15 @@ The customer was onboarded in March 2025; however, the actual start date of ship
 2026-09-14T10:16:00+08:00,CREATED,QA-9E5AC7,Volume Trend - Changes & New tab,Splunk,R3 (Within 5 days),Backlog,0,serol,2026-09-19 10:16:00,Sales,Adding new tab in PBI Sales report,serol,[Email: Sumanth] ,,,,
 2026-09-14T10:17:35+08:00,UPDATED,QA-9E5AC7,Volume Trend - Changes & New tab,Splunk,R3 (Within 5 days),Done,100,serol,2026-09-19 10:16:00,Sales,Adding new tab in PBI Sales report,serol,Apply changes and deploy to prod on 26/5/26,Critical,serol,,
 2026-09-14T10:20:29+08:00,CREATED,QA-19B623,Apollo | Success log not available in Splunk,Splunk,R2 (Within 2 days),Backlog,0,serol,2026-09-16 10:20:29,apollo,Apollo | Success log not available in Splunk - lead to discrepancy in reporting,serol,[Email: asrol] ,,,,
+2026-09-14T10:21:36+08:00,CREATED,QA-3ACA14,Operations KPI (Delivery): 15 Days Delivered/Return Day,Splunk,R3 (Within 5 days),Backlog,0,serol,2026-09-19 10:21:36,KPI,"1.	The KPI set is to identify percentage of shipments that delivered/return delivered within 15 days (calculate from encode).
+2.	@Aun Ling YU (DHL eCom MY) will need to confirm on:
+i.	Calculation for EMY, as the return day is slightly different from WMY
+ii.	Merchant that need to be excluded from this KPI (no return policy)
+iii.	Weightage for this KPI
+3.	@Aun Ling YU (DHL eCom MY) Please confirm if the KPI scoring below is final?
+i.	E: <0.5% of total depot volume @99.5%
+ii.	T: <0.3% of total depot volume @ 99.7%
+iii.	M: <0.25% of total depot volume @99.75%
+4.	@Asrol Amirin Bin Mat Zin (DHL eCS) Please explore to provide visibility for this KPI on monthly basis.
+5.	@Asrol Amirin Bin Mat Zin (DHL eCS) Is it possible for us to have the summary for Jan – Apr 2026?
+",serol,[Email: Adillah] 26/5/26,,,,
