@@ -780,3 +780,6 @@ EH, SH team, MD, Sumanth, Security Team, Lawrence CS (pls add in anyone that I m
 3.	The report should be shared daily to the delivery team every 10am.
 ",serol,"report was setup together with pending return to hub, and deploy via 2244. review will take time",Complex,serol,,
 2026-09-14T11:42:19+08:00,UPDATED,QA-93BA6C,Depot Award Q2 2026,Others,R3 (Within 5 days),Done,100,serol,2026-09-19 11:10:07,kpi,"Appreciate if you can share the winner listing for Depot Award Q2 2026. Kindy share before/by 20th July 2026, Monday, 10am latest for my further actions.",serol,shared with alice,Complex,serol,,
+2026-09-14T11:42:46+08:00,UPDATED,QA-4E72BC,Pickup No Movement Today,Splunk,R2 (Within 2 days),Done,100,serol,2026-09-16 11:08:24,pickup,"We would appreciate it if you could include the courier ID in this report.  
+This addition would assist us in conducting a more thorough analysis and in identifying whether the pickup was performed by the courier or MR driver. Additionally, it would help us narrow down patterns of items that remain stationary after being scanned at pickup, based on the courier ID.  
+",serol,updated,Complex,serol,,
