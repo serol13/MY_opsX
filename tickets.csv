@@ -805,3 +805,4 @@ Courier ID	Delivery Date	Postcode	Success Delivery	Fail Delivery	Success Pickup
 2026-09-14T11:46:06+08:00,UPDATED,QA-43770D,MS Purview Access Approval Needed: APAC DDG DB's,Others,R1 (Within 24 hours),Done,100,serol,2026-09-15 10:58:12,purview,"MY: request raised for SP-DLS-ECSGBL-PROD-QL-READ-MY-APAC-DDG-001
 TH: request raised for SP-DLS-ECSGBL-PROD-QL-READ-TH-APAC-DDG-001
 ",serol,granted,Simple,serol,,
+2026-09-14T11:46:54+08:00,UPDATED,QA-B9F49B,PPOD Dashboard Report - Splunk,Splunk,R3 (Within 5 days),Done,100,serol,2026-09-19 10:40:15,ppod,Rework of PPOD dashboard,serol,rework the whole ppod report structure. shared to hazim and alfiera.,Critical,serol,,
