@@ -563,3 +563,13 @@ Please explore this requirement and share any limitations or challenges you may 
 The customer was onboarded in March 2025; however, the actual start date of shipments remains unclear.
 
 ",serol,[Email: Azlin] ,,,,
+2026-09-14T10:10:04+08:00,UPDATED,QA-A67A15,Request for Pickup and Delivery Data - 9000000015 (SRA LOGISTIK SDN BHD),Splunk,R1 (Within 24 hours),Done,100,serol,2026-09-15 10:09:01,"pickup, delivery, SRA","I would appreciate your assistance in retrieving the specified customer’s data for the period of 2025–2026, particularly the pickup and delivery data containing the following details:
+
+•	Pickup date
+•	Pickup address (including postcode and state)
+•	Delivery date
+•	Delivery address (including postcode and state)
+
+The customer was onboarded in March 2025; however, the actual start date of shipments remains unclear.
+
+",serol,Shared the data with requestor,Medium,serol,,
