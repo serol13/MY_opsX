@@ -718,3 +718,7 @@ d) LGK – suggest close this location for TEMU. Cost is higher than Revenue her
 -	KPIs to be included in the dashboard
 -	KPI calculation method
 ",serol,[Email: Ramsha] 14/8/26,,,,
+2026-09-14T11:27:52+08:00,CREATED,QA-34DEF1,MUA : EXCLUDE MISSED INBOUND RECORD DUE INTERNET ISSUE,Splunk,R1 (Within 24 hours),Backlog,0,serol,2026-09-15 11:27:52,MUA,"To be inform that our depot got some issue with internet that not captured during inbound process
+All ID already scan captured at error column please exclude this ID from Missed Inbound record from MUA
+Kindly refer the attachment for ID not inbound
+",serol,[Email: Safiudding] 18/8/26,,,,
