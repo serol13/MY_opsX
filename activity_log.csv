@@ -119,3 +119,4 @@ Alyu -
 2026-09-14T11:47:46+08:00,2026-09-14,serol,Review,Updated QA-395243 [TAT report by area / region on weekly basis] → In Progress 100% | Preparing query for the report,200
 2026-09-14T11:48:10+08:00,2026-09-14,serol,Review,Updated QA-C22F55 [Request for Total Parcel Volume BYN  (Jan–Apr 2026)] → In Progress 100% | shared,200
 2026-09-14T11:48:46+08:00,2026-09-14,serol,Review,Updated QA-E2B70D [Pickup No Movement Today - Discrepancy Check] → In Progress 100% | adding abandon as exclusion,260
+2026-09-14T11:49:08+08:00,2026-09-14,serol,Review,Updated QA-61908A [Extend BA RD Report to All Failure Reason] → Done 100% | update the query,260
