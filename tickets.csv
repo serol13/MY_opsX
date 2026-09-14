@@ -791,3 +791,4 @@ This addition would assist us in conducting a more thorough analysis and in iden
 4.	Add logic for holiday exclusion for dispatch (offday on Sunday) and inbound (follow Depot offday and PH).
 5.	Below is expected performance to be available in the dashboard:
 ",serol,deploy the dashboard to powerbi,Critical,serol,,
+2026-09-14T11:44:08+08:00,UPDATED,QA-D37A9A,Temu SLA Penalty List - 5339 Items,Splunk,R1 (Within 24 hours),Done,100,serol,2026-09-15 11:03:38,temu,Please compare with our Temu dashboard ,serol,shared to charlene,Medium,serol,,
