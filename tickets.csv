@@ -645,3 +645,11 @@ We start count from the receiving time at HUB.
 TH: request raised for SP-DLS-ECSGBL-PROD-QL-READ-TH-APAC-DDG-001
 ",serol,[Email: ramsha] ,,,,
 2026-09-14T10:59:28+08:00,CREATED,QA-060279,Request to Remove Email from BA & RD Report Lookup,Splunk,R3 (Within 5 days),Backlog,0,serol,2026-09-19 10:59:28,"Sales, bard",I would like to seek your assistance in removing my email address (chaihoon.koid@dhl.com) from the BA & RD report lookup for all the merchants listed below.,serol,[Email: Careen] 2/7/26,,,,
+2026-09-14T11:01:14+08:00,CREATED,QA-2FEA3D,Milkrun Coverage,Splunk,R2 (Within 2 days),Backlog,0,serol,2026-09-16 11:01:14,,"Please provide list of delivery (fail and success) and pickup job (success) by milkrun courier for the last 30 days. Attached herewith, milkrun courier list for your further analysis.
+You may refer below table for expected columns needed for this data.
+
+Courier ID	Delivery Date	Postcode	Success Delivery	Fail Delivery	Success Pickup
+ 	 	 	 	 	 
+ 	 	 	 	 	 
+ 	 	 	 	 	 
+",serol,[Email: Adillah] 6/7/2026,,,,
