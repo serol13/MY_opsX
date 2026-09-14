@@ -806,3 +806,10 @@ Courier ID	Delivery Date	Postcode	Success Delivery	Fail Delivery	Success Pickup
 TH: request raised for SP-DLS-ECSGBL-PROD-QL-READ-TH-APAC-DDG-001
 ",serol,granted,Simple,serol,,
 2026-09-14T11:46:54+08:00,UPDATED,QA-B9F49B,PPOD Dashboard Report - Splunk,Splunk,R3 (Within 5 days),Done,100,serol,2026-09-19 10:40:15,ppod,Rework of PPOD dashboard,serol,rework the whole ppod report structure. shared to hazim and alfiera.,Critical,serol,,
+2026-09-14T11:47:45+08:00,UPDATED,QA-395243,TAT report by area / region on weekly basis,Splunk,R3 (Within 5 days),In Progress,100,serol,2026-09-19 10:35:51,,"To clarify, we simply require your team to download the report in our format and share it with us on a weekly basis. It does not need to be 100% up to date, as I am fully aware that pulling real-time data can be challenging.
+
+Additionally, here are the agendas to be discussed during our monthly meeting:
+
+•	DHL Monthly Performance: Specifically focusing on the lead times taken.
+•	Continuous Improvement Plan: DHL’s strategy for shipments located in outskirt areas (e.g., Batu Pahat, Iskandar Puteri).
+",serol,Preparing query for the report,Complex,serol,,
