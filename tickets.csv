@@ -723,3 +723,7 @@ All ID already scan captured at error column please exclude this ID from Missed 
 Kindly refer the attachment for ID not inbound
 ",serol,[Email: Safiudding] 18/8/26,,,,
 2026-09-14T11:28:41+08:00,CREATED,QA-E5FE97,Volume Tracker- Service Point,Power BI,R3 (Within 5 days),Backlog,0,serol,2026-09-19 11:28:41,SP,Adding reference / pages for SP ,serol,[Email: Wei Mun] 19/8/26,,,,
+2026-09-14T11:32:56+08:00,CREATED,QA-1151B2,Delivery Rate for FTE Courier,Splunk,R2 (Within 2 days),Backlog,0,serol,2026-09-16 11:32:56,kpi,"1.	Delivery Rate for FTE Courier
+Formula: (Delivered Shipment/ Total OFD) x 100
+Understand that we do not have the indicator for courier type. Therefore, please share performance for all couriers instead and share with all depot SV.
+",serol,[Email: Adillah] 8/9/26,,,,
