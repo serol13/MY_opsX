@@ -727,3 +727,6 @@ Kindly refer the attachment for ID not inbound
 Formula: (Delivered Shipment/ Total OFD) x 100
 Understand that we do not have the indicator for courier type. Therefore, please share performance for all couriers instead and share with all depot SV.
 ",serol,[Email: Adillah] 8/9/26,,,,
+2026-09-14T11:33:36+08:00,CREATED,QA-4EEDBB,"NC Performance for SH, DD and PDE Shipment by Depot",Splunk,R3 (Within 5 days),Backlog,0,serol,2026-09-19 11:33:36,kpi,"NC Performance for SH, DD and PDE Shipment by Depot
+Only include shipment with SLA Type SH & DD and shipment with product code PDE and the summary to be share by depot level
+",serol,[Email: Adillah] 8/9/26,,,,
