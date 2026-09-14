@@ -546,6 +546,8 @@ def build_excel(log_df: pd.DataFrame) -> bytes:
                 cell.number_format = '0"%"'
                 cell.alignment = Alignment(horizontal="center", vertical="center")
                 cell.fill = PatternFill("solid", start_color=bg)
+            elif col == "due_date":
+                cell.value = str(val)[:10]
 
     ws3 = wb.create_sheet("Summary")
     ws3.sheet_view.showGridLines = False
