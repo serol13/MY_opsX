@@ -610,3 +610,7 @@ iii.	M: <0.25% of total depot volume @99.75%
 1.	Timeline for this changes
 2.	Issues/concern related to this changes
 ",serol,[Email: Adillah] 26/5/26,,,,
+2026-09-14T10:33:25+08:00,CREATED,QA-E2B70D,Pickup No Movement Today - Discrepancy Check,Splunk,R1 (Within 24 hours),Backlog,0,serol,2026-09-15 10:33:25,pickup,"Below IDs listed in this report. But as per check, the shipment has been updated as Abandoned in our system.
+7128057477969686
+7128057478889386
+",serol,[Email: adillah] 2/6/26,,,,
